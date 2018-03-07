@@ -1,5 +1,5 @@
 options {
-	LOOKAHEAD=1;
+	LOOKAHEAD=3;
 }
 
 PARSER_BEGIN(Yal)
@@ -9,27 +9,7 @@ public class Yal {
 		SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
 
 		root.dump(""); // imprime no ecrã a árvore
-		System.out.println("Valor da expressão: "+myYal.eval(root));
 	}
-
-	int eval(SimpleNode node) {
-	if(node.jjtGetNumChildren() == 0) // leaf node with integer value
-		return node.val;
-	else if(node.jjtGetNumChildren() == 1) // only one child
-		return this.eval((SimpleNode) node.jjtGetChild(0));
-	SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
-	SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
-	switch(node.Op) {
-		case MyConstants.ADD : return eval( lhs ) + eval( rhs );
-		case MyConstants.SUB : return eval( lhs ) - eval( rhs );
-		case MyConstants.MUL : return eval( lhs ) * eval( rhs );
-		case MyConstants.DIV : return eval( lhs ) / eval( rhs );
-	 	default : // abort
-	 		System.out.println("Operador ilegal!");
- 			System.exit(1);
- 		}
- 		return 0;
- 	}
 }
 PARSER_END(Yal)
 
@@ -76,13 +56,12 @@ PARSER_END(Yal)
 
 
 SimpleNode Program(): {} {
-     <MODULE>
+     <MODULE> {return jjtThis;}
 }
 
 void Module(): {} {
     <MODULE> <ID> <LCHAVETA> (Declaration())* (Function())* <RCHAVETA>
 }
-
 
 void Declaration(): {} {
     ( ArrayElement() | ScalarElement() ) ( <ASSIGN> ( ( "[" ArraySize() "]"
