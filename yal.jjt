@@ -97,7 +97,7 @@ TOKEN :
 SimpleNode Program() :
 {}
 {
-  < MODULE >
+  Module()
   {
     return jjtThis;
   }
@@ -220,12 +220,14 @@ void Stmtlst() :
   )*
 }
 
+
 void Stmt() : { Token t; }
 {
+  
   While()
 | If()
 (  t = < ID >
-(   AssignNoID(t)
+( LOOKAHEAD(2)   AssignNoID(t)
 | CallNoID(t) < PVIRG >))
 }
 
@@ -294,7 +296,7 @@ void Term() :
   |
     (
       t = < ID >
-      (
+      ( LOOKAHEAD(2)
         CallNoID(t)
       | ArrayAccessNoID(t)
       | ScalarAccessNoID(t)
