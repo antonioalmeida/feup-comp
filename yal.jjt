@@ -1,184 +1,349 @@
-options {
-	LOOKAHEAD=3;
+options
+{
+  LOOKAHEAD= 1;
+
 }
 
 PARSER_BEGIN(Yal)
-public class Yal {
-	public static void main(String args[]) throws ParseException {
-		Yal myYal = new Yal(System.in);
-		SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
-
-		root.dump(""); // imprime no ecrã a árvore
-	}
+public class Yal
+{
+  public static void main(String args []) throws ParseException
+  {
+    Yal myYal = new Yal(System.in);
+    SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
+    root.dump(""); // imprime no ecrã a árvore
+  }
 }
+
 PARSER_END(Yal)
 
-<DEFAULT> SKIP : {
-" "
+< DEFAULT >
+SKIP :
+{
+  " "
 | "\t"
 | "\n"
 | "\r"
-| <"//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
-| <"/*" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/">
+| < "//" (~[ "\n", "\r" ])*
+    (
+      "\n"
+    | "\r"
+    | "\r\n"
+    ) >
+| < "/*" (~[ "*" ])* "*"
+    (
+      "*"
+    | ~[ "*", "/" ] (~[ "*" ])* "*"
+    )*
+    "/" >
 }
 
 /* reserved words */
-<DEFAULT> TOKEN : {
-<RELA_OP: ">" | "<" | "<=" | ">=" | "==" | "!=">
-| <ADDSUB_OP: "+" | "-">
-| <ARITH_OP: "*" | "/" | "<<" | ">>" | ">>>">
-| <BITWISE_OP: "&" | "|" | "^">
-| <NOT_OP: "!">
-| <WHILE: "while">
-| <IF: "if">
-| <ELSE: "else">
-| <ASSIGN: "=">
-| <ASPA: "\"">
-| <LPAR: "(">
-| <RPAR: ")">
-| <VIRG: ",">
-| <PVIRG: ";">
-| <LCHAVETA: "{">
-| <RCHAVETA: "}">
-| <FUNCTION: "function">
-| <MODULE: "module">
-| <SIZE: "size">
+< DEFAULT >
+TOKEN :
+{
+  < RELA_OP :
+    ">"
+  | "<"
+  | "<="
+  | ">="
+  | "=="
+  | "!=" >
+| < ADDSUB_OP :
+    "+"
+  | "-" >
+| < ARITH_OP :
+    "*"
+  | "/"
+  | "<<"
+  | ">>"
+  | ">>>" >
+| < BITWISE_OP :
+    "&"
+  | "|"
+  | "^" >
+| < NOT_OP : "!" >
+| < WHILE : "while" >
+| < IF : "if" >
+| < ELSE : "else" >
+| < ASSIGN : "=" >
+| < ASPA : "\"" >
+| < LPAR : "(" >
+| < RPAR : ")" >
+| < VIRG : "," >
+| < PVIRG : ";" >
+| < LCHAVETA : "{" >
+| < RCHAVETA : "}" >
+| < FUNCTION : "function" >
+| < MODULE : "module" >
+| < SIZE : "size" >
 }
 
-<DEFAULT> TOKEN : {
-<INTEGER: (<DIGIT>)+>
-| <ID: <LETTER> (<LETTER> | <DIGIT>)*>
-| <#LETTER: ["$","A"-"Z","_","a"-"z"]>
-| <#DIGIT: ["0"-"9"]>
-| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
-
+< DEFAULT >
+TOKEN :
+{
+  < INTEGER : (< DIGIT >)+ >
+| < ID :
+    < LETTER >
+    (
+      < LETTER >
+    | < DIGIT >
+    )* >
+| < #LETTER : [ "$", "A"-"Z", "_", "a"-"z" ] >
+| < #DIGIT : [ "0"-"9" ] >
+| < STRING : "\"" ([ "a"-"z", "A"-"Z", "0"-"9", ":", " ", "=" ])+ "\"" >
 }
 
-
-SimpleNode Program(): {} {
-     <MODULE> {return jjtThis;}
+SimpleNode Program() :
+{}
+{
+  < MODULE >
+  {
+    return jjtThis;
+  }
 }
 
-void Module(): {} {
-    <MODULE> <ID> <LCHAVETA> (Declaration())* (Function())* <RCHAVETA>
+void Module() : 
+{Token t;}
+{
+  < MODULE > t=< ID >{jjtThis.setValue(t.image);} < LCHAVETA >
+  (
+    Declaration()
+  )*
+  (
+    Function()
+  )*
+  < RCHAVETA >
 }
 
-void Declaration(): {} {
-    ( ArrayElement() | ScalarElement() ) ( <ASSIGN> ( ( "[" ArraySize() "]"
-    ) | ( <ADDSUB_OP> )? <INTEGER> ) )? <PVIRG>
+void Declaration() :
+{}
+{
+  (
+    Element()
+  )
+  (
+    < ASSIGN >
+    (
+      (
+        "[" ArraySize() "]"
+      )
+    | (< ADDSUB_OP >)? < INTEGER >
+    )
+  )?
+  < PVIRG >
 }
 
-void Function(): {} {
-    ( ( <FUNCTION> ( ArrayElement() | ScalarElement() ) <ASSIGN> <ID>
-    <LPAR> ( Varlist() )? <RPAR> ) | ( <FUNCTION> <ID> <LPAR> ( Varlist()
-    )? <RPAR> ) ) <LCHAVETA> Stmtlst() <RCHAVETA>
+void Function() :
+{}
+{
+  (
+    (
+      < FUNCTION >
+      (
+        ArrayElement()
+      | ScalarElement()
+      )
+      < ASSIGN > < ID > 
+      < LPAR >
+      (
+        Varlist()
+      )?
+      < RPAR >
+    )
+  |
+    (
+      < FUNCTION > < ID > < LPAR >
+      (
+        Varlist()
+      )?
+      < RPAR >
+    )
+  )
+  < LCHAVETA > Stmtlst() < RCHAVETA >
 }
 
-void Varlist(): {} {
-    <ID> "[" "]"
+void Varlist() :
+{}
+{
+  (
+    ArrayElement()
+  | ScalarElement()
+  )
+  (
+    < VIRG >
+    (
+      ArrayElement()
+    | ScalarElement()
+    )
+  )*
 }
 
-void ArrayElement(): {} {
-    <ID> "[" "]"
+void Element() #void:{Token t;}{
+	t=<ID> (
+		ArrayElementNoID(t.image)
+	  | ScalarElementNoID(t.image)
+	)
 }
 
-void ScalarElement(): {} {
-    <ID>
+void ArrayElementNoID(String id) #ArrayElement:
+{}
+{
+	{jjtThis.setValue(id);}
+  "[" "]"
 }
 
-void Stmtlst(): {} {
-    ( Stmt() )*
+void ScalarElementNoID(String id) #ScalarElement:
+{}
+{
+	{jjtThis.setValue(id);}
+   ""
 }
 
-void Stmt(): {} {
-    While()
-    | If()
-    | Assign()
-    | Call() <PVIRG>
+void ArrayElement() :
+{}
+{
+  < ID > "[" "]"
 }
 
-void Assign(): {} {
-    Lhs() <ASSIGN> Rhs() <PVIRG>
+void ScalarElement() :
+{}
+{
+  < ID >
 }
 
-void Lhs(): {} {
-    ArrayAccess()
-    | ScalarAccess()
+void Stmtlst() :
+{}
+{
+  (
+    Stmt()
+  )*
 }
 
-void Rhs(): {} {
-    ( Term() ( ( <ARITH_OP> | <BITWISE_OP> | <ADDSUB_OP> ) Term() )? ) | "[" ArraySize() "]"
+void Stmt() :
+{}
+{
+  While()
+| If()
+| Assign()
+| Call() < PVIRG >
 }
 
-void ArraySize(): {} {
-     ScalarAccess()
-    | <INTEGER>
+void Assign() :
+{}
+{
+  Lhs() < ASSIGN > Rhs() < PVIRG >
 }
 
-void Term(): {} {
-    ( <ADDSUB_OP> )? ( <INTEGER> | Call() | ArrayAccess() | ScalarAccess() )
+void Lhs() :
+{}
+{
+  ArrayAccess()
+| ScalarAccess()
 }
 
-void Exprtest(): {} {
-    <LPAR> Lhs() <RELA_OP> Rhs() <RPAR>
+void Rhs() :
+{}
+{
+  (
+    Term()
+    (
+      (
+        < ARITH_OP >
+      | < BITWISE_OP >
+      | < ADDSUB_OP >
+      )
+      Term()
+    )?
+  )
+| "[" ArraySize() "]"
 }
 
-void While(): {} {
-    <WHILE> Exprtest() <LCHAVETA> Stmtlst() <RCHAVETA>
+void ArraySize() :
+{}
+{
+  ScalarAccess()
+| < INTEGER >
 }
 
-void If(): {} {
-    <IF> Exprtest() <LCHAVETA> Stmtlst() <RCHAVETA> ( <ELSE> <LCHAVETA>
-    Stmtlst() <RCHAVETA> )?
+void Term() :
+{}
+{
+  (< ADDSUB_OP >)?
+  (
+    < INTEGER >
+  | Call()
+  | ArrayAccess()
+  | ScalarAccess()
+  )
 }
 
-void Call(): {} {
-    <ID> ( "." <ID> )? <LPAR> ( ArgumentList() )? <RPAR>
+void Exprtest() :
+{}
+{
+  < LPAR > Lhs() < RELA_OP > Rhs() < RPAR >
 }
 
-void ArgumentList(): {} {
-    Argument() ( <VIRG> Argument() )*
+void While() :
+{}
+{
+  < WHILE > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
 }
 
-void Argument(): {} {
-    ( <ID> | <STRING> | <INTEGER> )
+void If() :
+{}
+{
+  < IF > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
+  (
+    < ELSE > < LCHAVETA > 
+    Stmtlst() < RCHAVETA >
+  )?
 }
 
-void ArrayAccess(): {} {
-    <ID> "[" Index() "]"
+void Call() :
+{}
+{
+  < ID > ("." < ID >)? < LPAR >
+  (
+    ArgumentList()
+  )?
+  < RPAR >
 }
 
-void ScalarAccess(): {} {
-    <ID> ( "." <SIZE> )?
+void ArgumentList() :
+{}
+{
+  Argument()
+  (
+    < VIRG > Argument()
+  )*
 }
 
-void Index(): {} {
-    <ID>
-    | <INTEGER>
+void Argument() :
+{}
+{
+  (
+    < ID >
+  | < STRING >
+  | < INTEGER >
+  )
 }
 
-
-/*
-SimpleNode Expression(): {} {
-	Expr1() <LF> {return jjtThis;} // código Java entre chavetas
+void ArrayAccess() :
+{}
+{
+  < ID > "[" Index() "]"
 }
 
-void Expr1(): {} {
-	Expr2(1) [("+" {jjtThis.Op = MyConstants.ADD;}
-		| "-" {jjtThis.Op = MyConstants.ADD;}
-		)
-	Expr2(1)]
+void ScalarAccess() :
+{}
+{
+  < ID > ("." < SIZE >)?
 }
 
-void Expr2(int sign): {} { // 1: positive, -1: negative
-	Expr3(sign) [("*" {jjtThis.Op = MyConstants.MUL;}
-		| "/" {jjtThis.Op = MyConstants.DIV;}
-		) Expr3(1)]
+void Index() :
+{}
+{
+  < ID >
+| < INTEGER >
 }
-
-void Expr3(int sign): {Token t;} {
-	t = <INTEGER> { jjtThis.val = sign * Integer.parseInt(t.image);}
-	| "-" Expr3(-1)
-	| "(" Expr1() ")"
-}
-*/
