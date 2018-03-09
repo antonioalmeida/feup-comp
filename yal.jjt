@@ -134,15 +134,14 @@ void Declaration() :
   < PVIRG >
 }
 
-void Function() :
-{}
-{
+void Function() : { Token t;}
+{ < FUNCTION > t=< ID > 
   (
     (
-      < FUNCTION >
+      
       (
-        ArrayElement()
-      | ScalarElement()
+        (          ArrayElementNoID(t))?
+      /*| ScalarElementNoID(t)*/
       )
       < ASSIGN > < ID > 
       < LPAR >
@@ -153,7 +152,7 @@ void Function() :
     )
   |
     (
-      < FUNCTION > < ID > < LPAR >
+	 < LPAR >
       (
         Varlist()
       )?
@@ -163,26 +162,25 @@ void Function() :
   < LCHAVETA > Stmtlst() < RCHAVETA >
 }
 
-void Varlist() :
-{}
-{
+void Varlist() : { Token t1, t2; }
+{ t = < ID >
   (
-    ArrayElement()
-  | ScalarElement()
+    (      ArrayElementNoID(t1))?
+  /*| ScalarElementNoID(t)*/
   )
   (
-    < VIRG >
+    < VIRG >  t2 = < ID >
     (
-      ArrayElement()
-    | ScalarElement()
+      (        ArrayElementNoID(t2))?
+    /*| ScalarElementNoID(t2) We don't know if we are supposed to have scalarElement*/
     )
   )*
 }
 
 void Element() #void:{Token t;}{
 	t=<ID> (
-		ArrayElementNoID(t.image)
-	  | ScalarElementNoID(t.image)
+		(		  ArrayElementNoID(t.image))?
+	 /* | ScalarElementNoID(t.image)*/
 	)
 }
 
@@ -193,12 +191,14 @@ void ArrayElementNoID(String id) #ArrayElement:
   "[" "]"
 }
 
+/*
+TODO: Ask teacher if it is preferable to have a warning or to delete ScalarElement
 void ScalarElementNoID(String id) #ScalarElement:
 {}
 {
 	{jjtThis.setValue(id);}
-   ""
-}
+  	""
+}*/
 
 void ArrayElement() :
 {}
@@ -220,13 +220,13 @@ void Stmtlst() :
   )*
 }
 
-void Stmt() :
-{}
+void Stmt() : { Token t; }
 {
   While()
 | If()
-| Assign()
-| Call() < PVIRG >
+(  t = < ID >
+(   AssignNoID(t)
+| CallNoID(t) < PVIRG >))
 }
 
 void Assign() :
@@ -235,12 +235,29 @@ void Assign() :
   Lhs() < ASSIGN > Rhs() < PVIRG >
 }
 
-void Lhs() :
-{}
+void AssignNoID(String id) #Assign:
+{ }
 {
-  ArrayAccess()
-| ScalarAccess()
+  {jjThis.setValue(id);}
+  LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
 }
+
+void Lhs() :
+{Token t;}
+{
+  t = < ID >
+  ArrayAccessNoID(t)
+| ScalarAccessNoID(t)
+}
+
+void LhsNoID(String id) #Lhs:
+{ }
+{
+  {jjThis.setValue(id);}
+  ArrayAccessNoID()
+| ScalarAccessNoID()
+}
+  
 
 void Rhs() :
 {}
@@ -267,14 +284,22 @@ void ArraySize() :
 }
 
 void Term() :
-{}
+{
+  Token t;
+}
 {
   (< ADDSUB_OP >)?
   (
     < INTEGER >
-  | Call()
-  | ArrayAccess()
-  | ScalarAccess()
+  |
+    (
+      t = < ID >
+      (
+        CallNoID(t)
+      | ArrayAccessNoID(t)
+      | ScalarAccessNoID(t)
+      )
+    )
   )
 }
 
@@ -310,6 +335,18 @@ void Call() :
   < RPAR >
 }
 
+void CallNoID(String id) #Call:
+{ }
+{
+  {jjThis.setValue(id);}
+  ("." < ID >)? < LPAR >
+  (
+    ArgumentList()
+  )?
+  < RPAR >
+}
+  
+
 void ArgumentList() :
 {}
 {
@@ -335,10 +372,26 @@ void ArrayAccess() :
   < ID > "[" Index() "]"
 }
 
+void ArrayAccessNoID(String id) #ArrayAccess:
+{ }
+{
+  {jjThis.setValue(id); }
+  "[" Index() "]"
+}
+
+   
+
 void ScalarAccess() :
 {}
 {
   < ID > ("." < SIZE >)?
+}
+
+void ScalarAccessNoID(String id) #ScalarAccess:
+{ }
+{
+  {jjThis.setValue(id); }
+  ("." < SIZE >)?
 }
 
 void Index() :
