@@ -320,7 +320,18 @@ void Exprtest() :
 void While() :
 {}
 {
-  < WHILE > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
+    try {
+      < WHILE > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
+     }
+    catch(ParseException e) {
+      System.out.println(e.toString());
+      Token t;
+      do {
+        t = getNextToken();
+      } while (t.kind != RCHAVETA);
+    }
+
+
 }
 
 void If() :
@@ -328,7 +339,7 @@ void If() :
 {
   < IF > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
   (
-    < ELSE > < LCHAVETA > 
+    < ELSE > < LCHAVETA >
     Stmtlst() < RCHAVETA >
   )?
 }
