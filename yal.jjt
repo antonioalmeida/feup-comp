@@ -229,8 +229,8 @@ void Stmt() : { Token t; }
 {
   
   While()
-| If()
-(
+| If() 
+|(
   t = < ID >
 ( LOOKAHEAD(2)
    AssignNoID(t.image)
