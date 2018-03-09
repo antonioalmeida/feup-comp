@@ -106,7 +106,7 @@ SimpleNode Program() :
 void Module() : 
 {Token t;}
 {
-  < MODULE > t=< ID >{jjtThis.setValue(t.image);} < LCHAVETA >
+  < MODULE > t=< ID >{jjtThis.jjtSetValue(t.image);} < LCHAVETA >
   (
     Declaration()
   )*
@@ -135,12 +135,13 @@ void Declaration() :
 }
 
 void Function() : { Token t;}
-{ < FUNCTION > t=< ID > 
+{ < FUNCTION > t=< ID >
   (
     (
       
       (
-        (          ArrayElementNoID(t))?
+        (
+          ArrayElementNoID(t.image))?
       /*| ScalarElementNoID(t)*/
       )
       < ASSIGN > < ID > 
@@ -163,15 +164,17 @@ void Function() : { Token t;}
 }
 
 void Varlist() : { Token t1, t2; }
-{ t = < ID >
+{ t1 = < ID >
   (
-    (      ArrayElementNoID(t1))?
+    (
+      ArrayElementNoID(t1.image))?
   /*| ScalarElementNoID(t)*/
   )
   (
     < VIRG >  t2 = < ID >
     (
-      (        ArrayElementNoID(t2))?
+      (
+        ArrayElementNoID(t2.image))?
     /*| ScalarElementNoID(t2) We don't know if we are supposed to have scalarElement*/
     )
   )*
@@ -179,7 +182,8 @@ void Varlist() : { Token t1, t2; }
 
 void Element() #void:{Token t;}{
 	t=<ID> (
-		(		  ArrayElementNoID(t.image))?
+		(
+		  ArrayElementNoID(t.image))?
 	 /* | ScalarElementNoID(t.image)*/
 	)
 }
@@ -187,7 +191,7 @@ void Element() #void:{Token t;}{
 void ArrayElementNoID(String id) #ArrayElement:
 {}
 {
-	{jjtThis.setValue(id);}
+	{jjtThis.jjtSetValue(id);}
   "[" "]"
 }
 
@@ -226,9 +230,11 @@ void Stmt() : { Token t; }
   
   While()
 | If()
-(  t = < ID >
-( LOOKAHEAD(2)   AssignNoID(t)
-| CallNoID(t) < PVIRG >))
+(
+  t = < ID >
+( LOOKAHEAD(2)
+   AssignNoID(t.image)
+| CallNoID(t.image) < PVIRG >))
 }
 
 void Assign() :
@@ -240,24 +246,24 @@ void Assign() :
 void AssignNoID(String id) #Assign:
 { }
 {
-  {jjThis.setValue(id);}
+  {jjtThis.jjtSetValue(id);}
   LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
 }
 
 void Lhs() :
 {Token t;}
 {
-  t = < ID >
-  ArrayAccessNoID(t)
-| ScalarAccessNoID(t)
+  t = < ID >(
+  ArrayAccessNoID(t.image)
+| ScalarAccessNoID(t.image))
 }
 
 void LhsNoID(String id) #Lhs:
 { }
 {
-  {jjThis.setValue(id);}
-  ArrayAccessNoID()
-| ScalarAccessNoID()
+  {jjtThis.jjtSetValue(id);}
+  ArrayAccessNoID(id)
+| ScalarAccessNoID(id)
 }
   
 
@@ -297,9 +303,9 @@ void Term() :
     (
       t = < ID >
       ( LOOKAHEAD(2)
-        CallNoID(t)
-      | ArrayAccessNoID(t)
-      | ScalarAccessNoID(t)
+        CallNoID(t.image)
+      | ArrayAccessNoID(t.image)
+      | ScalarAccessNoID(t.image)
       )
     )
   )
@@ -340,7 +346,7 @@ void Call() :
 void CallNoID(String id) #Call:
 { }
 {
-  {jjThis.setValue(id);}
+  {jjtThis.jjtSetValue(id);}
   ("." < ID >)? < LPAR >
   (
     ArgumentList()
@@ -377,7 +383,7 @@ void ArrayAccess() :
 void ArrayAccessNoID(String id) #ArrayAccess:
 { }
 {
-  {jjThis.setValue(id); }
+  {jjtThis.jjtSetValue(id); }
   "[" Index() "]"
 }
 
@@ -392,7 +398,7 @@ void ScalarAccess() :
 void ScalarAccessNoID(String id) #ScalarAccess:
 { }
 {
-  {jjThis.setValue(id); }
+  {jjtThis.jjtSetValue(id); }
   ("." < SIZE >)?
 }
 
