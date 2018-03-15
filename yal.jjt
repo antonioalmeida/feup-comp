@@ -135,31 +135,40 @@ void Declaration() :
 }
 
 void Function() : { Token t;}
-{ < FUNCTION > t=< ID >
-  (
+{ 
+  try {
+    < FUNCTION > t=< ID >
     (
-      
       (
         (
-          ArrayElementNoID(t.image))?
-      /*| ScalarElementNoID(t)*/
+          (
+            ArrayElementNoID(t.image))?
+        /*| ScalarElementNoID(t)*/
+        )
+        < ASSIGN > < ID > 
+        < LPAR >
+        (
+          Varlist()
+        )?
+        < RPAR >
       )
-      < ASSIGN > < ID > 
-      < LPAR >
+    |
       (
-        Varlist()
-      )?
-      < RPAR >
+  	 < LPAR >
+        (
+          Varlist()
+        )?
+        < RPAR >
+      )
     )
-  |
-    (
-	 < LPAR >
-      (
-        Varlist()
-      )?
-      < RPAR >
-    )
-  )
+  } 
+  catch(ParseException e) {
+    System.out.println("Syntatic error on function declaration. " + e.toString());
+    Token t1;
+    do {
+      t1 = getNextToken();
+    } while (t1.kind != RPAR);
+  }
   < LCHAVETA > Stmtlst() < RCHAVETA >
 }
 
@@ -247,7 +256,19 @@ void AssignNoID(String id) #Assign:
 { }
 {
   {jjtThis.jjtSetValue(id);}
-  LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
+
+  try {
+    LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
+  }
+  catch(ParseException e) {
+    /* Error during assignment - skipping to next ';' */
+    System.out.println("Syntatic error during assignment. " + e.toString());
+    Token t;
+    do {
+      t = getNextToken();
+    } while (t.kind != PVIRG);
+  }
+
 }
 
 void Lhs() :
@@ -324,24 +345,56 @@ void While() :
       < WHILE > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
      }
     catch(ParseException e) {
-      System.out.println(e.toString());
+      System.out.println("Syntatic error on WHILE statement. " + e.toString());
       Token t;
       do {
         t = getNextToken();
       } while (t.kind != RCHAVETA);
     }
-
-
 }
 
 void If() :
 {}
 {
-  < IF > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
-  (
-    < ELSE > < LCHAVETA >
-    Stmtlst() < RCHAVETA >
-  )?
+  try {
+    < IF > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
+  }
+  catch (ParseException e) {
+    System.out.println("Syntatic error on IF statement. " + e.toString());
+    Token t;
+    do {
+      t = getNextToken();
+    } while (t.kind != RCHAVETA);
+  }
+
+  try {
+    (
+      < ELSE > < LCHAVETA >
+      Stmtlst() < RCHAVETA >
+    )?
+  }
+  catch (ParseException e) {
+    System.out.println("Syntatic error on ELSE statement. " + e.toString());
+    Token t1;
+    boolean hasBrackets = false;
+    // If left brackets is found, skip to right bracket
+    // otherwise, skip to ';'
+
+    // TODO: Refactor this later
+    do {
+      t1 = getNextToken();
+      if(t1.kind == LCHAVETA) {
+        hasBrackets = true;
+        break;
+      }
+    } while (t1.kind != PVIRG);
+
+    if(hasBrackets) {
+      do {
+        t1 = getNextToken();
+      } while (t1.kind != RCHAVETA);
+    }
+  }
 }
 
 void Call() :
@@ -397,8 +450,6 @@ void ArrayAccessNoID(String id) #ArrayAccess:
   {jjtThis.jjtSetValue(id); }
   "[" Index() "]"
 }
-
-   
 
 void ScalarAccess() :
 {}
