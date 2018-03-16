@@ -115,17 +115,18 @@ void Module() :
   (
     Declaration()
   )*
-  try { 
+  //try { 
   (
     Function()
   )*
-  < RCHAVETA > } catch(ParseException e) {
+  < RCHAVETA > /*} catch(ParseException e) {
     System.out.println("Syntatic Error: This area of the module can only contain function declarations." + e.toString());
     Token t1;
     do {
       t1 = getNextToken();
     } while (t1.kind != RCHAVETA);
-  }
+
+  }*/
 }
 
 void Declaration() :
@@ -267,9 +268,16 @@ void Stmt() : { Token t; }
   catch(ParseException e) {
   	System.out.println("Syntatic error during Statement declaration. " + e.toString());
       Token t2;
+
       do {
         t2 = getNextToken();
-      } while (t2.kind != PVIRG && t2.kind != RCHAVETA);
+
+        /*
+        if(t2.kind == LCHAVETA) {
+          StmtlstError();
+          return;
+        }*/
+      } while(t2.kind != PVIRG);
     }
 }
 
