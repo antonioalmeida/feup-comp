@@ -13,6 +13,14 @@ public class Yal
     SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
     root.dump(""); // imprime no ecrã a árvore
   }
+
+  public static void errorSkipTo(ParseException e, int skipTarget, String errorMessage) {
+    System.out.println("Syntatic Error on " + errorMessage + ". " + e.toString());
+    Token t1;
+    do {
+      t1 = getNextToken();
+    } while (t1.kind != skipTarget);
+  }
 }
 
 PARSER_END(Yal)
@@ -176,12 +184,9 @@ void Function() : { Token t;}
     )
   } 
   catch(ParseException e) {
-    System.out.println("Syntatic error on function declaration. " + e.toString());
-    Token t1;
-    do {
-      t1 = getNextToken();
-    } while (t1.kind != RPAR);
+    errorSkipTo(e, RPAR, "function declaration");
   }
+
   < LCHAVETA > Stmtlst() < RCHAVETA >
 }
 
@@ -296,14 +301,8 @@ void AssignNoID(String id) #Assign:
     LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
   }
   catch(ParseException e) {
-    /* Error during assignment - skipping to next ';' */
-    System.out.println("Syntatic error during assignment. " + e.toString());
-    Token t;
-    do {
-      t = getNextToken();
-    } while (t.kind != PVIRG);
+    errorSkipTo(e, PVIRG, "assignment");
   }
-
 }
 
 void Lhs() :
