@@ -370,10 +370,10 @@ void ArraySize() :
 
 void Term() :
 {
-  Token t;
+  Token t,t2=null;
 }
 {
-  (< ADDSUB_OP >)?
+  (t2=< ADDSUB_OP >{jjtThis.set_sign(t2.image);})?
   (
     t=< INTEGER >{jjtThis.jjtSetValue(t.image);}
   |
