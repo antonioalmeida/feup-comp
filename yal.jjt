@@ -178,9 +178,8 @@ void Function() : { Token t2,t3;}
     (
       (
         (
-          (
-            ArrayElementNoID(t2.image))?
-        /*| ScalarElementNoID(t)*/
+          ArrayElementNoID(t2.image)
+        | ScalarElementNoID(t2.image)
         )
         < ASSIGN > t3=< ID > {jjtThis.jjtSetValue(t2.image+ "=" + t3.image);}
         < LPAR >
@@ -213,25 +212,22 @@ void Function() : { Token t2,t3;}
 void Varlist() : { Token t1, t2; }
 { t1 = < ID >
   (
-    (
-      ArrayElementNoID(t1.image))?
-  /*| ScalarElementNoID(t)*/
+    ArrayElementNoID(t1.image)
+  | ScalarElementNoID(t1.image)
   )
   (
     < VIRG >  t2 = < ID >
     (
-      (
-        ArrayElementNoID(t2.image))?
-    /*| ScalarElementNoID(t2) We don't know if we are supposed to have scalarElement*/
+     ArrayElementNoID(t2.image)
+    | ScalarElementNoID(t2.image)
     )
   )*
 }
 
 void Element() :{Token t;}{
 	t=<ID> (
-		(
-		  ArrayElementNoID(t.image))?
-	 /* | ScalarElementNoID(t.image)*/
+		ArrayElementNoID(t.image)
+	  | ScalarElementNoID(t.image)
 	)
 	{jjtThis.jjtSetValue(t.image);}
 }
@@ -243,14 +239,13 @@ void ArrayElementNoID(String id) #ArrayElement:
   "[" "]"
 }
 
-/*
-TODO: Ask teacher if it is preferable to have a warning or to delete ScalarElement
+
 void ScalarElementNoID(String id) #ScalarElement:
 {}
 {
-	{jjtThis.setValue(id);}
-  	""
-}*/
+	{jjtThis.jjtSetValue(id);}
+  	
+}
 
 void ArrayElement() :
 {}
