@@ -115,17 +115,17 @@ void Module() :
   (
     Declaration()
   )*
-  /*try { */
+  try { 
   (
     Function()
   )*
-  < RCHAVETA > /*} catch(ParseException e) {
+  < RCHAVETA > } catch(ParseException e) {
     System.out.println("Syntatic Error: This area of the module can only contain function declarations." + e.toString());
     Token t1;
     do {
       t1 = getNextToken();
     } while (t1.kind != RCHAVETA);
-  }*/
+  }
 }
 
 void Declaration() :
@@ -245,6 +245,13 @@ void Stmtlst() :
   )*
 }
 
+void StmtlstError() :
+{}
+{
+  (
+    Stmt()
+  )*"}"
+}
 
 void Stmt() : { Token t; }
 {
@@ -255,7 +262,7 @@ void Stmt() : { Token t; }
   t = < ID >
 ( LOOKAHEAD(2)
    AssignNoID(t.image)
-| CallNoID(t.image) < PVIRG >)) } catch(ParseException e) {
+| CallNoIDVirg(t.image) )) } catch(ParseException e) {
 	System.out.println("Syntatic error during Statement declaration. " + e.toString());
     Token t2;
     do {
@@ -453,6 +460,41 @@ void CallNoID(String id) #Call:
       t1 = getNextToken();
       
     } while (t1.kind != RPAR);
+
+    t1 = getNextToken();
+    if(t1.kind == LCHAVETA) {
+		StmtlstError();
+		System.out.println("b2");
+    }
+
+   
+  }
+}
+
+void CallNoIDVirg(String id) #Call:
+{ }
+{
+  {jjtThis.jjtSetValue(id);}
+  ("." < ID >)?
+  try { 
+  < LPAR >
+  (	
+    ArgumentList()
+  )?
+  < RPAR > < PVIRG >} catch (ParseException e) {
+    System.out.println("Syntatic error on Call function. " + e.toString());
+    Token t1;
+   
+    do {
+      t1 = getNextToken();
+      
+    } while (t1.kind != RPAR && t1.kind != PVIRG);
+
+    t1 = getNextToken();
+    if(t1.kind == LCHAVETA) {
+		StmtlstError();
+		System.out.println("b3");
+    }
 
    
   }
