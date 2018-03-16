@@ -360,10 +360,20 @@ void While() :
 {}
 {
     try {
-      < WHILE > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
-     }
+      < WHILE > Exprtest() < LCHAVETA > 
+    }
     catch(ParseException e) {
-      System.out.println("Syntatic error on WHILE statement. " + e.toString());
+      System.out.println("Syntatic error on WHILE statement declaration. " + e.toString());
+      Token t;
+      do {
+        t = getNextToken();
+      } while (t.kind != LCHAVETA);
+    }
+    try {
+      Stmtlst() < RCHAVETA >
+    }
+    catch(ParseException e) {
+      System.out.println("Syntatic error inside WHILE body. " + e.toString());
       Token t;
       do {
         t = getNextToken();
