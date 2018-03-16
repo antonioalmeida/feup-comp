@@ -26,8 +26,6 @@ class ASTScalarAccess extends SimpleNode {
 			node += " [" + "sizeof(" + this.value + ")]";
 		else node += " [" + this.value + "]";
 	}
-	
-    
     	 	
   	return node; 
   }

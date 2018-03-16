@@ -146,18 +146,18 @@ void Declaration() :
   < PVIRG >
 }
 
-void Function() : { Token t;}
+void Function() : { Token t2,t3;}
 { 
   try {
-    < FUNCTION > t=< ID >{jjtThis.jjtSetValue(t.image);}
+    < FUNCTION > t2=< ID >{jjtThis.jjtSetValue(t2.image);}
     (
       (
         (
           (
-            ArrayElementNoID(t.image))?
+            ArrayElementNoID(t2.image))?
         /*| ScalarElementNoID(t)*/
         )
-        < ASSIGN > < ID > 
+        < ASSIGN > t3=< ID > {jjtThis.jjtSetValue(t2.image+ "=" + t3.image);}
         < LPAR >
         (
           Varlist()
@@ -183,6 +183,8 @@ void Function() : { Token t;}
   }
   < LCHAVETA > Stmtlst() < RCHAVETA >
 }
+
+
 
 void Varlist() : { Token t1, t2; }
 { t1 = < ID >
@@ -238,7 +240,7 @@ void ScalarElement() :
   < ID >
 }
 
-void Stmtlst() :
+void Stmtlst() #void:
 {}
 {
   (
@@ -247,7 +249,7 @@ void Stmtlst() :
 }
 
 
-void Stmt() : { Token t; }
+void Stmt() #void: { Token t; }
 {
   
   While()
@@ -428,17 +430,13 @@ void CallNoID(String id) #Call:
 {Token t=null; }
 {
   
-  ("." t=< ID >)? < LPAR >
+  ("." t=< ID >{jjtThis.set_type(t.image);})? < LPAR >
   (
     ArgumentList()
   )?
   < RPAR >
 
-  {if (t != null)
-  	jjtThis.jjtSetValue(id + "." + t);
-   else
-   	jjtThis.jjtSetValue(id);
-  	}
+  {jjtThis.jjtSetValue(id);}
 }
   
 
@@ -475,10 +473,10 @@ void ArrayAccessNoID(String id) #ArrayAccess:
   "[" Index() "]"
 }
 
-void ScalarAccess() :
-{}
+void ScalarAccess() #void:
+{Token t;}
 {
-  < ID > ("." < SIZE >)?
+  t=< ID > ScalarAccessNoID(t.image)
 }
 
 void ScalarAccessNoID(String id) #ScalarAccess:
