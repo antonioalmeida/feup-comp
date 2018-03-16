@@ -1,7 +1,7 @@
 options
 {
   LOOKAHEAD= 1;
-
+  MULTI = true;
 }
 
 PARSER_BEGIN(Yal)
@@ -149,7 +149,7 @@ void Declaration() :
 void Function() : { Token t;}
 { 
   try {
-    < FUNCTION > t=< ID >
+    < FUNCTION > t=< ID >{jjtThis.jjtSetValue(t.image);}
     (
       (
         (
@@ -201,12 +201,13 @@ void Varlist() : { Token t1, t2; }
   )*
 }
 
-void Element() #void:{Token t;}{
+void Element() :{Token t;}{
 	t=<ID> (
 		(
 		  ArrayElementNoID(t.image))?
 	 /* | ScalarElementNoID(t.image)*/
 	)
+	{jjtThis.jjtSetValue(t.image);}
 }
 
 void ArrayElementNoID(String id) #ArrayElement:
@@ -267,8 +268,7 @@ void Assign() :
 void AssignNoID(String id) #Assign:
 { }
 {
-  {jjtThis.jjtSetValue(id);}
-
+  
   try {
     LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
   }
@@ -283,7 +283,7 @@ void AssignNoID(String id) #Assign:
 
 }
 
-void Lhs() :
+void Lhs() #void:
 {Token t;}
 {
   t = < ID >(
@@ -291,37 +291,40 @@ void Lhs() :
 | ScalarAccessNoID(t.image))
 }
 
-void LhsNoID(String id) #Lhs:
+void LhsNoID(String id) #void:
 { }
 {
-  {jjtThis.jjtSetValue(id);}
+  /*{jjtThis.jjtSetValue(id);}*/
   ArrayAccessNoID(id)
 | ScalarAccessNoID(id)
 }
   
 
-void Rhs() :
-{}
+void Rhs():
+{Token t=null;}
 {
   (
     Term()
     (
       (
-        < ARITH_OP >
-      | < BITWISE_OP >
-      | < ADDSUB_OP >
+        t=< ARITH_OP >
+      | t=< BITWISE_OP >
+      | t=< ADDSUB_OP >
       )
+      {jjtThis.jjtSetValue(t.image);}
       Term()
     )?
   )
 | "[" ArraySize() "]"
+
+
 }
 
 void ArraySize() :
-{}
+{Token t;}
 {
   ScalarAccess()
-| < INTEGER >
+| t=< INTEGER >{jjtThis.jjtSetValue(t.image);}
 }
 
 void Term() :
@@ -331,7 +334,7 @@ void Term() :
 {
   (< ADDSUB_OP >)?
   (
-    < INTEGER >
+    t=< INTEGER >{jjtThis.jjtSetValue(t.image);}
   |
     (
       t = < ID >
@@ -342,12 +345,14 @@ void Term() :
       )
     )
   )
+  
 }
 
 void Exprtest() :
-{}
+{Token t;}
 {
-  < LPAR > Lhs() < RELA_OP > Rhs() < RPAR >
+  < LPAR > Lhs() t=< RELA_OP > Rhs() < RPAR >
+  {jjtThis.jjtSetValue(t.image);}
 }
 
 void While() :
@@ -408,7 +413,7 @@ void If() :
     }
   }
 }
-
+/*
 void Call() :
 {}
 {
@@ -417,21 +422,27 @@ void Call() :
     ArgumentList()
   )?
   < RPAR >
-}
+}*/
 
 void CallNoID(String id) #Call:
-{ }
+{Token t=null; }
 {
-  {jjtThis.jjtSetValue(id);}
-  ("." < ID >)? < LPAR >
+  
+  ("." t=< ID >)? < LPAR >
   (
     ArgumentList()
   )?
   < RPAR >
+
+  {if (t != null)
+  	jjtThis.jjtSetValue(id + "." + t);
+   else
+   	jjtThis.jjtSetValue(id);
+  	}
 }
   
 
-void ArgumentList() :
+void ArgumentList() #void:
 {}
 {
   Argument()
@@ -441,13 +452,14 @@ void ArgumentList() :
 }
 
 void Argument() :
-{}
+{Token t;}
 {
   (
-    < ID >
-  | < STRING >
-  | < INTEGER >
+    t=< ID >
+  | t=< STRING > 
+  | t=< INTEGER > 
   )
+  {jjtThis.jjtSetValue(t.image);}
 }
 
 void ArrayAccess() :
@@ -470,15 +482,17 @@ void ScalarAccess() :
 }
 
 void ScalarAccessNoID(String id) #ScalarAccess:
-{ }
+{ Token t=null;}
 {
   {jjtThis.jjtSetValue(id); }
-  ("." < SIZE >)?
+  ("." < SIZE >{jjtThis.set_size_access(true);})?
+
 }
 
 void Index() :
-{}
+{Token t;}
 {
-  < ID >
-| < INTEGER >
+( t=< ID >
+| t=< INTEGER >)
+{jjtThis.jjtSetValue(t.image); }
 }
