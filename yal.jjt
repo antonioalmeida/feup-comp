@@ -13,6 +13,21 @@ public class Yal
     SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
     root.dump(""); // imprime no ecrã a árvore
   }
+
+  public static void errorSkipTo(ParseException e, String errorMessage, int... skipTargets) {
+    System.out.println("Syntatic Error on " + errorMessage + ". " + e.toString());
+    Token t1;
+    boolean foundTarget = false;
+
+    do {
+      t1 = getNextToken();
+
+      for (int token : skipTargets) {
+        if(token == t1.kind) 
+          foundTarget = true;
+      }
+    } while (!foundTarget);
+  }
 }
 
 PARSER_END(Yal)
@@ -115,17 +130,18 @@ void Module() :
   (
     Declaration()
   )*
-  try { 
+  //try { 
   (
     Function()
   )*
-  < RCHAVETA > } catch(ParseException e) {
-    System.out.println("This area of the module can only contain function declarations." + e.toString());
+  < RCHAVETA > /*} catch(ParseException e) {
+    System.out.println("Syntatic Error: This area of the module can only contain function declarations." + e.toString());
     Token t1;
     do {
       t1 = getNextToken();
     } while (t1.kind != RCHAVETA);
-  }
+
+  }*/
 }
 
 void Declaration() :
@@ -175,12 +191,9 @@ void Function() : { Token t2,t3;}
     )
   } 
   catch(ParseException e) {
-    System.out.println("Syntatic error on function declaration. " + e.toString());
-    Token t1;
-    do {
-      t1 = getNextToken();
-    } while (t1.kind != RPAR);
+    errorSkipTo(e, "function declaration", RPAR);
   }
+
   < LCHAVETA > Stmtlst() < RCHAVETA >
 }
 
@@ -248,17 +261,39 @@ void Stmtlst() #void:
   )*
 }
 
+void StmtlstError() :
+{}
+{
+  (
+    Stmt()
+  )*"}"
+}
 
 void Stmt() #void: { Token t; }
 {
-  
-  While()
-| If() 
-|(
-  t = < ID >
-( LOOKAHEAD(2)
-   AssignNoID(t.image)
-| CallNoID(t.image) < PVIRG >))
+  try { 
+    While()
+  | If() 
+  |(
+    t = < ID >
+  ( LOOKAHEAD(2)
+     AssignNoID(t.image)
+  | CallNoIDVirg(t.image) )) 
+  } 
+  catch(ParseException e) {
+  	System.out.println("Syntatic error during Statement declaration. " + e.toString());
+      Token t2;
+
+      do {
+        t2 = getNextToken();
+
+        /*
+        if(t2.kind == LCHAVETA) {
+          StmtlstError();
+          return;
+        }*/
+      } while(t2.kind != PVIRG);
+    }
 }
 
 void Assign() :
@@ -275,14 +310,8 @@ void AssignNoID(String id) #Assign:
     LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
   }
   catch(ParseException e) {
-    /* Error during assignment - skipping to next ';' */
-    System.out.println("Syntatic error during assignment. " + e.toString());
-    Token t;
-    do {
-      t = getNextToken();
-    } while (t.kind != PVIRG);
+    errorSkipTo(e, "assignment", PVIRG);
   }
-
 }
 
 void Lhs() #void:
@@ -361,15 +390,12 @@ void While() :
 {}
 {
     try {
-      < WHILE > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
-     }
-    catch(ParseException e) {
-      System.out.println("Syntatic error on WHILE statement. " + e.toString());
-      Token t;
-      do {
-        t = getNextToken();
-      } while (t.kind != RCHAVETA);
+      < WHILE > Exprtest() < LCHAVETA > 
     }
+    catch(ParseException e) {
+      errorSkipTo(e, "WHILE statement declaration", LCHAVETA);
+    }
+    Stmtlst() < RCHAVETA >
 }
 
 void If() :
@@ -379,11 +405,7 @@ void If() :
     < IF > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
   }
   catch (ParseException e) {
-    System.out.println("Syntatic error on IF statement. " + e.toString());
-    Token t;
-    do {
-      t = getNextToken();
-    } while (t.kind != RCHAVETA);
+    errorSkipTo(e, "IF statement", RCHAVETA);
   }
 
   try {
@@ -429,14 +451,48 @@ void Call() :
 void CallNoID(String id) #Call:
 {Token t=null; }
 {
-  
-  ("." t=< ID >{jjtThis.set_type(t.image);})? < LPAR >
-  (
+
+ 
+  ("." t=< ID >{jjtThis.set_type(t.image);})? 
+  try { 
+  < LPAR >
+  (	
     ArgumentList()
   )?
-  < RPAR >
+  < RPAR > } catch (ParseException e) {
+    errorSkipTo(e, "function call", RPAR, PVIRG);
 
+    Token t1;
+    t1 = getNextToken();
+    if(t1.kind == LCHAVETA) {
+      StmtlstError();
+      System.out.println("b2");
+    }
+  }
+   {jjtThis.jjtSetValue(id);}
+}
+
+void CallNoIDVirg(String id) #Call:
+{ }
+{
   {jjtThis.jjtSetValue(id);}
+  ("." < ID >)?
+  try { 
+  < LPAR >
+  (	
+    ArgumentList()
+  )?
+  < RPAR > < PVIRG >} catch (ParseException e) {
+    errorSkipTo(e, "function call", RPAR, PVIRG);
+
+    Token t1;
+    t1 = getNextToken();
+    if(t1.kind == LCHAVETA) {
+  		StmtlstError();
+	   	System.out.println("b3");
+    }
+  }
+
 }
   
 
