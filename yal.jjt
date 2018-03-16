@@ -136,20 +136,18 @@ void Module() :
     Token t1;
     return;    
   }
+  try { 
   (
     Declaration()
-  )*
+  )* }catch(ParseException e) {
+		errorSkipTo(e, "declarations module area", PVIRG);
+     }
   try { 
   (
     Function()
   )*
   < RCHAVETA > } catch(ParseException e) {
-    System.out.println("Syntatic Error: This area of the module can only contain function declarations." + e.toString());
-    Token t1;
-    do {
-      t1 = getNextToken();
-    } while (t1.kind != RCHAVETA);
-
+    errorSkipTo(e, "functions module area", RCHAVETA);
   }
 }
 
@@ -470,7 +468,7 @@ void CallNoID(String id) #Call:
   < RPAR > } catch (ParseException e) {
     errorSkipTo(e, "function call", RPAR, PVIRG);
 
-    coverageBlock();
+
   }
    {jjtThis.jjtSetValue(id);}
 }
