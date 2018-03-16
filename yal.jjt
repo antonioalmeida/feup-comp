@@ -28,6 +28,15 @@ public class Yal
       }
     } while (!foundTarget);
   }
+
+  public static void coverageBlock() throws ParseException {
+	Token t1;
+    t1 = getNextToken();
+    if(t1.kind == LCHAVETA) {
+      StmtlstError();
+      System.out.println("b2");
+    }
+  }
 }
 
 PARSER_END(Yal)
@@ -130,18 +139,18 @@ void Module() :
   (
     Declaration()
   )*
-  //try { 
+  try { 
   (
     Function()
   )*
-  < RCHAVETA > /*} catch(ParseException e) {
+  < RCHAVETA > } catch(ParseException e) {
     System.out.println("Syntatic Error: This area of the module can only contain function declarations." + e.toString());
     Token t1;
     do {
       t1 = getNextToken();
     } while (t1.kind != RCHAVETA);
 
-  }*/
+  }
 }
 
 void Declaration() :
@@ -193,8 +202,10 @@ void Function() : { Token t;}
   catch(ParseException e) {
     errorSkipTo(e, "function declaration", RPAR);
   }
-
-  < LCHAVETA > Stmtlst() < RCHAVETA >
+  try { 
+  < LCHAVETA > Stmtlst() < RCHAVETA > } catch(ParseException e) {
+		errorSkipTo(e, "function body", RCHAVETA);
+    }
 }
 
 void Varlist() : { Token t1, t2; }
@@ -454,12 +465,7 @@ void CallNoID(String id) #Call:
   < RPAR > } catch (ParseException e) {
     errorSkipTo(e, "function call", RPAR, PVIRG);
 
-    Token t1;
-    t1 = getNextToken();
-    if(t1.kind == LCHAVETA) {
-      StmtlstError();
-      System.out.println("b2");
-    }
+    coverageBlock();
   }
 }
 
@@ -476,12 +482,7 @@ void CallNoIDVirg(String id) #Call:
   < RPAR > < PVIRG >} catch (ParseException e) {
     errorSkipTo(e, "function call", RPAR, PVIRG);
 
-    Token t1;
-    t1 = getNextToken();
-    if(t1.kind == LCHAVETA) {
-  		StmtlstError();
-	   	System.out.println("b3");
-    }
+    coverageBlock();
   }
 }
   
