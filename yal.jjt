@@ -451,8 +451,6 @@ void Call() :
 void CallNoID(String id) #Call:
 {Token t=null; }
 {
-
- 
   ("." t=< ID >{jjtThis.set_type(t.image);})? 
   try { 
   < LPAR >
@@ -473,10 +471,9 @@ void CallNoID(String id) #Call:
 }
 
 void CallNoIDVirg(String id) #Call:
-{ }
+{Token t=null; }
 {
-  {jjtThis.jjtSetValue(id);}
-  ("." < ID >)?
+  ("." t=< ID >{jjtThis.set_type(t.image);})?
   try { 
   < LPAR >
   (	
@@ -492,7 +489,7 @@ void CallNoIDVirg(String id) #Call:
 	   	System.out.println("b3");
     }
   }
-
+  {jjtThis.jjtSetValue(id);}
 }
   
 
