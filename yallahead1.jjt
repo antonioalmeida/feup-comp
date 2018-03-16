@@ -106,26 +106,14 @@ SimpleNode Program() :
 void Module() : 
 {Token t;}
 {
-  try { 
-  < MODULE > t=< ID >{jjtThis.jjtSetValue(t.image);} < LCHAVETA > }catch(ParseException e) {
-    System.out.println("Syntatic error on module declaration. " + e.toString());
-    Token t1;
-    return;    
-  }
+  < MODULE > t=< ID >{jjtThis.setValue(t.image);} < LCHAVETA >
   (
     Declaration()
   )*
-  try { 
   (
     Function()
   )*
-  < RCHAVETA > } catch(ParseException e) {
-    System.out.println("This area of the module can only contain function declarations." + e.toString());
-    Token t1;
-    do {
-      t1 = getNextToken();
-    } while (t1.kind != RCHAVETA);
-  }
+  < RCHAVETA >
 }
 
 void Declaration() :
@@ -147,55 +135,46 @@ void Declaration() :
 }
 
 void Function() : { Token t;}
-{ 
-  try {
-    < FUNCTION > t=< ID >
+{ < FUNCTION > t=< ID > 
+  (
     (
+      
       (
         (
-          (
-            ArrayElementNoID(t.image))?
-        /*| ScalarElementNoID(t)*/
-        )
-        < ASSIGN > < ID > 
-        < LPAR >
-        (
-          Varlist()
-        )?
-        < RPAR >
+          ArrayElementNoID(t))?
+      /*| ScalarElementNoID(t)*/
       )
-    |
+      < ASSIGN > < ID > 
+      < LPAR >
       (
-  	 < LPAR >
-        (
-          Varlist()
-        )?
-        < RPAR >
-      )
+        Varlist()
+      )?
+      < RPAR >
     )
-  } 
-  catch(ParseException e) {
-    System.out.println("Syntatic error on function declaration. " + e.toString());
-    Token t1;
-    do {
-      t1 = getNextToken();
-    } while (t1.kind != RPAR);
-  }
+  |
+    (
+	 < LPAR >
+      (
+        Varlist()
+      )?
+      < RPAR >
+    )
+  )
   < LCHAVETA > Stmtlst() < RCHAVETA >
 }
 
 void Varlist() : { Token t1, t2; }
-{ t1 = < ID >
+{ t = < ID >
   (
     (
-      ArrayElementNoID(t1.image))?
+      ArrayElementNoID(t1))?
   /*| ScalarElementNoID(t)*/
   )
   (
     < VIRG >  t2 = < ID >
     (
       (
-        ArrayElementNoID(t2.image))?
+        ArrayElementNoID(t2))?
     /*| ScalarElementNoID(t2) We don't know if we are supposed to have scalarElement*/
     )
   )*
@@ -212,7 +191,7 @@ void Element() #void:{Token t;}{
 void ArrayElementNoID(String id) #ArrayElement:
 {}
 {
-	{jjtThis.jjtSetValue(id);}
+	{jjtThis.setValue(id);}
   "[" "]"
 }
 
@@ -250,12 +229,12 @@ void Stmt() : { Token t; }
 {
   
   While()
-| If() 
-|(
+| If()
+(
   t = < ID >
-( LOOKAHEAD(2)
-   AssignNoID(t.image)
-| CallNoID(t.image) < PVIRG >))
+( 
+   AssignNoID(t)
+| CallNoID(t) < PVIRG >))
 }
 
 void Assign() :
@@ -267,36 +246,24 @@ void Assign() :
 void AssignNoID(String id) #Assign:
 { }
 {
-  {jjtThis.jjtSetValue(id);}
-
-  try {
-    LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
-  }
-  catch(ParseException e) {
-    /* Error during assignment - skipping to next ';' */
-    System.out.println("Syntatic error during assignment. " + e.toString());
-    Token t;
-    do {
-      t = getNextToken();
-    } while (t.kind != PVIRG);
-  }
-
+  {jjThis.setValue(id);}
+  LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
 }
 
 void Lhs() :
 {Token t;}
 {
-  t = < ID >(
-  ArrayAccessNoID(t.image)
-| ScalarAccessNoID(t.image))
+  t = < ID >
+  ArrayAccessNoID(t)
+| ScalarAccessNoID(t)
 }
 
 void LhsNoID(String id) #Lhs:
 { }
 {
-  {jjtThis.jjtSetValue(id);}
-  ArrayAccessNoID(id)
-| ScalarAccessNoID(id)
+  {jjThis.setValue(id);}
+  ArrayAccessNoID()
+| ScalarAccessNoID()
 }
   
 
@@ -335,13 +302,17 @@ void Term() :
   |
     (
       t = < ID >
-      ( LOOKAHEAD(2)
-        CallNoID(t.image)
-      | ArrayAccessNoID(t.image)
-      | ScalarAccessNoID(t.image)
+      ( 
+        CallScalarAccessNoIDNoPoint(t)
+      | ArrayAccessNoID(t) 
       )
     )
   )
+}
+
+void CallScalarAccessNoIDNoPoint(String id) : {}
+{
+  (    (     "." ( CallNoIDNoPoint(id) | ScalarAccessNoIDNoPoint(id) ))? | CallNoIDNoInterrogation(id)) 
 }
 
 void Exprtest() :
@@ -353,60 +324,17 @@ void Exprtest() :
 void While() :
 {}
 {
-    try {
-      < WHILE > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
-     }
-    catch(ParseException e) {
-      System.out.println("Syntatic error on WHILE statement. " + e.toString());
-      Token t;
-      do {
-        t = getNextToken();
-      } while (t.kind != RCHAVETA);
-    }
+  < WHILE > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
 }
 
 void If() :
 {}
 {
-  try {
-    < IF > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
-  }
-  catch (ParseException e) {
-    System.out.println("Syntatic error on IF statement. " + e.toString());
-    Token t;
-    do {
-      t = getNextToken();
-    } while (t.kind != RCHAVETA);
-  }
-
-  try {
-    (
-      < ELSE > < LCHAVETA >
-      Stmtlst() < RCHAVETA >
-    )?
-  }
-  catch (ParseException e) {
-    System.out.println("Syntatic error on ELSE statement. " + e.toString());
-    Token t1;
-    boolean hasBrackets = false;
-    // If left brackets is found, skip to right bracket
-    // otherwise, skip to ';'
-
-    // TODO: Refactor this later
-    do {
-      t1 = getNextToken();
-      if(t1.kind == LCHAVETA) {
-        hasBrackets = true;
-        break;
-      }
-    } while (t1.kind != PVIRG);
-
-    if(hasBrackets) {
-      do {
-        t1 = getNextToken();
-      } while (t1.kind != RCHAVETA);
-    }
-  }
+  < IF > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
+  (
+    < ELSE > < LCHAVETA > 
+    Stmtlst() < RCHAVETA >
+  )?
 }
 
 void Call() :
@@ -422,12 +350,36 @@ void Call() :
 void CallNoID(String id) #Call:
 { }
 {
-  {jjtThis.jjtSetValue(id);}
+  {jjThis.setValue(id);}
   ("." < ID >)? < LPAR >
   (
     ArgumentList()
   )?
   < RPAR >
+}
+
+void CallNoIDNoPoint(String id) #Call:
+{ }
+{
+  {jjThis.setValue(id);}
+  < ID > < LPAR >
+  (
+    ArgumentList()
+  )?
+  < RPAR >
+}
+  
+void CallNoIDNoInterrogation(String id) #Call:
+{ }
+{
+  {jjThis.setValue(id); }
+  < LPAR >
+  (
+    ArgumentList()
+  )?
+  < RPAR >
+  
+    
 }
   
 
@@ -459,9 +411,11 @@ void ArrayAccess() :
 void ArrayAccessNoID(String id) #ArrayAccess:
 { }
 {
-  {jjtThis.jjtSetValue(id); }
+  {jjThis.setValue(id); }
   "[" Index() "]"
 }
+
+   
 
 void ScalarAccess() :
 {}
@@ -472,8 +426,15 @@ void ScalarAccess() :
 void ScalarAccessNoID(String id) #ScalarAccess:
 { }
 {
-  {jjtThis.jjtSetValue(id); }
+  {jjThis.setValue(id); }
   ("." < SIZE >)?
+}
+
+void ScalarAccessNoIDNoPoint(String id) #ScalarAccess:
+{ }
+{
+  {jjThis.setValue(id); }
+  <  SIZE >
 }
 
 void Index() :
