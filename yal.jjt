@@ -171,17 +171,17 @@ void Declaration() :
   < PVIRG >
 }
 
-void Function() : { Token t2,t3;}
+void Function() : { Token t;}
 { 
   try {
-    < FUNCTION > t2=< ID >{jjtThis.jjtSetValue(t2.image);}
+    < FUNCTION > t=< ID >{jjtThis.jjtSetValue(t.image);}
     (
       (
         (
-          ArrayElementNoID(t2.image)
-        | ScalarElementNoID(t2.image)
+          ArrayElementNoID(t.image)
+        | ScalarElementNoID(t.image)
         )
-        < ASSIGN > t3=< ID > {jjtThis.jjtSetValue(t2.image+ "=" + t3.image);}
+       	FunctionAssign()
         < LPAR >
         (
           Varlist()
@@ -207,7 +207,12 @@ void Function() : { Token t2,t3;}
     }
 }
 
-
+void FunctionAssign() : {Token t;}
+{
+	
+	 < ASSIGN > t=< ID > 
+	 {jjtThis.jjtSetValue(t.image);}
+}
 
 void Varlist() : { Token t1, t2; }
 { t1 = < ID >
@@ -244,7 +249,6 @@ void ScalarElementNoID(String id) #ScalarElement:
 {}
 {
 	{jjtThis.jjtSetValue(id);}
-  	
 }
 
 void ArrayElement() :
