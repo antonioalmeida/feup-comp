@@ -1,7 +1,7 @@
 options
 {
   LOOKAHEAD= 1;
-
+  MULTI = true;
 }
 
 PARSER_BEGIN(Yal)
@@ -162,18 +162,18 @@ void Declaration() :
   < PVIRG >
 }
 
-void Function() : { Token t;}
+void Function() : { Token t2,t3;}
 { 
   try {
-    < FUNCTION > t=< ID >
+    < FUNCTION > t2=< ID >{jjtThis.jjtSetValue(t2.image);}
     (
       (
         (
           (
-            ArrayElementNoID(t.image))?
+            ArrayElementNoID(t2.image))?
         /*| ScalarElementNoID(t)*/
         )
-        < ASSIGN > < ID > 
+        < ASSIGN > t3=< ID > {jjtThis.jjtSetValue(t2.image+ "=" + t3.image);}
         < LPAR >
         (
           Varlist()
@@ -197,6 +197,8 @@ void Function() : { Token t;}
   < LCHAVETA > Stmtlst() < RCHAVETA >
 }
 
+
+
 void Varlist() : { Token t1, t2; }
 { t1 = < ID >
   (
@@ -214,12 +216,13 @@ void Varlist() : { Token t1, t2; }
   )*
 }
 
-void Element() #void:{Token t;}{
+void Element() :{Token t;}{
 	t=<ID> (
 		(
 		  ArrayElementNoID(t.image))?
 	 /* | ScalarElementNoID(t.image)*/
 	)
+	{jjtThis.jjtSetValue(t.image);}
 }
 
 void ArrayElementNoID(String id) #ArrayElement:
@@ -250,7 +253,7 @@ void ScalarElement() :
   < ID >
 }
 
-void Stmtlst() :
+void Stmtlst() #void:
 {}
 {
   (
@@ -266,7 +269,7 @@ void StmtlstError() :
   )*"}"
 }
 
-void Stmt() : { Token t; }
+void Stmt() #void: { Token t; }
 {
   try { 
     While()
@@ -302,8 +305,7 @@ void Assign() :
 void AssignNoID(String id) #Assign:
 { }
 {
-  {jjtThis.jjtSetValue(id);}
-
+  
   try {
     LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
   }
@@ -312,7 +314,7 @@ void AssignNoID(String id) #Assign:
   }
 }
 
-void Lhs() :
+void Lhs() #void:
 {Token t;}
 {
   t = < ID >(
@@ -320,37 +322,40 @@ void Lhs() :
 | ScalarAccessNoID(t.image))
 }
 
-void LhsNoID(String id) #Lhs:
+void LhsNoID(String id) #void:
 { }
 {
-  {jjtThis.jjtSetValue(id);}
+  /*{jjtThis.jjtSetValue(id);}*/
   ArrayAccessNoID(id)
 | ScalarAccessNoID(id)
 }
   
 
-void Rhs() :
-{}
+void Rhs():
+{Token t=null;}
 {
   (
     Term()
     (
       (
-        < ARITH_OP >
-      | < BITWISE_OP >
-      | < ADDSUB_OP >
+        t=< ARITH_OP >
+      | t=< BITWISE_OP >
+      | t=< ADDSUB_OP >
       )
+      {jjtThis.jjtSetValue(t.image);}
       Term()
     )?
   )
 | "[" ArraySize() "]"
+
+
 }
 
 void ArraySize() :
-{}
+{Token t;}
 {
   ScalarAccess()
-| < INTEGER >
+| t=< INTEGER >{jjtThis.jjtSetValue(t.image);}
 }
 
 void Term() :
@@ -360,7 +365,7 @@ void Term() :
 {
   (< ADDSUB_OP >)?
   (
-    < INTEGER >
+    t=< INTEGER >{jjtThis.jjtSetValue(t.image);}
   |
     (
       t = < ID >
@@ -371,12 +376,14 @@ void Term() :
       )
     )
   )
+  
 }
 
 void Exprtest() :
-{}
+{Token t;}
 {
-  < LPAR > Lhs() < RELA_OP > Rhs() < RPAR >
+  < LPAR > Lhs() t=< RELA_OP > Rhs() < RPAR >
+  {jjtThis.jjtSetValue(t.image);}
 }
 
 void While() :
@@ -430,7 +437,7 @@ void If() :
     }
   }
 }
-
+/*
 void Call() :
 {}
 {
@@ -439,13 +446,14 @@ void Call() :
     ArgumentList()
   )?
   < RPAR >
-}
+}*/
 
 void CallNoID(String id) #Call:
-{ }
+{Token t=null; }
 {
-  {jjtThis.jjtSetValue(id);}
-  ("." < ID >)?
+
+ 
+  ("." t=< ID >{jjtThis.set_type(t.image);})? 
   try { 
   < LPAR >
   (	
@@ -461,6 +469,7 @@ void CallNoID(String id) #Call:
       System.out.println("b2");
     }
   }
+   {jjtThis.jjtSetValue(id);}
 }
 
 void CallNoIDVirg(String id) #Call:
@@ -483,10 +492,11 @@ void CallNoIDVirg(String id) #Call:
 	   	System.out.println("b3");
     }
   }
+
 }
   
 
-void ArgumentList() :
+void ArgumentList() #void:
 {}
 {
   Argument()
@@ -496,13 +506,14 @@ void ArgumentList() :
 }
 
 void Argument() :
-{}
+{Token t;}
 {
   (
-    < ID >
-  | < STRING >
-  | < INTEGER >
+    t=< ID >
+  | t=< STRING > 
+  | t=< INTEGER > 
   )
+  {jjtThis.jjtSetValue(t.image);}
 }
 
 void ArrayAccess() :
@@ -518,22 +529,24 @@ void ArrayAccessNoID(String id) #ArrayAccess:
   "[" Index() "]"
 }
 
-void ScalarAccess() :
-{}
+void ScalarAccess() #void:
+{Token t;}
 {
-  < ID > ("." < SIZE >)?
+  t=< ID > ScalarAccessNoID(t.image)
 }
 
 void ScalarAccessNoID(String id) #ScalarAccess:
-{ }
+{ Token t=null;}
 {
   {jjtThis.jjtSetValue(id); }
-  ("." < SIZE >)?
+  ("." < SIZE >{jjtThis.set_size_access(true);})?
+
 }
 
 void Index() :
-{}
+{Token t;}
 {
-  < ID >
-| < INTEGER >
+( t=< ID >
+| t=< INTEGER >)
+{jjtThis.jjtSetValue(t.image); }
 }
