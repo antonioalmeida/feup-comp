@@ -256,19 +256,21 @@ void StmtlstError() :
 void Stmt() : { Token t; }
 {
   try { 
-  While()
-| If() 
-|(
-  t = < ID >
-( LOOKAHEAD(2)
-   AssignNoID(t.image)
-| CallNoIDVirg(t.image) )) } catch(ParseException e) {
-	System.out.println("Syntatic error during Statement declaration. " + e.toString());
-    Token t2;
-    do {
-      t2 = getNextToken();
-    } while (t2.kind != PVIRG && t2.kind != RCHAVETA);
-  }
+    While()
+  | If() 
+  |(
+    t = < ID >
+  ( LOOKAHEAD(2)
+     AssignNoID(t.image)
+  | CallNoIDVirg(t.image) )) 
+  } 
+  catch(ParseException e) {
+  	System.out.println("Syntatic error during Statement declaration. " + e.toString());
+      Token t2;
+      do {
+        t2 = getNextToken();
+      } while (t2.kind != PVIRG && t2.kind != RCHAVETA);
+    }
 }
 
 void Assign() :
@@ -376,16 +378,7 @@ void While() :
         t = getNextToken();
       } while (t.kind != LCHAVETA);
     }
-    try {
-      Stmtlst() < RCHAVETA >
-    }
-    catch(ParseException e) {
-      System.out.println("Syntatic error inside WHILE body. " + e.toString());
-      Token t;
-      do {
-        t = getNextToken();
-      } while (t.kind != RCHAVETA);
-    }
+    Stmtlst() < RCHAVETA >
 }
 
 void If() :
@@ -492,11 +485,9 @@ void CallNoIDVirg(String id) #Call:
 
     t1 = getNextToken();
     if(t1.kind == LCHAVETA) {
-		StmtlstError();
-		System.out.println("b3");
+  		StmtlstError();
+	   	System.out.println("b3");
     }
-
-   
   }
 }
   
