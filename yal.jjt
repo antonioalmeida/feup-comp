@@ -34,7 +34,6 @@ public class Yal
     t1 = getNextToken();
     if(t1.kind == LCHAVETA) {
       StmtlstError();
-      System.out.println("b2");
     }
   }
 }
@@ -284,9 +283,9 @@ void Stmt() #void: { Token t; }
   | If() 
   |(
     t = < ID >
-  ( LOOKAHEAD(2)
-     AssignNoID(t.image)
-  | CallNoIDVirg(t.image) )) 
+  ( 
+     AssignNoPoint(t.image)
+  | CallLPARVirg(t.image) |  "."PointAssignCallVirg(t.image))) 
   } 
   catch(ParseException e) {
   	System.out.println("Syntatic error during Statement declaration. " + e.toString());
@@ -302,6 +301,13 @@ void Stmt() #void: { Token t; }
         }*/
       } while(t2.kind != PVIRG);
     }
+}
+
+void PointAssignCallVirg(String id) #void:
+{}
+{
+  (
+    < ID > CallLPARVirg(id)) | (< SIZE > AssignNoPoint(id))
 }
 
 void Assign() :
@@ -322,6 +328,19 @@ void AssignNoID(String id) #Assign:
   }
 }
 
+void AssignNoPoint(String id) #Assign:
+{ }
+{
+  
+  try {
+    LhsNoPoint(id) < ASSIGN > Rhs() < PVIRG >
+  }
+  catch(ParseException e) {
+    errorSkipTo(e, "assignment", PVIRG);
+  }
+}
+  
+
 void Lhs() #void:
 {Token t;}
 {
@@ -336,6 +355,13 @@ void LhsNoID(String id) #void:
   /*{jjtThis.jjtSetValue(id);}*/
   ArrayAccessNoID(id)
 | ScalarAccessNoID(id)
+}
+  
+void LhsNoPoint(String id) #void:
+{ }
+{
+  ArrayAccessNoID(id)
+| ScalarAccessNothing(id)
 }
   
 
@@ -377,15 +403,15 @@ void Term() :
   |
     (
       t = < ID >
-      ( LOOKAHEAD(2)
-        CallNoID(t.image)
-      | ArrayAccessNoID(t.image)
-      | ScalarAccessNoID(t.image)
-      )
+      (CallLPAR(t.image) | "." PointCallScalarAccess(t.image) | ArrayAccessNoID(t.image) 
+		| ScalarAccessNothing(t.image))  
+        
     )
   )
   
 }
+
+
 
 void Exprtest() :
 {Token t;}
@@ -489,7 +515,41 @@ void CallNoIDVirg(String id) #Call:
   }
   {jjtThis.jjtSetValue(id);}
 }
+
+void CallLPAR (String id) #Call:
+{Token t=null; }
+{
+  try { 
+  < LPAR >
+  (	
+    ArgumentList()
+  )?
+  < RPAR > } catch (ParseException e) {
+    errorSkipTo(e, "function call", RPAR, PVIRG);
+
+    
+  }
+  {jjtThis.jjtSetValue(id);}
+	
+}
   
+   
+void CallLPARVirg (String id) #Call:
+{Token t=null; }
+{
+  try { 
+  < LPAR >
+  (	
+    ArgumentList()
+  )?
+  < RPAR > < PVIRG >} catch (ParseException e) {
+    errorSkipTo(e, "function call", RPAR, PVIRG);
+
+    coverageBlock();
+  }
+  {jjtThis.jjtSetValue(id);}
+	
+}
 
 void ArgumentList() #void:
 {}
@@ -537,6 +597,31 @@ void ScalarAccessNoID(String id) #ScalarAccess:
   ("." < SIZE >{jjtThis.set_size_access(true);})?
 
 }
+
+void ScalarAccessNothing(String id) #ScalarAccess:
+{ Token t=null; }
+{
+  {jjtThis.jjtSetValue(id); }
+    
+} 
+
+void PointCallScalarAccess(String id) #void:
+{
+  
+}
+{
+  (
+    < ID > CallLPAR(id)) | (< SIZE > ScalarAccessNothing(id))
+}
+
+/*void CallScalarAccessVirgPoint(String id) #void:
+{
+  
+}
+{
+  (
+    < ID > CallLPARVirg(id)) | (< SIZE > ScalarAccessNothing(id))
+}*/
 
 void Index() :
 {Token t;}
