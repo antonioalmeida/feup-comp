@@ -80,7 +80,7 @@ public class Yal
     Token t1;
     boolean foundTarget = false;
 
-	 System.out.println(token);
+	 //System.out.println(token);
 	
     do {
       t1 = getToken(1);
@@ -105,7 +105,7 @@ public class Yal
       	
     } while (!foundTarget);
 
-     System.out.println(token);
+     //System.out.println(token);
   }
 
   public static void coverageBlock() throws ParseException {
@@ -250,10 +250,13 @@ void Declaration() :
   < PVIRG >
 }
 
-void Function() : { Token t;}
+void Function() : { Token t=null;}
 { 
   try {
-    < FUNCTION > t=< ID >{jjtThis.jjtSetValue(t.image);}
+    < FUNCTION > t=< ID >{jjtThis.jjtSetValue(t.image);} }catch(ParseException e) {
+			errorSkipTo(e, "function name", new SkipToken(LPAR, false));
+       }
+    try { 
     (
       (
         (
@@ -367,7 +370,7 @@ void Stmt() #void: { Token t; }
     t = < ID >
   ( 
      AssignNoPoint(t.image)
-  | CallLPARVirg(t.image) |  "."PointAssignCallVirg(t.image))) 
+  | CallVirg(t.image) |  "."NoPointAssignCallVirg(t.image))) 
   } 
   catch(ParseException e) {
   	System.out.println("Syntatic error during Statement declaration. " + e.toString());
@@ -385,11 +388,11 @@ void Stmt() #void: { Token t; }
     }
 }
 
-void PointAssignCallVirg(String id) #void:
+void NoPointAssignCallVirg(String id) #void:
 {}
 {
   (
-    < ID > CallLPARVirg(id)) | (< SIZE > AssignNoPoint(id))
+    < ID > CallVirg(id)) | (< SIZE > AssignNoPoint(id))
 }
 
 void Assign() :
@@ -485,7 +488,7 @@ void Term() :
   |
     ( 
       t = < ID > 
-      (CallLPAR(t.image) | "." PointCallScalarAccess(t.image) | ArrayAccessNoID(t.image) 
+      (Call(t.image) | "." PointCallScalarAccess(t.image) | ArrayAccessNoID(t.image) 
 		| ScalarAccessNothing(t.image))  
         
     )
@@ -564,7 +567,43 @@ void Call() :
   < RPAR >
 }*/
 
-void CallNoID(String id) #Call:
+void CallArguments():
+{ }
+{
+  try {
+    < LPAR > }catch(ParseException e) {
+		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
+		return;
+      }
+    try {
+		(
+		  ArgumentList()		)?
+		<  RPAR >
+      }catch(ParseException e) {
+        errorSkipTo(e, "function call", new SkipToken(RPAR, true), new SkipToken(PVIRG, true));
+      }
+}
+
+void CallArgumentsVirg():
+{ }
+{
+  try {
+    < LPAR > }catch(ParseException e) {
+		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
+		return;
+      }
+    try {
+		(
+		  ArgumentList()
+		)?
+		<  RPAR > < PVIRG >
+      }catch(ParseException e) {
+        errorSkipTo(e, "function call", new SkipToken(RPAR, true), new SkipToken(PVIRG, true));
+        coverageBlock();
+      }
+}  
+
+/*void CallPointID(String id) #Call:
 {Token t=null; }
 {
   ("." t=< ID >{jjtThis.set_type(t.image);})? 
@@ -579,9 +618,9 @@ void CallNoID(String id) #Call:
 
   }
    {jjtThis.jjtSetValue(id);}
-}
+}*/
 
-void CallNoIDVirg(String id) #Call:
+/*void CallNoIDVirg(String id) #Call:
 {Token t=null; }
 {
   ("." t=< ID >{jjtThis.set_type(t.image);})?
@@ -596,39 +635,46 @@ void CallNoIDVirg(String id) #Call:
     coverageBlock();
   }
   {jjtThis.jjtSetValue(id);}
-}
+}*/
 
-void CallLPAR (String id) #Call:
+void Call (String id) #Call:
 {Token t=null; }
 {
-  try { 
-  < LPAR >
-  (	
-    ArgumentList()
-  )?
-  < RPAR > } catch (ParseException e) {
-    errorSkipTo(e, "function call",  new SkipToken(RPAR, false),  new SkipToken(PVIRG, true));
-
-    
-  }
+  try {
+    < LPAR > }catch(ParseException e) {
+		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
+		return;
+      }
+    try {
+		(
+		  ArgumentList()
+		)?
+		<  RPAR >
+      }catch(ParseException e) {
+        errorSkipTo(e, "function call", new SkipToken(RPAR, true));
+      }
   {jjtThis.jjtSetValue(id);}
 	
 }
   
    
-void CallLPARVirg (String id) #Call:
+void CallVirg (String id) #Call:
 {Token t=null; }
 {
-  try { 
-  < LPAR >
-  (	
-    ArgumentList()
-  )?
-  < RPAR > < PVIRG >} catch (ParseException e) {
-    errorSkipTo(e, "function call",  new SkipToken(RPAR, true),  new SkipToken(PVIRG, true));
-
-    coverageBlock();
-  }
+  try {
+    < LPAR > }catch(ParseException e) {
+		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
+		return;
+      }
+    try {
+		(
+		  ArgumentList()
+		)?
+		<  RPAR > < PVIRG >
+      }catch(ParseException e) {
+        errorSkipTo(e, "function call", new SkipToken(RPAR, true));
+        coverageBlock();
+      }
   {jjtThis.jjtSetValue(id);}
 	
 }
@@ -693,7 +739,7 @@ void PointCallScalarAccess(String id) #void:
 }
 {
   (
-    < ID >  CallLPAR(id)) | (< SIZE > ScalarAccessNothing(id))
+    < ID >  Call(id)) | (< SIZE > ScalarAccessNothing(id))
 }
 
 /*void CallScalarAccessVirgPoint(String id) #void:

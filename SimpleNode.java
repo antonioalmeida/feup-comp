@@ -97,9 +97,9 @@ class SimpleNode implements Node {
   }
 
   public boolean analyse() {
-    boolean result = true;
+   boolean result = true;
 
-    if(children == null) {
+   /* if(children == null) {
       //TODO: add actual node analysis
       System.out.println("No children");
       return false;
@@ -111,10 +111,11 @@ class SimpleNode implements Node {
         System.out.println("Ola");
         result = false;
       }
-    }
+    }*/
 
     return result;
   }
+	 
 
 }
 
