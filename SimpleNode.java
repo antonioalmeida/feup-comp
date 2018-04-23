@@ -8,8 +8,13 @@ class SimpleNode implements Node {
   protected int id;
   protected Object value;
   protected Yal parser;
+  protected SymbolTable symbolTable;
 
   public SimpleNode(int i) {
+    if(this.parent != null)
+      this.symbolTable = new SymbolTable(this.parent.getSymbolTable());
+    else
+      this.symbolTable = new SymbolTable();
     id = i;
   }
 
@@ -19,12 +24,11 @@ class SimpleNode implements Node {
   }
 
   public void jjtOpen() {
+
   }
 
   public void jjtClose() {
   }
-  
-
 
   public void jjtSetParent(Node n) { parent = n; }
   public Node jjtGetParent() { return parent; }
@@ -87,6 +91,31 @@ class SimpleNode implements Node {
   public int getId() {
     return id;
   }
+
+  public SymbolTable getSymbolTable() {
+    return symbolTable;
+  }
+
+  public boolean analyse() {
+    boolean result = true;
+
+    if(children == null) {
+      //TODO: add actual node analysis
+      System.out.println("No children");
+      return false;
+    }
+
+    for(Node child : children) {
+      if(!child.analyse()) {
+        //TODO: add actual node analysis
+        System.out.println("Ola");
+        result = false;
+      }
+    }
+
+    return result;
+  }
+
 }
 
 /* JavaCC - OriginalChecksum=a536ad506ca058676615e1a3304534ab (do not edit this line) */

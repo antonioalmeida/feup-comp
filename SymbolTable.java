@@ -2,12 +2,15 @@ import java.util.HashMap;
 
 public class SymbolTable {
 	private HashMap<String, Symbol> symbolsInitialization;
+
 	private SymbolTable parent;
+
+	public SymbolTable() {
+	}
 	
 	public SymbolTable(SymbolTable parent) {
 		this.parent = parent;
 	}
-	
 	
 	public HashMap<String, Symbol> getSymbolsInitialization() {
 		return symbolsInitialization;

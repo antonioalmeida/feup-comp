@@ -216,6 +216,9 @@ SimpleNode Program() :
   }
 /*@egen*/
   {
+    //TODO: where to analyse AST?
+    jjtn000.analyse();
+
     return jjtn000;
   }/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
