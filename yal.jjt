@@ -353,7 +353,7 @@ void Stmtlst() #void:
   )*
 }
 
-void StmtlstError() :
+void StmtlstError() #void :
 {}
 {
   (
@@ -505,9 +505,9 @@ void Exprtest() :
   {jjtThis.jjtSetValue(t.image);}
 }
 
-void While() :
+void While():
 {}
-{
+{ 
     try {
       < WHILE > Exprtest() < LCHAVETA > 
     }
@@ -556,86 +556,7 @@ void If() :
     }
   }
 }
-/*
-void Call() :
-{}
-{
-  < ID > ("." < ID >)? < LPAR >
-  (
-    ArgumentList()
-  )?
-  < RPAR >
-}*/
 
-void CallArguments():
-{ }
-{
-  try {
-    < LPAR > }catch(ParseException e) {
-		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
-		return;
-      }
-    try {
-		(
-		  ArgumentList()		)?
-		<  RPAR >
-      }catch(ParseException e) {
-        errorSkipTo(e, "function call", new SkipToken(RPAR, true), new SkipToken(PVIRG, true));
-      }
-}
-
-void CallArgumentsVirg():
-{ }
-{
-  try {
-    < LPAR > }catch(ParseException e) {
-		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
-		return;
-      }
-    try {
-		(
-		  ArgumentList()
-		)?
-		<  RPAR > < PVIRG >
-      }catch(ParseException e) {
-        errorSkipTo(e, "function call", new SkipToken(RPAR, true), new SkipToken(PVIRG, true));
-        coverageBlock();
-      }
-}  
-
-/*void CallPointID(String id) #Call:
-{Token t=null; }
-{
-  ("." t=< ID >{jjtThis.set_type(t.image);})? 
-  try { 
-  < LPAR >
-  (	
-    ArgumentList()
-  )?
-  < RPAR > } catch (ParseException e) {
-    errorSkipTo(e, "function call",  new SkipToken(RPAR, false),  new SkipToken(PVIRG, true));
-
-
-  }
-   {jjtThis.jjtSetValue(id);}
-}*/
-
-/*void CallNoIDVirg(String id) #Call:
-{Token t=null; }
-{
-  ("." t=< ID >{jjtThis.set_type(t.image);})?
-  try { 
-  < LPAR >
-  (	
-    ArgumentList()
-  )?
-  < RPAR > < PVIRG >} catch (ParseException e) {
-   errorSkipTo(e, "function call",  new SkipToken(RPAR, true),  new SkipToken(PVIRG, true));
-
-    coverageBlock();
-  }
-  {jjtThis.jjtSetValue(id);}
-}*/
 
 void Call (String id) #Call:
 {Token t=null; }
