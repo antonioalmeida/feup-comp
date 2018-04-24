@@ -9,8 +9,24 @@ class SimpleNode implements Node {
   protected Object value;
   protected Yal parser;
   protected SymbolTable symbolTable;
-
+  protected boolean hasScope;
+  
   public SimpleNode(int i) {
+	    if(this.parent != null)
+	      this.symbolTable = new SymbolTable(this.parent.getSymbolTable());
+	    else
+	      this.symbolTable = new SymbolTable();
+	    id = i;
+	    this.hasScope = false;
+  }
+
+  
+  public SimpleNode(Yal p, int i) {
+	    this(i);
+	    parser = p;
+  }
+  
+  public SimpleNode(int i, boolean hasScope) {
     if(this.parent != null)
       this.symbolTable = new SymbolTable(this.parent.getSymbolTable());
     else
@@ -18,8 +34,8 @@ class SimpleNode implements Node {
     id = i;
   }
 
-  public SimpleNode(Yal p, int i) {
-    this(i);
+  public SimpleNode(Yal p, int i, boolean hasScope) {
+    this(i, hasScope);
     parser = p;
   }
 
@@ -99,7 +115,7 @@ class SimpleNode implements Node {
   public boolean analyse() {
    boolean result = true;
 
-   /* if(children == null) {
+  /*  if(children == null) {
       //TODO: add actual node analysis
       System.out.println("No children");
       return false;
