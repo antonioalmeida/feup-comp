@@ -6,12 +6,13 @@ class SimpleNode implements Node {
   protected Node parent;
   protected Node[] children;
   protected int id;
-  protected Object value;
+  protected String value;
   protected Yal parser;
   protected SymbolTable symbolTable;
   protected boolean hasScope;
   
   public SimpleNode(int i) {
+	  	this.value = "";
 	    this.hasScope = false;
 	    symbolTable = assignSymbolTable();
 	    id = i;
@@ -24,6 +25,7 @@ class SimpleNode implements Node {
   }
   
   public SimpleNode(int i, boolean hasScope) {
+	this.value = "";
 	this.hasScope = hasScope;
     symbolTable = assignSymbolTable();
     id = i;
@@ -75,7 +77,7 @@ class SimpleNode implements Node {
     return (children == null) ? 0 : children.length;
   }
 
-  public void jjtSetValue(Object value) { this.value = value; }
+  public void jjtAddValue(String value) { this.value = this.value + value; }
   public Object jjtGetValue() { return value; }
 
   /* You can override these two methods in subclasses of SimpleNode to
@@ -92,7 +94,7 @@ class SimpleNode implements Node {
 	
   	String node = prefix + toString();
 	
-	if (this.value != null)
+	if (this.value != "")
 		node += " [" + this.value + "]";
     	 	
   	return node; 

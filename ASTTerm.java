@@ -14,21 +14,6 @@ class ASTTerm extends SimpleNode {
   }
   
     
-  public void set_sign(String sign){
-  	this.sign = sign;
-  }
-  
-  public String toString(String prefix) { 
-  	String node = prefix + toString();
-	
-
-	if (this.sign != null)
-		node += " [" + this.sign + this.value + "]";
-	else node += " [" + this.value + "]";
-
-    	 	
-  	return node; 
-  }
-
+ 
 }
 /* JavaCC - OriginalChecksum=694cdb272d61fc5ab19824a2f80bedc9 (do not edit this line) */
