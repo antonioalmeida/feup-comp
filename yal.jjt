@@ -40,21 +40,13 @@ public class Yal
     }
   }
 
-   public static void generateCode(SimpleNode root) throws IOException {
-		
-	
-
-		 
-  
-
-   	 	  FileOutputStream outputStream = new FileOutputStream("test.j");
-   	 	  		String codeString = root.generateCode();
-    byte[] strToBytes = codeString.getBytes();
+  public static void generateCode(SimpleNode root) throws IOException
+  {
+    FileOutputStream outputStream = new FileOutputStream("test.j");
+    String codeString = root.generateCode();
+    byte [] strToBytes = codeString.getBytes();
     outputStream.write(strToBytes);
- 
     outputStream.close();
-
-			
   }
 
   public static File validFilePath(String filePath) {

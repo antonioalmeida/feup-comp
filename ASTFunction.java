@@ -15,6 +15,32 @@ class ASTFunction extends SimpleNode {
 
   	//TODO: add header analysing logic
   }
+  
+  
+	public String generateCode() {
+		String generatedCode = "";
+		generatedCode += ".method public static " + this.value;
+		
+		if(this.value.equals("main"))
+			generatedCode += "([Ljava/lang/String;)V\n";
+		//else 
+		//generatedCode += "Ljava/lang/String;)V";
+			
+
+		if (children != null) {
+			for (int i = 0; i < children.length; ++i) {
+				SimpleNode n = (SimpleNode) children[i];
+				if (n != null) {
+					generatedCode += n.generateCode();
+				}
+			}
+		}
+		generatedCode += "\nreturn\n";
+		generatedCode += ".end method\n\n";
+
+		return generatedCode;
+
+	}
 
 }
 /* JavaCC - OriginalChecksum=87cbf5972d530f3221d99b5c8270925a (do not edit this line) */
