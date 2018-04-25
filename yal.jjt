@@ -26,7 +26,10 @@ public class Yal
     else { 
     	SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
       root.analyse();
+      	System.out.println("\nAST Tree:");
     	root.dump(""); // imprime no ecrã a árvore
+		System.out.println("\nSymbol Table:");
+		root.printSymbolTable(""); 
     }
   }
 

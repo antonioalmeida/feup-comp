@@ -24,7 +24,7 @@ class SimpleNode implements Node {
   }
   
   public SimpleNode(int i, boolean hasScope) {
-	this.hasScope = false;
+	this.hasScope = hasScope;
     symbolTable = assignSymbolTable();
     id = i;
   }
@@ -35,12 +35,18 @@ class SimpleNode implements Node {
   }
 
   public SymbolTable assignSymbolTable() {
-	  if(parent == null)
+	  if(parent == null) {
+		  System.out.println("b1null");
 		  return null;
-	  else if(hasScope)
+	  }
+	  else if(hasScope) {
+		  System.out.println("b1hasScope");
 		  return new SymbolTable(parent.getSymbolTable());
-	  else 
-		  return ((SimpleNode) parent).assignSymbolTable();
+	  }
+	  else {
+		  System.out.println("b1NoScope");
+		  return ((SimpleNode) parent).getSymbolTable();
+	  }
   }
   
   public void jjtOpen() {
@@ -85,7 +91,8 @@ class SimpleNode implements Node {
     return YalTreeConstants.jjtNodeName[id]; 
   }
   
-  public String toString(String prefix) { 
+  public String toString(String prefix) {
+	
   	String node = prefix + toString();
 	
 	if (this.value != null)
@@ -152,12 +159,15 @@ class SimpleNode implements Node {
   //public void printSymbolTableScope(String prefix)
   
   public void printSymbolTable(String prefix) {
-	  System.out.println(toString(prefix));
+	  if(hasScope) {
+		  System.out.println(toString(prefix));
+		  symbolTable.printSymbols(prefix);
+  	  }
 	    if (children != null) {
 	      for (int i = 0; i < children.length; ++i) {
 	        SimpleNode n = (SimpleNode)children[i];
 	        if (n != null) {
-	          n.dump(prefix + "   ");
+	          n.printSymbolTable(prefix + "   ");
 	        }
 	      }
 	    }

@@ -19,6 +19,7 @@ public class SymbolTable {
 
 	public SymbolTable(SymbolTable parent) {
 		this.parent = parent;
+		symbols = new HashMap<String, Symbol>();
 	}
 	
 	public SymbolTable getParent() {
@@ -102,13 +103,14 @@ public class SymbolTable {
 	    }
 	
 	public void printSymbols(String prefix) {
-		/*Iterator<Entry<String, Type>> symbolsIt = symbols.entrySet().iterator();
+		System.out.println("Print Symbols");
+		Iterator<Entry<String, Symbol>> symbolsIt = symbols.entrySet().iterator();
 		while(symbolsIt.hasNext()) {
-			Map.Entry<String, Type> pair = (Entry<String, Type>) symbolsIt.next();
+			Map.Entry<String, Symbol> pair = (Entry<String, Symbol>) symbolsIt.next();
 			String symbolName = pair.getKey();
-			Type type = pair.getValue();
-			System.out.print(prefix+symbolName+": "+type);
-		}*/
+			Symbol symbol = pair.getValue();
+			System.out.print(prefix+symbolName+": "+symbol.getType());
+		}
 	}
 	
 	
