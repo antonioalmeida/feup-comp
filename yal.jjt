@@ -265,6 +265,11 @@ void Declaration() :
   < PVIRG >
 }
 
+void AssignedScalar() : {Token t=null; }
+{
+	< INTEGER >
+}
+
 void Function() : { Token t=null;}
 { 
   try {
@@ -499,7 +504,7 @@ void Term() :
 {
   (t2=< ADDSUB_OP >{jjtThis.set_sign(t2.image);})?
   (
-    t=< INTEGER >{jjtThis.jjtSetValue(t.image);}
+    t=< INTEGER >{jjtThis.jjtSetValue(t.image); System.out.println("InsideTerm");}
   |
     ( 
       t = < ID > 
