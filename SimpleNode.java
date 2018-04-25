@@ -121,7 +121,7 @@ class SimpleNode implements Node {
   
 
   public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized) {
-	   	   return initializeSymbol(symbolName, type, initialized);
+	   	   return symbolTable.initializeSymbol(symbolName, type, initialized);
     }
   
   public int getId() {
