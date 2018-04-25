@@ -36,16 +36,13 @@ class SimpleNode implements Node {
 
   public SymbolTable assignSymbolTable() {
 	  if(parent == null) {
-		  System.out.println("b1null");
-		  return null;
+		 return null;
 	  }
 	  else if(hasScope) {
-		  System.out.println("b1hasScope");
 		  return new SymbolTable(parent.getSymbolTable());
 	  }
 	  else {
-		  System.out.println("b1NoScope");
-		  return ((SimpleNode) parent).getSymbolTable();
+		 return ((SimpleNode) parent).getSymbolTable();
 	  }
   }
   
@@ -172,6 +169,18 @@ class SimpleNode implements Node {
 	      }
 	    }
 	  
+  }
+  
+  public Symbol.Type getType() {
+	  	// Element -> ScalarElement | ArrayElement
+	  	//Node child = children[0];
+
+	  	if(toString().equals("ScalarElement"))
+	  		return Symbol.Type.SCALAR;
+	  	else if(toString().equals("ArrayElement"))
+	  		return Symbol.Type.ARRAY;
+
+	  	return null;
   }
 	 
 

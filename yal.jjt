@@ -10,6 +10,7 @@ PARSER_BEGIN(Yal)
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 
 
@@ -114,10 +115,23 @@ public class Yal
 
   public static void coverageBlock() throws ParseException {
 	Token t1;
-    t1 = getNextToken();
+    t1 = getToken(1);
     if(t1.kind == LCHAVETA) {
+	  getNextToken();
       StmtlstError();
     }
+  }
+
+  public static void consumeToken(Integer... tokens) throws ParseException {
+  	Token t;
+  	t = getToken(1);
+	
+  	if(Arrays.asList(tokens).contains(t.kind)) {
+  	    System.out.println("contains");
+  		getNextToken();
+  	}
+  
+  	  
   }
 }
 
@@ -312,12 +326,12 @@ void Varlist() : { Token t1, t2; }
   )*
 }
 
-void Element() :{Token t;}{
+void Element() #void: {Token t;}{
 	t=<ID> (
 		ArrayElementNoID(t.image)
 	  | ScalarElementNoID(t.image)
 	)
-	{jjtThis.jjtSetValue(t.image);}
+	//{jjtThis.jjtSetValue(t.image);}
 }
 
 void ArrayElementNoID(String id) #ArrayElement:
@@ -596,6 +610,7 @@ void CallVirg (String id) #Call:
       }catch(ParseException e) {
         errorSkipTo(e, "function call", new SkipToken(RPAR, true));
         coverageBlock();
+        consumeToken(PVIRG);
       }
   {jjtThis.jjtSetValue(id);}
 	
