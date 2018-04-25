@@ -13,10 +13,16 @@ public class SymbolTable {
 	}*/
 	
 	private HashMap<String, Symbol> symbols;
+	private SymbolTable parent;
 
 	
 
-	public SymbolTable() {
+	public SymbolTable(SymbolTable parent) {
+		this.parent = parent;
+	}
+	
+	public SymbolTable getParent() {
+		return parent;
 	}
 	
 	
@@ -61,6 +67,39 @@ public class SymbolTable {
 			return false;
 		
 	}
+	
+	 /**
+	   * If checkInitialized equals true, this function checks if a variable symbolName has been initialized to one of types
+	   * If checkInitialized equals false, this function checks if a variable symbolName has not been initialized to any type different from types
+	   */
+	  public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types ) {
+			if(this.containsSymbolName(symbolName))
+				return this.containsSymbol(symbolName, checkInitialized, types);
+			
+			else {
+				if(parent != null)
+					return parent.verifySymbolTypes(symbolName, checkInitialized, types);
+				else
+					return !checkInitialized;
+			}
+	  }
+	  
+
+	  public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized) {
+		   if(! verifySymbolTypes(symbolName, false, type))
+				   return false;
+			
+		    /*if(hasScope) {
+		    	symbolTable.addSymbol(symbolName, type, initialized);
+		    	return true;
+		    }	
+		    else if(parent != null)
+					return parent.initializeSymbol(symbolName, type, initialized, false);
+		    else
+		    	return false;*/
+		   this.addSymbol(symbolName, type, initialized);
+		   return true;
+	    }
 	
 	public void printSymbols(String prefix) {
 		/*Iterator<Entry<String, Type>> symbolsIt = symbols.entrySet().iterator();

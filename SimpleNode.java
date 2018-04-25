@@ -12,25 +12,20 @@ class SimpleNode implements Node {
   protected boolean hasScope;
   
   public SimpleNode(int i) {
-	    if(this.parent != null)
-	      this.symbolTable = new SymbolTable();
-	    else
-	      this.symbolTable = new SymbolTable();
-	    id = i;
 	    this.hasScope = false;
+	    symbolTable = assignSymbolTable();
+	    id = i;
   }
-
   
+   
   public SimpleNode(Yal p, int i) {
 	    this(i);
 	    parser = p;
   }
   
   public SimpleNode(int i, boolean hasScope) {
-    if(this.parent != null)
-      this.symbolTable = new SymbolTable();
-    else
-      this.symbolTable = new SymbolTable();
+	this.hasScope = false;
+    symbolTable = assignSymbolTable();
     id = i;
   }
 
@@ -39,6 +34,15 @@ class SimpleNode implements Node {
     parser = p;
   }
 
+  public SymbolTable assignSymbolTable() {
+	  if(parent == null)
+		  return null;
+	  else if(hasScope)
+		  return new SymbolTable(parent.getSymbolTable());
+	  else 
+		  return ((SimpleNode) parent).assignSymbolTable();
+  }
+  
   public void jjtOpen() {
 
   }
@@ -141,7 +145,9 @@ class SimpleNode implements Node {
   public int getId() {
     return id;
   }
-
+  
+ 
+  
   public SymbolTable getSymbolTable() {
     return symbolTable;
   }
