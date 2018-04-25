@@ -10,21 +10,39 @@ class ASTDeclaration extends SimpleNode {
         super(p, id);
     }
 
-    public boolean analyse() {
+    public boolean analyseSymbolTable() {
         System.out.println("Analysing " + toString(""));
         if(children == null)
             return false;
 
         // Declaration -> Element
-        SimpleNode element = (SimpleNode) children[0];
+        SimpleNode leftChild = (SimpleNode) children[0];
+        Symbol.Type typeLeftChild = leftChild.getType();
+        String symbolName = (String) leftChild.jjtGetValue();
+        
+        boolean noErrorsFound = true;
+        boolean initialized = false;
+        if(children.length > 1) {
+        	SimpleNode rightChild = (SimpleNode) children[1];
+        	Symbol.Type typeRightChild = rightChild.getType();
+        	
+        	if(! typeLeftChild.equals(typeRightChild)) {
+        		noErrorsFound = false;
+        		if(typeLeftChild.equals(Symbol.Type.ARRAY))
+        			System.out.println("Semantic Error: An array can't be assigned to a scalar");
+        		else
+        			System.out.println("Semantic Error: A Scalar can't be assigned to an array");
+        	}
+        	else if(typeLeftChild.equals(Symbol.Type.SCALAR))
+        		initialized = true;
+        }
+        	
+        
+        	
+        if(noErrorsFound)
+        	return initializeSymbol((String) this.value, typeLeftChild, initialized);
+        else return false;
 
-        Symbol.Type type = element.getType();
-        String symbolName = (String) element.jjtGetValue();
-
-        //TODO: uncomment this when working
-        //initializeSymbol((String) this.value, type, false);
-
-        return true;
     }
     
     

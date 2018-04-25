@@ -30,11 +30,12 @@ public class Yal
     	return;
     else { 
     	SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
-      root.analyse();
+     
       	System.out.println("\nAST Tree:");
     	root.dump(""); // imprime no ecrã a árvore
+    	 root.analyse();
 		System.out.println("\nSymbol Table:");
-		//root.printSymbolTable("");
+		root.printSymbolTable("");
 
 		generateCode(root); 
     }
@@ -242,7 +243,7 @@ void Module() :
 {Token t;}
 {
   try { 
-  < MODULE > t=< ID >{jjtThis.jjtSetValue(t.image);} < LCHAVETA > }catch(ParseException e) {
+  < MODULE > t=< ID >{jjtThis.jjtAddValue(t.image);} < LCHAVETA > }catch(ParseException e) {
     System.out.println("Syntatic error on module declaration. " + e.toString());
     Token t1;
     return;    
@@ -271,24 +272,30 @@ void Declaration() :
   (
     < ASSIGN >
     (
-      (
-        "[" ArraySize() "]"
-      )
-    | (< ADDSUB_OP >)? < INTEGER > 
+      ArrayAssigned()
+    | ScalarAssigned() 
     )
   )?
   < PVIRG >
 }
 
-void AssignedScalar() : {Token t=null; }
+void ArrayAssigned() : { }
 {
-	< INTEGER >
+  "[" ArraySize() "]"
 }
+
+void ScalarAssigned() : {Token t1, t2; }
+{
+	(	  t1 = < ADDSUB_OP > { jjtThis.jjtAddValue(t1.image);})?
+	t2 = < INTEGER > { jjtThis.jjtAddValue(t2.image);}
+}
+
+
 
 void Function() : { Token t=null;}
 { 
   try {
-    < FUNCTION > t=< ID >{jjtThis.jjtSetValue(t.image);} }catch(ParseException e) {
+    < FUNCTION > t=< ID >{jjtThis.jjtAddValue(t.image);} }catch(ParseException e) {
 			errorSkipTo(e, "function name", new SkipToken(LPAR, false));
        }
     try { 
@@ -328,7 +335,7 @@ void FunctionAssign() : {Token t;}
 {
 	
 	 < ASSIGN > t=< ID > 
-	 {jjtThis.jjtSetValue(t.image);}
+	 {jjtThis.jjtAddValue(t.image);}
 }
 
 void Varlist() : { Token t1, t2; }
@@ -351,13 +358,13 @@ void Element() #void: {Token t;}{
 		ArrayElementNoID(t.image)
 	  | ScalarElementNoID(t.image)
 	)
-	//{jjtThis.jjtSetValue(t.image);}
+	//{jjtThis.jjtAddValue(t.image);}
 }
 
 void ArrayElementNoID(String id) #ArrayElement:
 {}
 {
-	{jjtThis.jjtSetValue(id);}
+	{jjtThis.jjtAddValue(id);}
   "[" "]"
 }
 
@@ -365,7 +372,7 @@ void ArrayElementNoID(String id) #ArrayElement:
 void ScalarElementNoID(String id) #ScalarElement:
 {}
 {
-	{jjtThis.jjtSetValue(id);}
+	{jjtThis.jjtAddValue(id);}
 }
 
 void ArrayElement() :
@@ -472,7 +479,7 @@ void Lhs() #void:
 void LhsNoID(String id) #void:
 { }
 {
-  /*{jjtThis.jjtSetValue(id);}*/
+  /*{jjtThis.jjtAddValue(id);}*/
   ArrayAccessNoID(id)
 | ScalarAccessNoID(id)
 }
@@ -496,7 +503,7 @@ void Rhs():
       | t=< BITWISE_OP >
       | t=< ADDSUB_OP >
       )
-      {jjtThis.jjtSetValue(t.image);}
+      {jjtThis.jjtAddValue(t.image);}
       Term()
     )?
   )
@@ -509,7 +516,7 @@ void ArraySize() :
 {Token t;}
 {
   ScalarAccess()
-| t=< INTEGER >{jjtThis.jjtSetValue(t.image);}
+| t=< INTEGER >{jjtThis.jjtAddValue(t.image);}
 }
 
 void Term() :
@@ -517,9 +524,9 @@ void Term() :
   Token t,t2=null;
 }
 {
-  (t2=< ADDSUB_OP >{jjtThis.set_sign(t2.image);})?
+  (t2=< ADDSUB_OP >{jjtThis.jjtAddValue(t2.image);})?
   (
-    t=< INTEGER >{jjtThis.jjtSetValue(t.image); System.out.println("InsideTerm");}
+    t=< INTEGER >{jjtThis.jjtAddValue(t.image); }
   |
     ( 
       t = < ID > 
@@ -537,7 +544,7 @@ void Exprtest() :
 {Token t;}
 {
   < LPAR > Lhs() t=< RELA_OP > Rhs() < RPAR >
-  {jjtThis.jjtSetValue(t.image);}
+  {jjtThis.jjtAddValue(t.image);}
 }
 
 void While():
@@ -609,7 +616,7 @@ void Call (String id) #Call:
       }catch(ParseException e) {
         errorSkipTo(e, "function call", new SkipToken(RPAR, true));
       }
-  {jjtThis.jjtSetValue(id);}
+  {jjtThis.jjtAddValue(id);}
 	
 }
   
@@ -632,7 +639,7 @@ void CallVirg (String id) #Call:
         coverageBlock();
         consumeToken(PVIRG);
       }
-  {jjtThis.jjtSetValue(id);}
+  {jjtThis.jjtAddValue(id);}
 	
 }
 
@@ -653,7 +660,7 @@ void Argument() :
   | t=< STRING > 
   | t=< INTEGER > 
   )
-  {jjtThis.jjtSetValue(t.image);}
+  {jjtThis.jjtAddValue(t.image);}
 }
 
 void ArrayAccess() :
@@ -665,7 +672,7 @@ void ArrayAccess() :
 void ArrayAccessNoID(String id) #ArrayAccess:
 { }
 {
-  {jjtThis.jjtSetValue(id); }
+  {jjtThis.jjtAddValue(id); }
   "[" Index() "]"
 }
 
@@ -678,7 +685,7 @@ void ScalarAccess() #void:
 void ScalarAccessNoID(String id) #ScalarAccess:
 { Token t=null;}
 {
-  {jjtThis.jjtSetValue(id); }
+  {jjtThis.jjtAddValue(id); }
   ("." < SIZE >{jjtThis.set_size_access(true);})?
 
 }
@@ -686,7 +693,7 @@ void ScalarAccessNoID(String id) #ScalarAccess:
 void ScalarAccessNothing(String id) #ScalarAccess:
 { Token t=null; }
 {
-  {jjtThis.jjtSetValue(id); }
+  {jjtThis.jjtAddValue(id); }
     
 } 
 
@@ -713,5 +720,5 @@ void Index() :
 {
 ( t=< ID >
 | t=< INTEGER >)
-{jjtThis.jjtSetValue(t.image); }
+{jjtThis.jjtAddValue(t.image); }
 }
