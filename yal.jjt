@@ -279,19 +279,25 @@ void Declaration() :
   (
     < ASSIGN >
     (
-      (
-        "[" ArraySize() "]"
-      )
-    | (< ADDSUB_OP >)? < INTEGER > 
+      ArrayAssigned()
+    | ScalarAssigned() 
     )
   )?
   < PVIRG >
 }
 
-void AssignedScalar() : {Token t=null; }
+void ArrayAssigned() : { }
 {
-	< INTEGER >
+  "[" ArraySize() "]"
 }
+
+void ScalarAssigned() : {Token t1, t2; }
+{
+	(	  t1 = < ADDSUB_OP > { jjtThis.jjtAddValue(t1.image);})?
+	t2 = < INTEGER > { jjtThis.jjtAddValue(t2.image);}
+}
+
+
 
 void Function() : { Token t=null;}
 { 
@@ -527,7 +533,7 @@ void Term() :
 {
   (t2=< ADDSUB_OP >{jjtThis.jjtAddValue(t2.image);})?
   (
-    t=< INTEGER >{jjtThis.jjtAddValue(t.image); System.out.println("InsideTerm");}
+    t=< INTEGER >{jjtThis.jjtAddValue(t.image); }
   |
     ( 
       t = < ID > 
