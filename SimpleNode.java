@@ -122,9 +122,7 @@ class SimpleNode implements Node {
 		}
   }
   
-  
- 
-  
+
   public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean verifyInitialization) {
 	   if(verifyInitialization)
 		   if(! verifySymbolTypes(symbolName, false, type))
@@ -138,9 +136,7 @@ class SimpleNode implements Node {
 				return parent.initializeSymbol(symbolName, type, initialized, false);
 	    else
 	    	return false;
-			
-		
-	}
+    }
   
   public int getId() {
     return id;
@@ -151,25 +147,20 @@ class SimpleNode implements Node {
   }
 
   public boolean analyse() {
-   boolean result = true;
+    boolean result = true;
+    //System.out.println("Analysing " + toString(""));
 
-  /*  if(children == null) {
-      //TODO: add actual node analysis
-      System.out.println("No children");
-      return false;
-    }
+    if(children == null)
+     return false; 
 
     for(Node child : children) {
-      if(!child.analyse()) {
-        //TODO: add actual node analysis
-        System.out.println("Ola");
+      if(!child.analyse())
         result = false;
-      }
-    }*/
+    }
 
     return result;
   }
-  
+
   //public void printSymbolTableScope(String prefix)
   
   public void printSymbolTable(String prefix) {

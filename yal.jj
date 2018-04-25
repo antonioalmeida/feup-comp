@@ -29,6 +29,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/
     	return;
     else { 
     	SimpleNode root = myYal.Program(); // devolve refer\u00eancia para o n\u00f3 raiz da \u00e1rvore
+      root.analyse();
     	root.dump(""); // imprime no ecr\u00e3 a \u00e1rvore
     }
   }
@@ -84,7 +85,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/
     Token t1;
     boolean foundTarget = false;
 
-	 System.out.println(token);
+	 //System.out.println(token);
 	
     do {
       t1 = getToken(1);
@@ -109,7 +110,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/
       	
     } while (!foundTarget);
 
-     System.out.println(token);
+     //System.out.println(token);
   }
 
   public static void coverageBlock() throws ParseException {
@@ -341,12 +342,15 @@ void Function() : {/*@bgen(jjtree) Function */
                     ASTFunction jjtn000 = new ASTFunction(JJTFUNCTION);
                     boolean jjtc000 = true;
                     jjtree.openNodeScope(jjtn000);
-/*@egen*/ Token t;}
+/*@egen*/ Token t=null;}
 {/*@bgen(jjtree) Function */
   try {
 /*@egen*/ 
   try {
-    < FUNCTION > t=< ID >{jjtn000.jjtSetValue(t.image);}
+    < FUNCTION > t=< ID >{jjtn000.jjtSetValue(t.image);} }catch(ParseException e) {
+			errorSkipTo(e, "function name", new SkipToken(LPAR, false));
+       }
+    try { 
     (
       (
         (
@@ -590,38 +594,12 @@ void Stmtlst()      :
   )*
 }
 
-void StmtlstError() :
-{/*@bgen(jjtree) StmtlstError */
-  ASTStmtlstError jjtn000 = new ASTStmtlstError(JJTSTMTLSTERROR);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
-{/*@bgen(jjtree) StmtlstError */
-  try {
-/*@egen*/
+void StmtlstError()       :
+{}
+{
   (
     Stmt()
-  )*"}"/*@bgen(jjtree)*/
-  } catch (Throwable jjte000) {
-    if (jjtc000) {
-      jjtree.clearNodeScope(jjtn000);
-      jjtc000 = false;
-    } else {
-      jjtree.popNode();
-    }
-    if (jjte000 instanceof RuntimeException) {
-      throw (RuntimeException)jjte000;
-    }
-    if (jjte000 instanceof ParseException) {
-      throw (ParseException)jjte000;
-    }
-    throw (Error)jjte000;
-  } finally {
-    if (jjtc000) {
-      jjtree.closeNodeScope(jjtn000, true);
-    }
-  }
-/*@egen*/
+  )*"}"
 }
 
 void Stmt()      : { Token t; }
@@ -633,7 +611,7 @@ void Stmt()      : { Token t; }
     t = < ID >
   ( 
      AssignNoPoint(t.image)
-  | CallLPARVirg(t.image) |  "."PointAssignCallVirg(t.image))) 
+  | CallVirg(t.image) |  "."NoPointAssignCallVirg(t.image))) 
   } 
   catch(ParseException e) {
   	System.out.println("Syntatic error during Statement declaration. " + e.toString());
@@ -651,11 +629,11 @@ void Stmt()      : { Token t; }
     }
 }
 
-void PointAssignCallVirg(String id)      :
+void NoPointAssignCallVirg(String id)      :
 {}
 {
   (
-    < ID > CallLPARVirg(id)) | (< SIZE > AssignNoPoint(id))
+    < ID > CallVirg(id)) | (< SIZE > AssignNoPoint(id))
 }
 
 void Assign() :
@@ -897,7 +875,7 @@ void Term() :
   |
     ( 
       t = < ID > 
-      (CallLPAR(t.image) | "." PointCallScalarAccess(t.image) | ArrayAccessNoID(t.image) 
+      (Call(t.image) | "." PointCallScalarAccess(t.image) | ArrayAccessNoID(t.image) 
 		| ScalarAccessNothing(t.image))  
         
     )
@@ -965,7 +943,7 @@ void Exprtest() :
 /*@egen*/
 }
 
-void While() :
+void While():
 {/*@bgen(jjtree) While */
   ASTWhile jjtn000 = new ASTWhile(JJTWHILE);
   boolean jjtc000 = true;
@@ -973,7 +951,7 @@ void While() :
 /*@egen*/}
 {/*@bgen(jjtree) While */
     try {
-/*@egen*/
+/*@egen*/ 
     try {
       < WHILE > Exprtest() < LCHAVETA > 
     }
@@ -1068,18 +1046,9 @@ void If() :
   }
 /*@egen*/
 }
-/*
-void Call() :
-{}
-{
-  < ID > ("." < ID >)? < LPAR >
-  (
-    ArgumentList()
-  )?
-  < RPAR >
-}*/
 
-void CallNoID(String id)      :
+
+void Call (String id)      :
 {/*@bgen(jjtree) Call */
  ASTCall jjtn000 = new ASTCall(JJTCALL);
  boolean jjtc000 = true;
@@ -1088,112 +1057,19 @@ void CallNoID(String id)      :
 {/*@bgen(jjtree) Call */
   try {
 /*@egen*/
-  ("." t=< ID >{jjtn000.set_type(t.image);})? 
-  try { 
-  < LPAR >
-  (	
-    ArgumentList()
-  )?
-  < RPAR > } catch (ParseException e) {
-    errorSkipTo(e, "function call",  new SkipToken(RPAR, false),  new SkipToken(PVIRG, true));
-
-
-  }/*@bgen(jjtree)*/
-   {
-     jjtree.closeNodeScope(jjtn000, true);
-     jjtc000 = false;
-   }
-/*@egen*/
-   {jjtn000.jjtSetValue(id);}/*@bgen(jjtree)*/
-  } catch (Throwable jjte000) {
-    if (jjtc000) {
-      jjtree.clearNodeScope(jjtn000);
-      jjtc000 = false;
-    } else {
-      jjtree.popNode();
-    }
-    if (jjte000 instanceof RuntimeException) {
-      throw (RuntimeException)jjte000;
-    }
-    if (jjte000 instanceof ParseException) {
-      throw (ParseException)jjte000;
-    }
-    throw (Error)jjte000;
-  } finally {
-    if (jjtc000) {
-      jjtree.closeNodeScope(jjtn000, true);
-    }
-  }
-/*@egen*/
-}
-
-void CallNoIDVirg(String id)      :
-{/*@bgen(jjtree) Call */
- ASTCall jjtn000 = new ASTCall(JJTCALL);
- boolean jjtc000 = true;
- jjtree.openNodeScope(jjtn000);
-/*@egen*/Token t=null; }
-{/*@bgen(jjtree) Call */
   try {
-/*@egen*/
-  ("." t=< ID >{jjtn000.set_type(t.image);})?
-  try { 
-  < LPAR >
-  (	
-    ArgumentList()
-  )?
-  < RPAR > < PVIRG >} catch (ParseException e) {
-   errorSkipTo(e, "function call",  new SkipToken(RPAR, true),  new SkipToken(PVIRG, true));
-
-    coverageBlock();
-  }/*@bgen(jjtree)*/
-  {
-    jjtree.closeNodeScope(jjtn000, true);
-    jjtc000 = false;
-  }
-/*@egen*/
-  {jjtn000.jjtSetValue(id);}/*@bgen(jjtree)*/
-  } catch (Throwable jjte000) {
-    if (jjtc000) {
-      jjtree.clearNodeScope(jjtn000);
-      jjtc000 = false;
-    } else {
-      jjtree.popNode();
-    }
-    if (jjte000 instanceof RuntimeException) {
-      throw (RuntimeException)jjte000;
-    }
-    if (jjte000 instanceof ParseException) {
-      throw (ParseException)jjte000;
-    }
-    throw (Error)jjte000;
-  } finally {
-    if (jjtc000) {
-      jjtree.closeNodeScope(jjtn000, true);
-    }
-  }
-/*@egen*/
-}
-
-void CallLPAR (String id)      :
-{/*@bgen(jjtree) Call */
- ASTCall jjtn000 = new ASTCall(JJTCALL);
- boolean jjtc000 = true;
- jjtree.openNodeScope(jjtn000);
-/*@egen*/Token t=null; }
-{/*@bgen(jjtree) Call */
-  try {
-/*@egen*/
-  try { 
-  < LPAR >
-  (	
-    ArgumentList()
-  )?
-  < RPAR > } catch (ParseException e) {
-    errorSkipTo(e, "function call",  new SkipToken(RPAR, false),  new SkipToken(PVIRG, true));
-
-    
-  }/*@bgen(jjtree)*/
+    < LPAR > }catch(ParseException e) {
+		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
+		return;
+      }
+    try {
+		(
+		  ArgumentList()
+		)?
+		<  RPAR >
+      }catch(ParseException e) {
+        errorSkipTo(e, "function call", new SkipToken(RPAR, true));
+      }/*@bgen(jjtree)*/
   {
     jjtree.closeNodeScope(jjtn000, true);
     jjtc000 = false;
@@ -1224,7 +1100,7 @@ void CallLPAR (String id)      :
 }
   
    
-void CallLPARVirg (String id)      :
+void CallVirg (String id)      :
 {/*@bgen(jjtree) Call */
  ASTCall jjtn000 = new ASTCall(JJTCALL);
  boolean jjtc000 = true;
@@ -1233,16 +1109,20 @@ void CallLPARVirg (String id)      :
 {/*@bgen(jjtree) Call */
   try {
 /*@egen*/
-  try { 
-  < LPAR >
-  (	
-    ArgumentList()
-  )?
-  < RPAR > < PVIRG >} catch (ParseException e) {
-    errorSkipTo(e, "function call",  new SkipToken(RPAR, true),  new SkipToken(PVIRG, true));
-
-    coverageBlock();
-  }/*@bgen(jjtree)*/
+  try {
+    < LPAR > }catch(ParseException e) {
+		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
+		return;
+      }
+    try {
+		(
+		  ArgumentList()
+		)?
+		<  RPAR > < PVIRG >
+      }catch(ParseException e) {
+        errorSkipTo(e, "function call", new SkipToken(RPAR, true));
+        coverageBlock();
+      }/*@bgen(jjtree)*/
   {
     jjtree.closeNodeScope(jjtn000, true);
     jjtc000 = false;
@@ -1430,7 +1310,7 @@ void PointCallScalarAccess(String id)      :
 }
 {
   (
-    < ID >  CallLPAR(id)) | (< SIZE > ScalarAccessNothing(id))
+    < ID >  Call(id)) | (< SIZE > ScalarAccessNothing(id))
 }
 
 /*void CallScalarAccessVirgPoint(String id) #void:
