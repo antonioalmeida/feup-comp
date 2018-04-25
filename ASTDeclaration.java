@@ -26,6 +26,27 @@ class ASTDeclaration extends SimpleNode {
 
         return true;
     }
+    
+    
+   	public String generateCode() {
+   		String generatedCode = "";
+   		generatedCode += ".field static " + this.value + " I" + "\n";
+   		
+
+   		if (children != null) {
+   			for (int i = 0; i < children.length; ++i) {
+   				SimpleNode n = (SimpleNode) children[i];
+   				if (n != null) {
+   					generatedCode += n.generateCode();
+   				}
+   			}
+   		}
+   		
+
+   		return generatedCode;
+
+   	}
+
 
 }
 /* JavaCC - OriginalChecksum=f0ec2df2bb99c0df69ade4aa7071b5f6 (do not edit this line) */

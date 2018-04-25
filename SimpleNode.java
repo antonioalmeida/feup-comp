@@ -103,6 +103,7 @@ class SimpleNode implements Node {
 
   public void dump(String prefix) {
     System.out.println(toString(prefix));
+    
     if (children != null) {
       for (int i = 0; i < children.length; ++i) {
         SimpleNode n = (SimpleNode)children[i];
@@ -111,8 +112,24 @@ class SimpleNode implements Node {
         }
       }
     }
+    
   }
-  
+
+	public String generateCode() {
+		String generatedCode = "";
+
+		if (children != null) {
+			for (int i = 0; i < children.length; ++i) {
+				SimpleNode n = (SimpleNode) children[i];
+				if (n != null) {
+					generatedCode += n.generateCode();
+				}
+			}
+		}
+
+		return generatedCode;
+
+	}
   
   
   /**

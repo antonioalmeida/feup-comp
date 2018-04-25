@@ -40,6 +40,26 @@ class ASTModule extends SimpleNode {
 
         return true;
     }
+    
+	public String generateCode() {
+		String generatedCode = "";
+		generatedCode += ".class public " + this.value + "\n";
+		generatedCode += ".super java/lang/Object"  + "\n";
+		generatedCode += "\n\n";
+
+		if (children != null) {
+			for (int i = 0; i < children.length; ++i) {
+				SimpleNode n = (SimpleNode) children[i];
+				if (n != null) {
+					generatedCode += n.generateCode();
+				}
+			}
+		}
+		
+
+		return generatedCode;
+
+	}
 
 }
 /* JavaCC - OriginalChecksum=172febbc9f462a34b5659db8744215af (do not edit this line) */
