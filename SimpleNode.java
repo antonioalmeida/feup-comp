@@ -13,7 +13,7 @@ class SimpleNode implements Node {
   
   public SimpleNode(int i) {
 	    if(this.parent != null)
-	      this.symbolTable = new SymbolTable(this.parent.getSymbolTable());
+	      this.symbolTable = new SymbolTable();
 	    else
 	      this.symbolTable = new SymbolTable();
 	    id = i;
@@ -28,7 +28,7 @@ class SimpleNode implements Node {
   
   public SimpleNode(int i, boolean hasScope) {
     if(this.parent != null)
-      this.symbolTable = new SymbolTable(this.parent.getSymbolTable());
+      this.symbolTable = new SymbolTable();
     else
       this.symbolTable = new SymbolTable();
     id = i;
@@ -103,7 +103,38 @@ class SimpleNode implements Node {
       }
     }
   }
-
+  
+  public boolean verifySymbolType(String symbolName, SymbolTable.Type type, boolean checkInitialized) {
+		if(hasScope && symbolTable.getSymbols().containsKey(symbolName))
+			return symbolTable.verifySymbolExists(symbolName, type);
+		
+		else {
+			if(parent != null)
+				return parent.verifySymbolType(symbolName, type, checkInitialized);
+			else
+				return !checkInitialized;
+		}
+  }
+  
+ 
+  
+  public boolean initializeSymbol(String symbolName, SymbolTable.Type type, boolean verifyInitialization) {
+	   if(verifyInitialization)
+		   if(! verifySymbolType(symbolName, type, false))
+			   return false;
+		
+	    if(hasScope) {
+	    	symbolTable.addSymbol(symbolName, type);
+	    	return true;
+	    }	
+	    else if(parent != null)
+				return parent.initializeSymbol(symbolName, type, false);
+	    else
+	    	return false;
+			
+		
+	}
+  
   public int getId() {
     return id;
   }

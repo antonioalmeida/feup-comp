@@ -1,41 +1,64 @@
 import java.util.HashMap;
 
 public class SymbolTable {
-	private HashMap<String, Symbol> symbolsInitialization;
+	
+	public static enum Type {
+		INT, ARRAY 
+	}
+	
+	private HashMap<String, Type> symbols;
 
-	private SymbolTable parent;
+	
 
 	public SymbolTable() {
 	}
 	
-	public SymbolTable(SymbolTable parent) {
-		this.parent = parent;
+	
+	public HashMap<String, Type> getSymbols() {
+		return symbols;
 	}
 	
-	public HashMap<String, Symbol> getSymbolsInitialization() {
-		return symbolsInitialization;
+	public boolean verifySymbolExists(String symbolName, SymbolTable.Type type) {
+		//if(symbols.containsKey(symbolName))
+			if(symbols.get(symbolName).equals(type))
+				return true;
+		
+		return false;
 	}
 	
-	public SymbolTable getParent() {
-		return parent;
+	public boolean addSymbol(String symbolName, SymbolTable.Type type) {
+		if(! symbols.containsKey(symbolName)) {
+			symbols.put(symbolName, type);
+			return true;
+		}
+		else if(symbols.get(symbolName).equals(type)) {
+			symbols.put(symbolName, type);
+			return true;
+		}
+		else
+			return false;
+		
 	}
 	
-	public boolean verifyInitialization(String symbolName) {
-		if(! symbolsInitialization.containsKey(symbolName))
+	
+	
+	
+	/*public boolean verifyInitialization(String symbolName) {
+		if(! symbols.containsKey(symbolName))
 			if(parent != null)
 				return parent.verifyInitialization(symbolName);
 			else
 				return false;
 		else
-			return symbolsInitialization.get(symbolName).getInitialized();
+			return symbols.get(symbolName).getInitialized();
 	}
 	
 	public void initializeSymbol(String symbolName) {
-		if(! symbolsInitialization.containsKey(symbolName))
+		if(! symbols.containsKey(symbolName))
 			if(parent != null)
 				parent.initializeSymbol(symbolName);
 			
 		else
-			symbolsInitialization.get(symbolName).setInitialized(true);
-	}
+			symbols.get(symbolName).setInitialized(true);
+	}*/
 }
