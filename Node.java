@@ -39,9 +39,11 @@ interface Node {
 
 
 
-public boolean initializeSymbol(String symbolName, SymbolTable.Type type, boolean b);
 
-public boolean verifySymbolType(String symbolName, SymbolTable.Type type, boolean checkInitialized);
+
+  public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types);
+
+public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean b);
   
  
 }

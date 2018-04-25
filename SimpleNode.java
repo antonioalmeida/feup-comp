@@ -104,13 +104,13 @@ class SimpleNode implements Node {
     }
   }
   
-  public boolean verifySymbolType(String symbolName, SymbolTable.Type type, boolean checkInitialized) {
+  public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types ) {
 		if(hasScope && symbolTable.containsSymbolName(symbolName))
-			return symbolTable.containsSymbol(symbolName, type);
+			return symbolTable.containsSymbol(symbolName, checkInitialized, types);
 		
 		else {
 			if(parent != null)
-				return parent.verifySymbolType(symbolName, type, checkInitialized);
+				return parent.verifySymbolTypes(symbolName, checkInitialized, types);
 			else
 				return !checkInitialized;
 		}
@@ -118,17 +118,17 @@ class SimpleNode implements Node {
   
  
   
-  public boolean initializeSymbol(String symbolName, SymbolTable.Type type, boolean verifyInitialization) {
+  public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean verifyInitialization) {
 	   if(verifyInitialization)
-		   if(! verifySymbolType(symbolName, type, false))
+		   if(! verifySymbolTypes(symbolName, false, type))
 			   return false;
 		
 	    if(hasScope) {
-	    	symbolTable.addSymbol(symbolName, type);
+	    	symbolTable.addSymbol(symbolName, type, initialized);
 	    	return true;
 	    }	
 	    else if(parent != null)
-				return parent.initializeSymbol(symbolName, type, false);
+				return parent.initializeSymbol(symbolName, type, initialized, false);
 	    else
 	    	return false;
 			
@@ -161,6 +161,21 @@ class SimpleNode implements Node {
     }*/
 
     return result;
+  }
+  
+  //public void printSymbolTableScope(String prefix)
+  
+  public void printSymbolTable(String prefix) {
+	  System.out.println(toString(prefix));
+	    if (children != null) {
+	      for (int i = 0; i < children.length; ++i) {
+	        SimpleNode n = (SimpleNode)children[i];
+	        if (n != null) {
+	          n.dump(prefix + "   ");
+	        }
+	      }
+	    }
+	  
   }
 	 
 
