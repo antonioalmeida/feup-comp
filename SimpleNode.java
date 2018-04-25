@@ -14,7 +14,6 @@ class SimpleNode implements Node {
   public SimpleNode(int i) {
 	  	this.value = "";
 	    this.hasScope = false;
-	    symbolTable = assignSymbolTable();
 	    id = i;
   }
   
@@ -27,7 +26,6 @@ class SimpleNode implements Node {
   public SimpleNode(int i, boolean hasScope) {
 	this.value = "";
 	this.hasScope = hasScope;
-    symbolTable = assignSymbolTable();
     id = i;
   }
 
@@ -36,14 +34,17 @@ class SimpleNode implements Node {
     parser = p;
   }
 
-  public SymbolTable assignSymbolTable() {
+  public SymbolTable getAssignedSymbolTable() {
 	  if(parent == null) {
+		 System.out.println("b1null: "+toString());
 		 return null;
 	  }
 	  else if(hasScope) {
+		  System.out.println("b1HasScope: "+toString());
 		  return new SymbolTable(parent.getSymbolTable());
 	  }
 	  else {
+		 System.out.println("b1notParentnotHasScope: "+toString());
 		 return ((SimpleNode) parent).getSymbolTable();
 	  }
   }
@@ -156,10 +157,18 @@ class SimpleNode implements Node {
   public SymbolTable getSymbolTable() {
     return symbolTable;
   }
-
+  
+  public boolean analyseSymbolTable() {
+	  return true;
+  }
+  
   public boolean analyse() {
-    boolean result = true;
-    //System.out.println("Analysing " + toString(""));
+    symbolTable = getAssignedSymbolTable();
+	boolean result = true;
+    
+	if(!analyseSymbolTable())
+		result = false;
+		//System.out.println("Analysing " + toString(""));
 
     if(children == null)
      return false; 
@@ -194,9 +203,9 @@ class SimpleNode implements Node {
 	  	// Element -> ScalarElement | ArrayElement
 	  	//Node child = children[0];
 
-	  	if(toString().equals("ScalarElement"))
+	  	if(toString().equals("ScalarElement") || toString().equals("ScalarAssigned"))
 	  		return Symbol.Type.SCALAR;
-	  	else if(toString().equals("ArrayElement"))
+	  	else if(toString().equals("ArrayElement") || toString().equals("ArrayAssigned"))
 	  		return Symbol.Type.ARRAY;
 
 	  	return null;

@@ -15,6 +15,12 @@ class ASTModule extends SimpleNode {
     }
 
     public boolean analyse() {
+    	 symbolTable = getAssignedSymbolTable();
+    	 boolean result = true;
+    	   
+    	if(!analyseSymbolTable())
+    			result = false;
+    	
         System.out.println("Analysing " + toString(""));
         if(children == null)
             return false;
@@ -22,7 +28,7 @@ class ASTModule extends SimpleNode {
         if(!analyseFunctionHeaders()) 
             return false;
 
-        boolean result = true;
+        result = true;
 
         for(Node child : children) {
             if(!child.analyse())
