@@ -48,7 +48,7 @@ public class SymbolTable {
 					if(symbols.get(symbolName).getInitialized() == false)
 						return false;
 			
-				return true;
+			return true;
 		}
 		
 		return false;
@@ -72,7 +72,7 @@ public class SymbolTable {
 	
 	 /**
 	   * If checkInitialized equals true, this function checks if a variable symbolName has been initialized to one of types
-	   * If checkInitialized equals false, this function checks if a variable symbolName has not been initialized to any type different from types
+	   * If checkInitialized equals false, this function checks if a variable symbolName has not been declared to any type different from types
 	   */
 	  public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types ) {
 			if(this.containsSymbolName(symbolName))
@@ -110,7 +110,7 @@ public class SymbolTable {
 			Map.Entry<String, Symbol> pair = (Entry<String, Symbol>) symbolsIt.next();
 			String symbolName = pair.getKey();
 			Symbol symbol = pair.getValue();
-			System.out.print(prefix+symbolName+": "+symbol.getType());
+			System.out.println(prefix+symbolName+": "+symbol.getType());
 		}
 	}
 	

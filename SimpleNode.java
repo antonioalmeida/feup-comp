@@ -36,15 +36,15 @@ class SimpleNode implements Node {
 
   public SymbolTable getAssignedSymbolTable() {
 	  if(parent == null) {
-		 System.out.println("b1null: "+toString());
+		 //System.out.println("b1null: "+toString());
 		 return null;
 	  }
 	  else if(hasScope) {
-		  System.out.println("b1HasScope: "+toString());
+		  //System.out.println("b1HasScope: "+toString());
 		  return new SymbolTable(parent.getSymbolTable());
 	  }
 	  else {
-		 System.out.println("b1notParentnotHasScope: "+toString());
+		 //System.out.println("b1notParentnotHasScope: "+toString());
 		 return ((SimpleNode) parent).getSymbolTable();
 	  }
   }
@@ -185,14 +185,14 @@ class SimpleNode implements Node {
   
   public void printSymbolTable(String prefix) {
 	  if(hasScope) {
-		  System.out.println(toString(prefix));
-		  symbolTable.printSymbols(prefix);
+		  System.out.println(toString(prefix+"@"));
+		  symbolTable.printSymbols(prefix+"   ");
   	  }
 	    if (children != null) {
 	      for (int i = 0; i < children.length; ++i) {
 	        SimpleNode n = (SimpleNode)children[i];
 	        if (n != null) {
-	          n.printSymbolTable(prefix + "   ");
+	          n.printSymbolTable(prefix + "");
 	        }
 	      }
 	    }

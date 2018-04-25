@@ -23,5 +23,15 @@ public class Symbol {
 		return initialized;
 	}
 	
+	@Override
+	public boolean equals(Object symbol) {
+		Symbol symbolCast = (Symbol) symbol;
+		
+		if(this.type.equals(symbolCast.getType()) && this.initialized == symbolCast.getInitialized())
+			return true;
+		else
+			return false;
+	}
+	
 	
 }
