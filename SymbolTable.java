@@ -43,12 +43,13 @@ public class SymbolTable {
 		
 		if(symbol != null) {
 			Symbol.Type symbolType = symbol.getType();
-			if(Arrays.asList(types).contains(symbolType))
+			if(Arrays.asList(types).contains(symbolType)) {
 				if(checkInitialized == true)
 					if(symbols.get(symbolName).getInitialized() == false)
 						return false;
 			
-			return true;
+				return true;
+			}
 		}
 		
 		return false;
@@ -75,6 +76,7 @@ public class SymbolTable {
 	   * If checkInitialized equals false, this function checks if a variable symbolName has not been declared to any type different from types
 	   */
 	  public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types ) {
+		    
 			if(this.containsSymbolName(symbolName))
 				return this.containsSymbol(symbolName, checkInitialized, types);
 			

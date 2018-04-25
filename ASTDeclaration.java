@@ -23,6 +23,7 @@ class ASTDeclaration extends SimpleNode {
         Symbol.Type type = typeLeftChild;
         //boolean noErrorsFound = true;
         boolean initialized = false;
+        boolean scalarInitialization = false; // This boolean will be set to true if declaration if of the form a = 2;
         if(children.length > 1) {
         	initialized = true;
         	SimpleNode rightChild = (SimpleNode) children[1];
@@ -31,6 +32,8 @@ class ASTDeclaration extends SimpleNode {
         	if(! typeLeftChild.equals(typeRightChild)) {
         		type = Symbol.Type.ARRAY;
         	}
+        	else if(typeLeftChild.equals(Symbol.Type.SCALAR))
+        		scalarInitialization = true;
         	/*if(! typeLeftChild.equals(typeRightChild)) {
         		noErrorsFound = false;
         		if(typeLeftChild.equals(Symbol.Type.ARRAY))
@@ -45,8 +48,14 @@ class ASTDeclaration extends SimpleNode {
         	
         //if(noErrorsFound) {
         	if(initializeSymbol( symbolName, type, initialized) == false){
-        		System.out.println("Semantic Error: Can't initialize "+symbolName);
-        		return false;
+        		if(scalarInitialization == false) {
+        			System.out.println("Semantic Error: Can't initialize "+symbolName);
+        			return false;
+        		}
+        		else { //scalarInitialization's are always valid
+        			initializeSymbol(symbolName, Symbol.Type.ARRAY, true);
+        			return true;
+        		}
         	}
        // }
         else return true;
