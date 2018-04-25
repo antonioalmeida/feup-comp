@@ -2,13 +2,33 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTModule extends SimpleNode {
-  public ASTModule(int id) {
-    super(id, true);
-  }
+    SymbolTable functions;
 
-  public ASTModule(Yal p, int id) {
-    super(p, id, true);
-  }
+    public ASTModule(int id) {
+        super(id, true);
+        functions = new SymbolTable();
+    }
+
+    public ASTModule(Yal p, int id) {
+        super(p, id, true);
+        functions = new SymbolTable();
+    }
+
+    public boolean analyse() {
+        boolean result = true;
+        System.out.println("Analysing " + toString(""));
+
+        if(children == null)
+            return false;
+
+        for(Node child : children) {
+            if(!child.analyse())
+                result = false;
+        }
+
+        return result;
+    }
+
 
 }
 /* JavaCC - OriginalChecksum=172febbc9f462a34b5659db8744215af (do not edit this line) */
