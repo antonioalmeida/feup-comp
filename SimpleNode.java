@@ -105,8 +105,8 @@ class SimpleNode implements Node {
   }
   
   public boolean verifySymbolType(String symbolName, SymbolTable.Type type, boolean checkInitialized) {
-		if(hasScope && symbolTable.getSymbols().containsKey(symbolName))
-			return symbolTable.verifySymbolExists(symbolName, type);
+		if(hasScope && symbolTable.containsSymbolName(symbolName))
+			return symbolTable.containsSymbol(symbolName, type);
 		
 		else {
 			if(parent != null)

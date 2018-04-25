@@ -18,7 +18,11 @@ public class SymbolTable {
 		return symbols;
 	}
 	
-	public boolean verifySymbolExists(String symbolName, SymbolTable.Type type) {
+	public boolean containsSymbolName(String symbolName) {
+		return symbols.containsKey(symbolName);
+	}
+	
+	public boolean containsSymbol(String symbolName, SymbolTable.Type type) {
 		//if(symbols.containsKey(symbolName))
 			if(symbols.get(symbolName).equals(type))
 				return true;
