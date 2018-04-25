@@ -14,6 +14,7 @@ public class SymbolTable {
 	
 	private HashMap<String, Symbol> symbols;
 	private SymbolTable parent;
+	private FunctionsTable functions;
 
 	
 

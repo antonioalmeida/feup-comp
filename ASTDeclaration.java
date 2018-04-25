@@ -16,7 +16,7 @@ class ASTDeclaration extends SimpleNode {
             return false;
 
         // Declaration -> Element
-        ASTElement element = (ASTElement) children[0];
+        SimpleNode element = (SimpleNode) children[0];
 
         Symbol.Type type = element.getType();
         String symbolName = (String) element.jjtGetValue();
