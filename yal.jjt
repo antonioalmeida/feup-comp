@@ -202,9 +202,6 @@ SimpleNode Program() :
 {
   Module()
   {
-    //TODO: where to analyse AST?
-    jjtThis.analyse();
-
     return jjtThis;
   }
 }

@@ -15,11 +15,14 @@ class ASTModule extends SimpleNode {
     }
 
     public boolean analyse() {
-        boolean result = true;
         System.out.println("Analysing " + toString(""));
-
         if(children == null)
             return false;
+
+        if(!analyseFunctionHeaders()) 
+            return false;
+
+        boolean result = true;
 
         for(Node child : children) {
             if(!child.analyse())
@@ -29,6 +32,14 @@ class ASTModule extends SimpleNode {
         return result;
     }
 
+    public boolean analyseFunctionHeaders() {
+        for(Node child : children) {
+            if(child.toString().equals("Function"))
+                ((ASTFunction) child).analyseHeader();
+        }
+
+        return true;
+    }
 
 }
 /* JavaCC - OriginalChecksum=172febbc9f462a34b5659db8744215af (do not edit this line) */

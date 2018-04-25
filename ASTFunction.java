@@ -10,5 +10,11 @@ class ASTFunction extends SimpleNode {
     super(p, id, true);
   }
 
+  public void analyseHeader() {
+  	System.out.println("Analysing Header " + toString(""));
+
+  	//TODO: add header analysing logic
+  }
+
 }
 /* JavaCC - OriginalChecksum=87cbf5972d530f3221d99b5c8270925a (do not edit this line) */
