@@ -40,6 +40,6 @@ interface Node {
   public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types);
 
   public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized);
- 
+
 }
 /* JavaCC - OriginalChecksum=77d9f6c6ec5657539851d2d8cc26461d (do not edit this line) */
