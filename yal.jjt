@@ -10,6 +10,9 @@ PARSER_BEGIN(Yal)
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 
 
 
@@ -18,7 +21,7 @@ public class Yal
 		
   private static Yal myYal;
   
-  public static void main(String args []) throws ParseException
+  public static void main(String args []) throws ParseException, IOException
   {
     
     if( validArgs(args) == false)
@@ -29,8 +32,27 @@ public class Yal
       	System.out.println("\nAST Tree:");
     	root.dump(""); // imprime no ecrã a árvore
 		System.out.println("\nSymbol Table:");
-		root.printSymbolTable(""); 
+		//root.printSymbolTable("");
+
+		generateCode(root); 
     }
+  }
+
+   public static void generateCode(SimpleNode root) throws IOException {
+		
+	
+
+		 
+  
+
+   	 	  FileOutputStream outputStream = new FileOutputStream("test.j");
+   	 	  		String codeString = root.generateCode();
+    byte[] strToBytes = codeString.getBytes();
+    outputStream.write(strToBytes);
+ 
+    outputStream.close();
+
+			
   }
 
   public static File validFilePath(String filePath) {
@@ -245,7 +267,7 @@ void Declaration() :
       (
         "[" ArraySize() "]"
       )
-    | (< ADDSUB_OP >)? < INTEGER >
+    | (< ADDSUB_OP >)? < INTEGER > 
     )
   )?
   < PVIRG >
