@@ -116,31 +116,12 @@ class SimpleNode implements Node {
    * If checkInitialized equals false, this function checks if a variable symbolName has not been initialized to any type different from types
    */
   public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types ) {
-		if(hasScope && symbolTable.containsSymbolName(symbolName))
-			return symbolTable.containsSymbol(symbolName, checkInitialized, types);
-		
-		else {
-			if(parent != null)
-				return parent.verifySymbolTypes(symbolName, checkInitialized, types);
-			else
-				return !checkInitialized;
-		}
+		return symbolTable.verifySymbolTypes(symbolName, checkInitialized, types);
   }
   
 
-  public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean verifyInitialization) {
-	   if(verifyInitialization)
-		   if(! verifySymbolTypes(symbolName, false, type))
-			   return false;
-		
-	    if(hasScope) {
-	    	symbolTable.addSymbol(symbolName, type, initialized);
-	    	return true;
-	    }	
-	    else if(parent != null)
-				return parent.initializeSymbol(symbolName, type, initialized, false);
-	    else
-	    	return false;
+  public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized) {
+	   	   return initializeSymbol(symbolName, type, initialized);
     }
   
   public int getId() {
