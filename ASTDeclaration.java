@@ -15,58 +15,55 @@ class ASTDeclaration extends SimpleNode {
         if(children == null)
             return false;
 
-        // Declaration -> Element
         SimpleNode leftChild = (SimpleNode) children[0];
-        Symbol.Type typeLeftChild = leftChild.getType();
+        Symbol.Type typeLeftChild = leftChild.getReturnType();
         String symbolName = (String) leftChild.jjtGetValue();
         
         Symbol.Type type = typeLeftChild;
-        //boolean noErrorsFound = true;
         boolean initialized = false;
-        boolean scalarInitialization = false; // This boolean will be set to true if declaration if of the form a = 2;
+
+        // This boolean will be set to true if declaration if of the form a = 2;
+        boolean scalarInitialization = false; 
+
         if(children.length > 1) {
         	initialized = true;
         	SimpleNode rightChild = (SimpleNode) children[1];
-        	Symbol.Type typeRightChild = rightChild.getType();
+        	Symbol.Type typeRightChild = rightChild.getReturnType();
         	
         	if(! typeLeftChild.equals(typeRightChild)) {
         		type = Symbol.Type.ARRAY;
         	}
         	else if(typeLeftChild.equals(Symbol.Type.SCALAR))
         		scalarInitialization = true;
-        	/*if(! typeLeftChild.equals(typeRightChild)) {
-        		noErrorsFound = false;
-        		if(typeLeftChild.equals(Symbol.Type.ARRAY))
-        			System.out.println("Semantic Error: An array can't be assigned to a scalar");
-        		else if(verifySymbolTypes(symbolName, false, SymbolType.ARR))
-        			System.out.println("Semantic Error: A Scalar can't be assigned to an array");
-        	}*/
-        	
         }
         	
-        
-        	
-        //if(noErrorsFound) {
-        	if(initializeSymbol( symbolName, type, initialized) == false){
-        		if(scalarInitialization == false) {
-        			System.out.println("Semantic Error: Can't initialize "+symbolName);
-        			return false;
-        		}
-        		else { //scalarInitialization's are always valid
-        			initializeSymbol(symbolName, Symbol.Type.ARRAY, true);
-        			return true;
-        		}
-        	}
-       // }
-        else return true;
+        if(!initializeSymbol(symbolName, type, initialized)) {
+            if(!scalarInitialization) {
+               System.out.println("Semantic Error: Can't initialize "+symbolName);
+               return false;
+            }
+        	else { //scalarInitialization is always valid
+                initializeSymbol(symbolName, Symbol.Type.ARRAY, true);
+                return true;
+            }
+        }
 
+       return true;
+    }
+
+    public Symbol.Type getReturnType() {
+        if(toString().equals("ScalarElement") || toString().equals("ScalarAssigned"))
+            return Symbol.Type.SCALAR;
+        else if(toString().equals("ArrayElement") || toString().equals("ArrayAssigned"))
+            return Symbol.Type.ARRAY;
+
+        return null;
     }
     
     
    	public String generateCode() {
    		String generatedCode = "";
    		generatedCode += ".field static " + this.value + " I" + "\n";
-   		
 
    		if (children != null) {
    			for (int i = 0; i < children.length; ++i) {
@@ -76,12 +73,9 @@ class ASTDeclaration extends SimpleNode {
    				}
    			}
    		}
-   		
 
    		return generatedCode;
-
    	}
-
 
 }
 /* JavaCC - OriginalChecksum=f0ec2df2bb99c0df69ade4aa7071b5f6 (do not edit this line) */

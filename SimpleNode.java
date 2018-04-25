@@ -199,9 +199,7 @@ class SimpleNode implements Node {
 	  
   }
   
-  public Symbol.Type getType() {
-	  	// Element -> ScalarElement | ArrayElement
-	  	//Node child = children[0];
+  public Symbol.Type getReturnType() {
 
 	  	if(toString().equals("ScalarElement") || toString().equals("ScalarAssigned"))
 	  		return Symbol.Type.SCALAR;
