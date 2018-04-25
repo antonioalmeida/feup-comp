@@ -78,8 +78,9 @@ class SimpleNode implements Node {
      you need to do. */
 
   public String toString() {
-   return YalTreeConstants.jjtNodeName[id]; 
-   }
+    return YalTreeConstants.jjtNodeName[id]; 
+  }
+  
   public String toString(String prefix) { 
   	String node = prefix + toString();
 	
