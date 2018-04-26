@@ -172,16 +172,18 @@ public class CodeGenerator {
 	}
 	
 	private void generateCall(SimpleNode functionChild) {
-		out.println("invokestatic" + functionChild.value + "(");
+		out.print("invokestatic " + functionChild.value + "(");
+
 		for (int i = 0; i < functionChild.jjtGetNumChildren(); i++)
 			out.print("I");
+
 		out.print(")");
 		
 		if(((SimpleNode)functionChild.parent).id==YalTreeConstants.JJTTERM)
 			out.print("I");
 		else out.print("V");
-			
-		
+
+		out.println();
 	}
 
 	private void generateAssign(SimpleNode functionChild) {
