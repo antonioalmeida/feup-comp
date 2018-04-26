@@ -42,11 +42,11 @@ class ASTScalarAccess extends SimpleNode {
     String symbolName = ((String) jjtGetValue());
 
     // if is in symbol table, return its type
-    if(symbolTable.verifySymbolTypes(symbolName, false, Symbol.Type.SCALAR, Symbol.Type.ARRAY, Symbol.Type.VOID))
+    //if(symbolTable.verifySymbolTypes(symbolName, false, Symbol.Type.SCALAR, Symbol.Type.ARRAY, Symbol.Type.VOID))
       return symbolTable.getSymbolType(symbolName);
 
     // else, it can be either one
-    return Symbol.Type.VOID;
+    //return Symbol.Type.VOID;
   }
 
 }

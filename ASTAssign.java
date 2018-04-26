@@ -33,7 +33,26 @@ class ASTAssign extends SimpleNode {
         Symbol.Type rhsType = rhsChild.getReturnType();
 
         
-        String symbolName = (String) lhsChild.jjtGetValue();       
+        String lhsSymbol = (String) lhsChild.jjtGetValue();
+        
+        String rhsSymbol = (String) rhsChild.jjtGetValue();
+        
+        if(rhsType.equals(Symbol.Type.ARRAY)) {
+        	if(! initializeSymbol(lhsSymbol, Symbol.Type.ARRAY, true)) {
+        		System.out.println("Semantic Error: "+lhsSymbol+ " has been declared as a scalar and now it has tried to be assigned to an array");
+        		return false;
+        	}
+        	else
+        		return true;
+        }
+        else if(lhsChild.toString().equals("ArrayAccess"))
+        	return true;
+        else {
+        	Symbol.Type type = Symbol.Type.SCALAR;
+        	if(lhsType.equals(Symbol.Type.ARRAY))
+        		type = Symbol.Type.ARRAY;
+        	initializeSymbol(lhsSymbol, type, true);
+        }
 
         return true;
     }

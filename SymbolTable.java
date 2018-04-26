@@ -98,7 +98,7 @@ public class SymbolTable {
 			if(parent != null)
 				return parent.getSymbolType(symbolName);
 			else
-				return null;
+				return Symbol.Type.VOID;
 		}
 	}
 	

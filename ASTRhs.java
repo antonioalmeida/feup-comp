@@ -2,7 +2,7 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTRhs extends SimpleNode {
-    Symbol.Type returnType;
+    
 
     public ASTRhs(int id) {
         super(id);
@@ -22,19 +22,25 @@ class ASTRhs extends SimpleNode {
             Symbol.Type lhsType = ((SimpleNode) children[0]).getReturnType();
             Symbol.Type rhsType = ((SimpleNode) children[1]).getReturnType();
 
-            /*if(lhsType != rhsType) {
-               System.out.println("Semantic error: " + this.value + " is of type " + rhsType + ", expected " + lhsType);
+            if(lhsType.equals(Symbol.Type.ARRAY)) {
+               System.out.println("Semantic error: " + ((SimpleNode) children[0]).value + " is of type " + lhsType + ", which is not allowed here ");
                return false;
-            }*/
+            }
+            else if(rhsType.equals(Symbol.Type.ARRAY)) {
+                System.out.println("Semantic error: " + ((SimpleNode) children[1]).value + " is of type " + rhsType + ", which is not allowed here ");
+                return false;
+             }
+           
 
-            this.returnType = lhsType;
+           
         }
 
         return true;
     }
 
     public Symbol.Type getReturnType() {
-        return returnType;
+    	Symbol.Type lhsType = ((SimpleNode) children[0]).getReturnType();      
+        return lhsType;
     }
 
 }
