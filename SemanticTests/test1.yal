@@ -1,0 +1,14 @@
+module aval6_err
+{
+
+function a=sqrt(vsqn, ad) { 
+	
+	a = 1;
+	b = 2;
+	if(a < b){
+		
+	}
+     	
+}
+
+}
