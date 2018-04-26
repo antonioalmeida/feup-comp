@@ -39,7 +39,7 @@ class ASTDeclaration extends SimpleNode {
         	
         if(!initializeSymbol(symbolName, type, initialized)) {
             if(!scalarInitialization) {
-               System.out.println("Semantic Error: Can't initialize "+symbolName);
+               System.out.println("Semantic Error: Can't initialize " + symbolName);
                return false;
             }
         	else { //scalarInitialization is always valid

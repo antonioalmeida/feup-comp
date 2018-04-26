@@ -13,7 +13,6 @@ class ASTScalarAccess extends SimpleNode {
     super(p, id);
   }
 
-
   public void set_size_access(boolean set){
   	size_array = set;
   }
@@ -29,5 +28,26 @@ class ASTScalarAccess extends SimpleNode {
     	 	
   	return node; 
   }
+
+  public boolean analyse() {
+    //TODO: update this, this is just for testing
+    System.out.println("Analysing " + toString(""));
+
+    symbolTable = getAssignedSymbolTable();
+
+    return true;
+  }
+
+  public Symbol.Type getReturnType() {
+    String symbolName = ((String) jjtGetValue());
+
+    // if is in symbol table, return its type
+    if(symbolTable.verifySymbolTypes(symbolName, false, Symbol.Type.SCALAR, Symbol.Type.ARRAY, Symbol.Type.VOID))
+      return symbolTable.getSymbolType(symbolName);
+
+    // else, it can be either one
+    return Symbol.Type.VOID;
+  }
+
 }
 /* JavaCC - OriginalChecksum=dc46aab5f6a610de55713f684578a33a (do not edit this line) */

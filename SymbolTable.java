@@ -8,15 +8,9 @@ import java.util.Map.Entry;
 
 public class SymbolTable {
 	
-	/*public static enum Type {
-		INT, ARRAY 
-	}*/
-	
 	private HashMap<String, Symbol> symbols;
 	private SymbolTable parent;
 	private FunctionsTable functions;
-
-	
 
 	public SymbolTable(SymbolTable parent) {
 		this.parent = parent;
@@ -27,19 +21,12 @@ public class SymbolTable {
 		return parent;
 	}
 	
-	
-	/*public HashMap<String, Type> getSymbols() {
-		return symbols;
-	}*/
-	
 	public boolean containsSymbolName(String symbolName) {
 		return symbols.containsKey(symbolName);
 	}
 	
 	public boolean containsSymbol(String symbolName, boolean checkInitialized, Symbol.Type... types) {
-		//if(symbols.containsKey(symbolName))
 		Symbol symbol = symbols.get(symbolName);
-		
 		
 		if(symbol != null) {
 			Symbol.Type symbolType = symbol.getType();
@@ -53,7 +40,6 @@ public class SymbolTable {
 		}
 		
 		return false;
-		
 	}
 	
 	public boolean addSymbol(String symbolName, Symbol.Type type, boolean initialized) {
@@ -68,7 +54,6 @@ public class SymbolTable {
 		}
 		else
 			return false;
-		
 	}
 	
 	 /**
@@ -104,6 +89,18 @@ public class SymbolTable {
 		   this.addSymbol(symbolName, type, initialized);
 		   return true;
 	    }
+
+	public Symbol.Type getSymbolType(String symbolName) {
+		if(containsSymbolName(symbolName))
+			return symbols.get(symbolName).getType();
+
+		else {
+			if(parent != null)
+				return parent.getSymbolType(symbolName);
+			else
+				return null;
+		}
+	}
 	
 	public void printSymbols(String prefix) {
 		System.out.println("Print Symbols");
@@ -115,7 +112,5 @@ public class SymbolTable {
 			System.out.println(prefix+symbolName+": "+symbol.getType());
 		}
 	}
-	
-	
 	
 }

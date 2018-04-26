@@ -37,6 +37,8 @@ interface Node {
   
   public boolean analyse();
 
+  public Symbol.Type getReturnType();
+
   public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types);
 
   public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized);

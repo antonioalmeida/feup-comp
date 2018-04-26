@@ -2,18 +2,26 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTTerm extends SimpleNode {
-  protected String sign = null;
+    protected String sign = null;
 
 
-  public ASTTerm(int id) {
-    super(id);
-  }
+    public ASTTerm(int id) {
+        super(id);
+    }
 
-  public ASTTerm(Yal p, int id) {
-    super(p, id);
-  }
-  
-    
- 
+    public ASTTerm(Yal p, int id) {
+        super(p, id);
+    }
+
+    public Symbol.Type getReturnType() {
+        // Term -> <INTEGER> | Call | ArrayAccess | ScalarAccess
+
+        // children is null when Term -> ScalarAccess
+        if(children == null) 
+            return Symbol.Type.SCALAR;
+
+        return ((SimpleNode) children[0]).getReturnType();
+    }
+
 }
 /* JavaCC - OriginalChecksum=694cdb272d61fc5ab19824a2f80bedc9 (do not edit this line) */

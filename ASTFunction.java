@@ -15,6 +15,7 @@ class ASTFunction extends SimpleNode {
 
   	//TODO: add header analysing logic
   }
+
   
   
 	public String generateCode() {

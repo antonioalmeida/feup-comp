@@ -1,9 +1,12 @@
 
 public class Symbol {
 	public static enum Type {
-		SCALAR, ARRAY
+		SCALAR, ARRAY, VOID 
+		// void is not really a symbol type, 
+		// but useful to define as the return
+		// type of intermediate nodes that don't
+		// return anything
 	}
-	
 	
 	private Type type;
 	private boolean initialized;

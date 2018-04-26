@@ -199,17 +199,10 @@ class SimpleNode implements Node {
 	  
   }
   
-  public Symbol.Type getReturnType() {
-
-	  	if(toString().equals("ScalarElement") || toString().equals("ScalarAssigned"))
-	  		return Symbol.Type.SCALAR;
-	  	else if(toString().equals("ArrayElement") || toString().equals("ArrayAssigned"))
-	  		return Symbol.Type.ARRAY;
-
-	  	return null;
-  }
-	 
-
+    public Symbol.Type getReturnType() {
+        //TODO: is this the best default?
+        return Symbol.Type.VOID;
+    }
 }
 
 /* JavaCC - OriginalChecksum=a536ad506ca058676615e1a3304534ab (do not edit this line) */
