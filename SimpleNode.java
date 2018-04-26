@@ -166,8 +166,7 @@ class SimpleNode implements Node {
     symbolTable = getAssignedSymbolTable();
 	boolean result = true;
     
-	if(!analyseSymbolTable())
-		result = false;
+	
 		//System.out.println("Analysing " + toString(""));
 
     if(children == null)
@@ -177,6 +176,9 @@ class SimpleNode implements Node {
       if(!child.analyse())
         result = false;
     }
+    
+    if(!analyseSymbolTable())
+		result = false;
 
     return result;
   }

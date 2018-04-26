@@ -10,12 +10,12 @@ class ASTAssign extends SimpleNode {
         super(p, id);
     }
 
-    public boolean analyse() {
+    /*public boolean analyse() {
         System.out.println("Analysing " + toString(""));
         symbolTable = getAssignedSymbolTable();
 
         return analyseSymbolTable();
-    }
+    }*/
 
     public boolean analyseSymbolTable() {
         if(children == null)
@@ -23,14 +23,14 @@ class ASTAssign extends SimpleNode {
 
         // lhs
         SimpleNode lhsChild = (SimpleNode) children[0];
-        if(!lhsChild.analyse())
-            return false;
+       /* if(!lhsChild.analyse())
+            return false;*/
         Symbol.Type lhsType = lhsChild.getReturnType();
 
         // rhs
         SimpleNode rhsChild = (SimpleNode) children[1];
-        if(!rhsChild.analyseSymbolTable())
-            return false;
+        /*if(!rhsChild.analyseSymbolTable())
+            return false;*/
         Symbol.Type rhsType = rhsChild.getReturnType();
 
         if(lhsType != rhsType) {

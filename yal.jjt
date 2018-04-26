@@ -507,7 +507,7 @@ void Rhs():
       Term()
     )?
   )
-| "[" ArraySize() "]"
+| ArrayAssigned()
 
 
 }

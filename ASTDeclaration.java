@@ -52,12 +52,13 @@ class ASTDeclaration extends SimpleNode {
     }
 
     public Symbol.Type getReturnType() {
-        if(toString().equals("ScalarElement") || toString().equals("ScalarAssigned"))
+        /*if(toString().equals("ScalarElement") || toString().equals("ScalarAssigned"))
             return Symbol.Type.SCALAR;
         else if(toString().equals("ArrayElement") || toString().equals("ArrayAssigned"))
             return Symbol.Type.ARRAY;
 
-        return null;
+        return null;*/
+    	return Symbol.Type.VOID;
     }
     
     
