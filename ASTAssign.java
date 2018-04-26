@@ -23,21 +23,16 @@ class ASTAssign extends SimpleNode {
 
         // lhs
         SimpleNode lhsChild = (SimpleNode) children[0];
-       /* if(!lhsChild.analyse())
-            return false;*/
+      
         Symbol.Type lhsType = lhsChild.getReturnType();
+        
 
         // rhs
         SimpleNode rhsChild = (SimpleNode) children[1];
-        /*if(!rhsChild.analyseSymbolTable())
-            return false;*/
+        
         Symbol.Type rhsType = rhsChild.getReturnType();
 
-        if(lhsType != rhsType) {
-            System.out.println("Semantic error: " + rhsChild.jjtGetValue() + " is of type " + rhsType + ", expected " + lhsType);
-            return false;
-        }
-
+        
         String symbolName = (String) lhsChild.jjtGetValue();       
 
         return true;

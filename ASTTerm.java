@@ -22,6 +22,25 @@ class ASTTerm extends SimpleNode {
 
         return ((SimpleNode) children[0]).getReturnType();
     }
+    
+    public boolean analyseSymbolTable() {
+    	
+    	if(children != null && children.length > 0) {
+    		SimpleNode child = (SimpleNode) children[0];
+    		if(child.toString().equals("ScalarAccess")) {
+    			if(! verifySymbolTypes(child.value, true, Symbol.Type.SCALAR, Symbol.Type.ARRAY)) {
+    				System.out.println("Semantic Error: "+child.value +" should have been initialized");
+    				return false;
+    			}
+    		}
+    		
+    		else if(child.toString().equals("Call")) {
+    			//TODO Check that call returns a scalar
+    		}
+    	}
+    		
+    	return true;
+    }
 
 }
 /* JavaCC - OriginalChecksum=694cdb272d61fc5ab19824a2f80bedc9 (do not edit this line) */

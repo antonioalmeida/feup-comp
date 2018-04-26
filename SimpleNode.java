@@ -169,12 +169,13 @@ class SimpleNode implements Node {
 	
 		//System.out.println("Analysing " + toString(""));
 
-    if(children == null)
-     return false; 
-
-    for(Node child : children) {
-      if(!child.analyse())
-        result = false;
+    /*if(children == null)
+     return false;*/ 
+    if(children != null) {
+    	for(Node child : children) {
+    		if(!child.analyse())
+    			result = false;
+    	}
     }
     
     if(!analyseSymbolTable())

@@ -22,10 +22,10 @@ class ASTRhs extends SimpleNode {
             Symbol.Type lhsType = ((SimpleNode) children[0]).getReturnType();
             Symbol.Type rhsType = ((SimpleNode) children[1]).getReturnType();
 
-            if(lhsType != rhsType) {
+            /*if(lhsType != rhsType) {
                System.out.println("Semantic error: " + this.value + " is of type " + rhsType + ", expected " + lhsType);
                return false;
-            }
+            }*/
 
             this.returnType = lhsType;
         }

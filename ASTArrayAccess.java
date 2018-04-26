@@ -13,6 +13,15 @@ class ASTArrayAccess extends SimpleNode {
   public Symbol.Type getReturnType() {
     return Symbol.Type.SCALAR;
   }
+  
+  public boolean analyseSymbolTable() {
+	  if(! verifySymbolTypes(value, true, Symbol.Type.ARRAY)) {
+			System.out.println("Semantic Error: "+value +" should have been initialized to an array");
+			return false;
+	  }
+	  else
+		  return true;
+  }
 
 }
 /* JavaCC - OriginalChecksum=9555d33a34fc82551229c4905477e2a1 (do not edit this line) */
