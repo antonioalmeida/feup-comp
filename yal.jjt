@@ -413,7 +413,7 @@ void Stmt() #void: { Token t; }
   |(
     t = < ID >
   ( 
-     AssignNoPoint(t.image)
+     AssignNoPoint(t.image, false)
   | CallVirg(t.image) |  "."NoPointAssignCallVirg(t.image))) 
   } 
   catch(ParseException e) {
@@ -436,7 +436,7 @@ void NoPointAssignCallVirg(String id) #void:
 {}
 {
   (
-    < ID > CallVirg(id)) | (< SIZE > AssignNoPoint(id))
+    < ID > CallVirg(id)) | (< SIZE > AssignNoPoint(id, true))
 }
 
 void Assign() :
@@ -457,12 +457,12 @@ void AssignNoID(String id) #Assign:
   }
 }
 
-void AssignNoPoint(String id) #Assign:
+void AssignNoPoint(String id, boolean size_array) #Assign:
 { }
 {
   
   try {
-    LhsNoPoint(id) < ASSIGN > Rhs() < PVIRG >
+    LhsNoPoint(id, size_array) < ASSIGN > Rhs() < PVIRG >
   }
   catch(ParseException e) {
     errorSkipTo(e, "assignment",  new SkipToken(PVIRG, true));
@@ -486,11 +486,11 @@ void LhsNoID(String id) #void:
 | ScalarAccessNoID(id)
 }
   
-void LhsNoPoint(String id) #void:
+void LhsNoPoint(String id, boolean size_array) #void:
 { }
 {
   ArrayAccessNoID(id)
-| ScalarAccessNothing(id)
+| ScalarAccessNothing(id, size_array)
 }
   
 
@@ -533,7 +533,7 @@ void Term() :
     ( 
       t = < ID > 
       (Call(t.image) | "." PointCallScalarAccess(t.image) | ArrayAccessNoID(t.image) 
-		| ScalarAccessNothing(t.image))  
+		| ScalarAccessNothing(t.image, false))  
         
     )
   )
@@ -692,10 +692,10 @@ void ScalarAccessNoID(String id) #ScalarAccess:
 
 }
 
-void ScalarAccessNothing(String id) #ScalarAccess:
+void ScalarAccessNothing(String id, boolean size_array) #ScalarAccess:
 { Token t=null; }
 {
-  {jjtThis.jjtAddValue(id); }
+  {jjtThis.jjtAddValue(id); jjtThis.set_size_access(size_array);}
     
 } 
 
@@ -705,17 +705,10 @@ void PointCallScalarAccess(String id) #void:
 }
 {
   (
-    < ID >  Call(id)) | (< SIZE > ScalarAccessNothing(id))
+    < ID >  Call(id)) | (< SIZE > ScalarAccessNothing(id, true))
 }
 
-/*void CallScalarAccessVirgPoint(String id) #void:
-{
-  
-}
-{
-  (
-    < ID > CallLPARVirg(id)) | (< SIZE > ScalarAccessNothing(id))
-}*/
+
 
 void Index() :
 {Token t;}
@@ -724,3 +717,6 @@ void Index() :
 | t=< INTEGER >)
 {jjtThis.jjtAddValue(t.image); }
 }
+
+
+  

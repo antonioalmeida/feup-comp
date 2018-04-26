@@ -22,7 +22,7 @@ class ASTDeclaration extends SimpleNode {
         Symbol.Type type = typeLeftChild;
         boolean initialized = false;
 
-        // This boolean will be set to true if declaration if of the form a = 2;
+        // This boolean will be set to true if declaration is of the form a = 2;
         boolean scalarInitialization = false; 
 
         if(children.length > 1) {
