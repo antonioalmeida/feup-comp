@@ -210,6 +210,14 @@ class SimpleNode implements Node {
     public boolean getSizeArray() {
     	return false;
     }
+    
+    public String getRealValue() {
+    	if(value.equals(""))
+    		if(children != null && children.length > 0)
+    			return ((SimpleNode) children[0]).getRealValue();
+    			
+    	return value;
+    }
 }
 
 /* JavaCC - OriginalChecksum=a536ad506ca058676615e1a3304534ab (do not edit this line) */

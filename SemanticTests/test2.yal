@@ -38,6 +38,9 @@ function a=sqrt(vsqn, ad) {
      	x7.size = 6; //error
      	x11 = gnrting;//error
      	x12 = x3; //no error
+	x13 = x10 + x12; //error
+	x14 = x12 + x10; //error;
+	x15 = x2 + x10; //no error;
      	
 }
 

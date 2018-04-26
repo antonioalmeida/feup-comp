@@ -23,11 +23,11 @@ class ASTRhs extends SimpleNode {
             Symbol.Type rhsType = ((SimpleNode) children[1]).getReturnType();
 
             if(lhsType.equals(Symbol.Type.ARRAY)) {
-               System.out.println("Semantic error: " + ((SimpleNode) children[0]).value + " is of type " + lhsType + ", which is not allowed here ");
+               System.out.println("Semantic error: " + ((SimpleNode) children[0]).getRealValue() + " is of type " + lhsType + ", which is not allowed here ");
                return false;
             }
             else if(rhsType.equals(Symbol.Type.ARRAY)) {
-                System.out.println("Semantic error: " + ((SimpleNode) children[1]).value + " is of type " + rhsType + ", which is not allowed here ");
+                System.out.println("Semantic error: " + ((SimpleNode) children[1]).getRealValue() + " is of type " + rhsType + ", which is not allowed here ");
                 return false;
              }
            
@@ -42,6 +42,8 @@ class ASTRhs extends SimpleNode {
     	Symbol.Type lhsType = ((SimpleNode) children[0]).getReturnType();      
         return lhsType;
     }
+    
+    
 
     public String generateCode() {
         String generatedCode = "";
