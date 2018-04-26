@@ -16,7 +16,7 @@ class ASTTerm extends SimpleNode {
     public Symbol.Type getReturnType() {
         // Term -> <INTEGER> | Call | ArrayAccess | ScalarAccess
 
-        // children is null when Term -> ScalarAccess
+        // children is null when Term -> <INTEGER>
         if(children == null) 
             return Symbol.Type.SCALAR;
 
@@ -40,6 +40,15 @@ class ASTTerm extends SimpleNode {
     	}
     		
     	return true;
+    }
+
+    public String generateCode() {
+        String generatedCode = "";
+
+        if(children == null)
+            generatedCode = "ldc " + this.value + "\n";
+
+        return generatedCode;
     }
 
 }

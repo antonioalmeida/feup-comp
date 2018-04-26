@@ -43,5 +43,24 @@ class ASTRhs extends SimpleNode {
         return lhsType;
     }
 
+    public String generateCode() {
+        String generatedCode = "";
+
+        if(children != null)
+            for(Node child : children)
+                generatedCode += ((SimpleNode) child).generateCode();
+
+        // if Rhs -> Term OP Term
+        if(children.length > 1) {
+            switch(this.value) {
+                case "+":
+                    generatedCode += "iadd\n";
+                    break;
+            }
+        }
+
+        return generatedCode;
+    }
+
 }
 /* JavaCC - OriginalChecksum=f98f0d78c74a90d4cd0f52de8c8b26b9 (do not edit this line) */

@@ -37,7 +37,9 @@ public class Yal
 		System.out.println("\nSymbol Table:");
 		root.printSymbolTable("");
 
-		generateCode(root); 
+		//generateCode(root);
+		CodeGenerator codeGenerator = new CodeGenerator(root, "test.j");
+		codeGenerator.generateCode();
     }
   }
 
