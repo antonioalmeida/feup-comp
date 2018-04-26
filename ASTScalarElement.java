@@ -2,17 +2,17 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTScalarElement extends SimpleNode {
-  public ASTScalarElement(int id) {
-    super(id);
-  }
+    public ASTScalarElement(int id) {
+        super(id);
+    }
 
-  public ASTScalarElement(Yal p, int id) {
-    super(p, id);
-  }
+    public ASTScalarElement(Yal p, int id) {
+        super(p, id);
+    }
 
-  public Symbol.Type getReturnType() {
-  	return Symbol.Type.SCALAR;
-  }
+    public Symbol.Type getReturnType() {
+        return Symbol.Type.SCALAR;
+    }
 
 }
 /* JavaCC - OriginalChecksum=b7ba9f4656986b8493ca752ab82bbada (do not edit this line) */
