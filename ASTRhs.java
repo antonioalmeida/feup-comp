@@ -52,11 +52,31 @@ class ASTRhs extends SimpleNode {
 
         // if Rhs -> Term OP Term
         if(children.length > 1) {
-            switch(this.value) {
-                case "+":
-                    generatedCode += "iadd\n";
-                    break;
-            }
+                switch(this.value) {
+                    case "+":
+                        generatedCode += "iadd\n";
+                        break;
+                    case "-":
+                        generatedCode += "isub\n";
+                        break;
+                    case "*":
+                        generatedCode += "imul\n";
+                        break;
+                    case "/":
+                        generatedCode += "idiv\n";
+                        break;
+                        /*
+                    case "<<":
+                        generatedCode += "isub\n";
+                        break;
+                    case ">>":
+                        generatedCode += "isub\n";
+                        break;
+                    case ">>>":
+                        generatedCode += "isub\n";
+                        break;
+                        */
+                }
         }
 
         return generatedCode;
