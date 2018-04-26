@@ -206,6 +206,10 @@ class SimpleNode implements Node {
         //TODO: is this the best default?
         return Symbol.Type.VOID;
     }
+    
+    public boolean getSizeArray() {
+    	return false;
+    }
 }
 
 /* JavaCC - OriginalChecksum=a536ad506ca058676615e1a3304534ab (do not edit this line) */

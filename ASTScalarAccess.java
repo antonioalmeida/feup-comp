@@ -29,13 +29,22 @@ class ASTScalarAccess extends SimpleNode {
   	return node; 
   }
 
-  public boolean analyse() {
+  public boolean analyseSymbolTable() {
     //TODO: update this, this is just for testing
     System.out.println("Analysing " + toString(""));
 
-    symbolTable = getAssignedSymbolTable();
-
+    if(size_array == true) {    	
+    	if(!symbolTable.containsSymbol(this.value, false, Symbol.Type.ARRAY)) {
+    		System.out.println("Semantic Error: "+this.value+" has not been previously declared as an array");
+    		return false;
+    	}
+    }
+    
     return true;
+  }
+  
+  public boolean getSizeArray() {
+	  return size_array;
   }
 
   public Symbol.Type getReturnType() {
@@ -43,7 +52,13 @@ class ASTScalarAccess extends SimpleNode {
 
     // if is in symbol table, return its type
     //if(symbolTable.verifySymbolTypes(symbolName, false, Symbol.Type.SCALAR, Symbol.Type.ARRAY, Symbol.Type.VOID))
-      return symbolTable.getSymbolType(symbolName);
+    Symbol.Type type = symbolTable.getSymbolType(symbolName);
+    if(size_array == true) {
+    	if(!type.equals(Symbol.Type.VOID))
+    		return Symbol.Type.SCALAR;
+    }
+  
+    return symbolTable.getSymbolType(symbolName);
 
     // else, it can be either one
     //return Symbol.Type.VOID;

@@ -23,6 +23,11 @@ class ASTAssign extends SimpleNode {
 
         // lhs
         SimpleNode lhsChild = (SimpleNode) children[0];
+        
+        if(lhsChild.getSizeArray() == true) {
+        	System.out.println("Semantic Error: Can't assign the size of array "+lhsChild.value);
+        	return false;
+        }
       
         Symbol.Type lhsType = lhsChild.getReturnType();
         
