@@ -13,6 +13,18 @@ class ASTArraySize extends SimpleNode {
   public Symbol.Type getReturnType() {
   	return Symbol.Type.SCALAR;	
   }
+  
+  public boolean analyseSymbolTable() {
+	  if(children != null && children.length > 0) {
+		  String symbolName = ((SimpleNode) children[0]).value;
+		  if(! verifySymbolTypes(symbolName, true, Symbol.Type.SCALAR)) {
+			  System.out.println("Semantic Error: "+symbolName+" should have been initialized to a scalar");
+			  return false;
+		  }
+		  
+	  }
+	  return true;
+  }
 
 }
 /* JavaCC - OriginalChecksum=157ede1329c1b5fc291489b1d41966bb (do not edit this line) */
