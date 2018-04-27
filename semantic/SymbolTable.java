@@ -18,9 +18,12 @@ public class SymbolTable {
 	private SymbolTable parent;
 	protected HashMap<String, Symbol> symbols;
 
+	private int indexCount;
+
 	public SymbolTable(SymbolTable parent) {
 		this.parent = parent;
 		symbols = new HashMap<String, Symbol>();
+		indexCount = 0;
 		//symbolsVector = new Vector<Pair>();
 	}
 	
@@ -51,9 +54,9 @@ public class SymbolTable {
 		
 		return false;
 	}
-	
-	public boolean addSymbol(String symbolName, Symbol.Type type, boolean initialized) {
-		Symbol symbol = new Symbol(type, initialized);
+
+	public boolean addSymbol(String symbolName, Symbol.Type type, boolean initialized, int index) {
+		Symbol symbol = new Symbol(type, initialized, true, index);
 
 		if(!symbols.containsKey(symbolName)) {			
 			symbols.put(symbolName, symbol);
@@ -67,8 +70,6 @@ public class SymbolTable {
 		else
 			return false;
 	}
-	
-	
 	
 	/**
 	* If checkInitialized equals true, this function checks if a variable symbolName has been initialized to one of types
@@ -86,26 +87,25 @@ public class SymbolTable {
 				return !checkDeclared;
 		}
 	}
-	  
 
-	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean verify) {
+	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean verify, boolean useIndex) {
 		if(verify && ! verifySymbolTypes(symbolName, false, false, type))
 			return false;
-
-		/*if(hasScope) {
-		symbolTable.addSymbol(symbolName, type, initialized);
-		return true;
-		}	
-		else if(parent != null)
-		return parent.initializeSymbol(symbolName, type, initialized, false);
-		else
-		return false;*/
 		else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
-			this.addSymbol(symbolName, type, initialized);
+			if(useIndex) {
+				this.addSymbol(symbolName, type, initialized, this.indexCount);
+				this.indexCount++;
+			}
+			else
+				this.addSymbol(symbolName, type, initialized, -1);
 			return true;
 		}
 		else
 			return parent.initializeSymbol(symbolName, type, initialized, false);
+	}
+	  
+	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean verify) {
+		return initializeSymbol(symbolName, type, initialized, verify, false);
 	}
 
 	public Symbol.Type getSymbolType(String symbolName) {
@@ -135,7 +135,7 @@ public class SymbolTable {
 			Symbol symbol = pair.getValue();
 			
 			if(symbol.getPrint())
-				System.out.println(prefix+symbolName+": "+symbol.getType());
+				System.out.println(prefix+symbolName+": "+symbol.getType() + " " + symbol.getIndex());
 		}
 		/*for(Pair pair : symbolsVector) {
 			String symbolName = (String) pair.getKey();
