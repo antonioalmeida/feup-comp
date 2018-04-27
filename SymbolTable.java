@@ -3,16 +3,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Vector;
+
+import utils.Pair;
 
 public class SymbolTable {
 	
 	private HashMap<String, Symbol> symbols;
+	//private Vector<Pair > symbolsVector;
 	private SymbolTable parent;
-	private FunctionsTable functions;
 
 	public SymbolTable(SymbolTable parent) {
 		this.parent = parent;
 		symbols = new HashMap<String, Symbol>();
+		//symbolsVector = new Vector<Pair>();
 	}
 	
 	public SymbolTable getParent() {
@@ -46,6 +50,7 @@ public class SymbolTable {
 
 		if(!symbols.containsKey(symbolName)) {			
 			symbols.put(symbolName, symbol);
+			//symbolsVector.add(new Pair(symbolName, type));
 			return true;
 		}
 		else if(symbols.get(symbolName).getType().equals(type)) {
@@ -102,6 +107,10 @@ public class SymbolTable {
 		}
 	}
 	
+	/*public Vector<Pair> getVectorSymbols(){
+		return symbolsVector;
+	}*/
+	
 	public void printSymbols(String prefix) {
 		System.out.println("Print Symbols");
 
@@ -114,6 +123,12 @@ public class SymbolTable {
 			
 			System.out.println(prefix+symbolName+": "+symbol.getType());
 		}
+		/*for(Pair pair : symbolsVector) {
+			String symbolName = (String) pair.getKey();
+			Symbol.Type type = (Symbol.Type) pair.getValue();
+			
+			System.out.println(prefix+symbolName+": "+type);
+		}*/
 	}
 	
 }

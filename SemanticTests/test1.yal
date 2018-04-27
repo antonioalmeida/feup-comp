@@ -47,7 +47,7 @@ function a=sqrt(vsqn, ad) {
 	f=[5];
 	g = [6];
 	
-	if(f == g){
+	if(f == g){//no error
 	
 	}
 	

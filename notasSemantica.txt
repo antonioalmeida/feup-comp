@@ -1,2 +1,11 @@
 - x6[] = 6; //não está a ser considerado erro ainda que x6 não tenha sido definido
 - é possivel fazer comparações de igualdade e diferença de arrays e eles não precisam de estar inicializados
+a[];
+a = 6; // isto é suposto ser erro
+
+while( 1 < 2){
+	i = 2;
+	break;
+}
+
+a = i;

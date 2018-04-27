@@ -9,6 +9,7 @@ class SimpleNode implements Node {
     protected String value;
     protected Yal parser;
     protected SymbolTable symbolTable;
+    protected FunctionsTable functionsTable;
     protected boolean hasScope;
     
     public SimpleNode(int i) {
