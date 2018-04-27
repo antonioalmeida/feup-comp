@@ -56,16 +56,16 @@ class ASTRhs extends SimpleNode {
         if(children.length > 1) {
                 switch(this.value) {
                     case "+":
-                        generatedCode += "iadd\n";
+                        generatedCode += "iadd";
                         break;
                     case "-":
-                        generatedCode += "isub\n";
+                        generatedCode += "isub";
                         break;
                     case "*":
-                        generatedCode += "imul\n";
+                        generatedCode += "imul";
                         break;
                     case "/":
-                        generatedCode += "idiv\n";
+                        generatedCode += "idiv";
                         break;
                         /*
                     case "<<":
@@ -79,6 +79,7 @@ class ASTRhs extends SimpleNode {
                         break;
                         */
                 }
+                generatedCode += '\n';
         }
 
         return generatedCode;

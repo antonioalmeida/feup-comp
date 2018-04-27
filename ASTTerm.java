@@ -45,8 +45,9 @@ class ASTTerm extends SimpleNode {
     public String generateCode() {
         String generatedCode = "";
 
+        // when Term -> <INTEGER>
         if(children == null)
-            generatedCode = "ldc " + this.value + "\n";
+            generatedCode = "iload " + this.value + "\n";
 
         return generatedCode;
     }

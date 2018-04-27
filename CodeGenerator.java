@@ -7,8 +7,6 @@ public class CodeGenerator {
 
 	private SimpleNode root;
 
-	// private String filename;
-
 	private PrintWriter out;
 
 	public CodeGenerator(SimpleNode root, String filename) throws IOException {
@@ -87,8 +85,7 @@ public class CodeGenerator {
 	}
 
 	private void generateFunctionMainHeader(SimpleNode functionNode) {
-		out.print(".method public static main([Ljava/lang/String;)V");
-
+		out.println(".method public static main([Ljava/lang/String;)V");
 	}
 
 	private void generateAssignFunction(SimpleNode functionNode) {
@@ -186,12 +183,20 @@ public class CodeGenerator {
 		out.println();
 	}
 
-	private void generateAssign(SimpleNode functionChild) {
-		// TODO Auto-generated method stub
+	private void generateAssign(SimpleNode node) {
+		// Assign -> Lhs = Rhs
+		/// Rhs -> Term OP Term | [ ArraySize ]
+		// Term -> OP? ( INT | Call | ArrayAccess | ScalarAccess )
 
+		SimpleNode rhs = (SimpleNode) node.jjtGetChild(1);
+		out.print(rhs.generateCode());
+
+		//TODO: right now always assuming ArrayAccess and ScalarAccess are from static fields
+		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
+		out.println("putstatic " + lhs.value + " I");
+
+		out.println("");
 	}
-
-	
 
 	private void generateDeclaration(SimpleNode node) {
 
