@@ -5,11 +5,11 @@ import java.util.Vector;
 
 import utils.Pair;
 
-public class FunctionsTable /*extends Table*/ {
+public class FunctionTable {
 	
 	protected HashMap<FunctionSignature, FunctionSymbol> functions;
 	
-	public FunctionsTable() {
+	public FunctionTable() {
 		functions = new HashMap<FunctionSignature, FunctionSymbol>();
 	}
 	
@@ -42,6 +42,9 @@ public class FunctionsTable /*extends Table*/ {
 			return false;
 		return true;
 	}*/
+	public void printFunctions() {
+		
+	}
 	
 	
 	

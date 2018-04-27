@@ -1,4 +1,4 @@
-import semantic.FunctionsTable;
+import semantic.FunctionTable;
 import semantic.Symbol;
 import semantic.SymbolTable;
 
@@ -13,12 +13,14 @@ class SimpleNode implements Node {
     protected String value;
     protected Yal parser;
     protected SymbolTable symbolTable;
-    protected FunctionsTable functionsTable;
+    protected FunctionTable functionTable;
     protected boolean hasScope;
+    protected boolean hasFunctionScope;
     
     public SimpleNode(int i) {
             this.value = "";
             this.hasScope = false;
+            this.hasFunctionScope = false;
             id = i;
     }
      
@@ -27,14 +29,14 @@ class SimpleNode implements Node {
             parser = p;
     }
     
-    public SimpleNode(int i, boolean hasScope) {
+    public SimpleNode(int i, boolean hasScope, boolean hasFunctionScope) {
     this.value = "";
     this.hasScope = hasScope;
         id = i;
     }
 
-    public SimpleNode(Yal p, int i, boolean hasScope) {
-        this(i, hasScope);
+    public SimpleNode(Yal p, int i, boolean hasScope, boolean hasFunctionScope) {
+        this(i, hasScope, hasFunctionScope);
         parser = p;
     }
 
@@ -45,6 +47,15 @@ class SimpleNode implements Node {
             return new SymbolTable(parent.getSymbolTable());
         else
             return ((SimpleNode) parent).getSymbolTable();
+    }
+    
+    public FunctionTable getAssignedFunctionTable() {
+    	if(parent == null)
+    		return null;
+    	else if(hasScope)
+    		return new FunctionTable();
+    	else
+    		return ((SimpleNode) parent).getFunctionTable();
     }
     
     public void jjtOpen() {}
@@ -77,6 +88,8 @@ class SimpleNode implements Node {
     }
 
     public void jjtAddValue(String value) { this.value = this.value + value; }
+    
+    public void jjtSetValue(String value) {this.value = value;}
 
     public Object jjtGetValue() { return value; }
 
@@ -157,12 +170,19 @@ class SimpleNode implements Node {
         return symbolTable;
     }
     
+    public FunctionTable getFunctionTable() {
+    	return functionTable;
+    }
+    
     public boolean analyseSymbolTable() {
         return true;
     }
     
+   
+    
     public boolean analyse() {
         symbolTable = getAssignedSymbolTable();
+        functionTable = getAssignedFunctionTable();
         boolean result = true;
     
         if(children != null) {
@@ -174,6 +194,7 @@ class SimpleNode implements Node {
         
         if(!analyseSymbolTable())
             result = false;
+       
 
         return result;
     }
