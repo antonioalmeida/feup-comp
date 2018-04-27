@@ -41,6 +41,8 @@ function a=sqrt(vsqn, ad) {
 	x13 = x10 + x12; //error
 	x14 = x12 + x10; //error;
 	x15 = x2 + x10; //no error;
+	x9 = 5;
+	x1 = [4];
      	
 }
 
