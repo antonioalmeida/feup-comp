@@ -1,3 +1,4 @@
+*/*.class
 *.class
 /Yal.java
 /YalTokenManager.java
