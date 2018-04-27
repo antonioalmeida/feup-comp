@@ -15,3 +15,6 @@
 /ASTArgument.java
 /YalTreeConstants.java
 /JJTYalState.java
+/ASTId.java
+/ASTString.java
+/ASTInteger.java

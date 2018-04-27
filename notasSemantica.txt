@@ -9,3 +9,5 @@ while( 1 < 2){
 }
 
 a = i;
+
+podem haver dois parâmetros iguais numa função?

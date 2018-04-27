@@ -1,15 +1,19 @@
+package semantic;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import semantic.Symbol.Type;
+
 import java.util.Vector;
 
 import utils.Pair;
 
-public class SymbolTable {
+public class SymbolTable extends Table {
 	
-	private HashMap<String, Symbol> symbols;
+	//private HashMap<String, Symbol> symbols;
 	//private Vector<Pair > symbolsVector;
 	private SymbolTable parent;
 
@@ -23,43 +27,7 @@ public class SymbolTable {
 		return parent;
 	}
 	
-	public boolean containsSymbolName(String symbolName) {
-		return symbols.containsKey(symbolName);
-	}
 	
-	public boolean containsSymbol(String symbolName, boolean checkInitialized, Symbol.Type... types) {
-		Symbol symbol = symbols.get(symbolName);
-		
-		if(symbol != null) {
-			Symbol.Type symbolType = symbol.getType();
-
-			if(Arrays.asList(types).contains(symbolType)) {
-				if(checkInitialized)
-					if(!symbols.get(symbolName).getInitialized())
-						return false;
-			
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	public boolean addSymbol(String symbolName, Symbol.Type type, boolean initialized) {
-		Symbol symbol = new Symbol(type, initialized);
-
-		if(!symbols.containsKey(symbolName)) {			
-			symbols.put(symbolName, symbol);
-			//symbolsVector.add(new Pair(symbolName, type));
-			return true;
-		}
-		else if(symbols.get(symbolName).getType().equals(type)) {
-			symbols.put(symbolName, symbol);
-			return true;
-		}
-		else
-			return false;
-	}
 	
 	/**
 	* If checkInitialized equals true, this function checks if a variable symbolName has been initialized to one of types
@@ -121,7 +89,8 @@ public class SymbolTable {
 			String symbolName = pair.getKey();
 			Symbol symbol = pair.getValue();
 			
-			System.out.println(prefix+symbolName+": "+symbol.getType());
+			if(symbol.getPrint())
+				System.out.println(prefix+symbolName+": "+symbol.getType());
 		}
 		/*for(Pair pair : symbolsVector) {
 			String symbolName = (String) pair.getKey();
