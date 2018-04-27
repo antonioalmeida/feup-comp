@@ -11,7 +11,10 @@ module test { //ok
 		x1 = x3; //ok
 		x3 = x2; //ok
 
-		x3 = x1 + 1;
+		x3 = x1 + 1; //ok
+
+		x3 = x2[1]; //ok
+		x3 = x2[x]; //ok
 
 	}
 }
