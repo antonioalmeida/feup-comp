@@ -1,7 +1,7 @@
 package semantic;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Vector;
 
 import utils.Pair;
 
@@ -9,17 +9,35 @@ public class FunctionsTable /*extends Table*/ {
 	
 	protected HashMap<FunctionSignature, FunctionSymbol> functions;
 	
-	/*public boolean initializeFunction(String functionName, Symbol.Type type, String returnVariable) {
-		if(containsSymbolName(functionName))
+	public FunctionsTable() {
+		functions = new HashMap<FunctionSignature, FunctionSymbol>();
+	}
+	
+	public Symbol.Type getFunctionReturnType(String name, Vector<Symbol.Type> arguments) {
+		if(functions.containsKey(new FunctionSignature(name, arguments, Symbol.Type.SCALAR)))
+			return Symbol.Type.SCALAR;
+		else if(functions.containsKey(new FunctionSignature(name, arguments, Symbol.Type.ARRAY)))
+			return Symbol.Type.ARRAY;
+		else if(functions.containsKey(new FunctionSignature(name, arguments, Symbol.Type.VOID)))
+			return Symbol.Type.VOID;
+		else 
+			return Symbol.Type.UNDEFINED;
+	}
+	public boolean initializeFunction(String name, Vector<Symbol.Type> argumentTypes, 
+			Vector<Pair> parameters, Symbol.Type returnType, String returnValue) {
+		if(getFunctionReturnType(name, argumentTypes).equals(returnType))
 			return false;
 		else {
-			symbols.put(functionName, new FunctionSymbol(type, false, true, returnVariable));
+			
+			
+			functions.put(new FunctionSignature(name, argumentTypes, returnType), 
+					new FunctionSymbol(returnType, returnValue, parameters));
 			return true;
 		}
 			
 	}
 	
-	public boolean addParameter(String functionName, String parameter, Symbol.Type parameterType) {
+	/*public boolean addParameter(String functionName, String parameter, Symbol.Type parameterType) {
 		if(! containsSymbolName(functionName))
 			return false;
 		return true;
