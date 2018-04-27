@@ -11,41 +11,32 @@ public class CodeGenerator {
 
 	public CodeGenerator(SimpleNode root, String filename) throws IOException {
 		this.root = (SimpleNode) root.children[0];
-		// this.filename=filename;
+
 		FileWriter fw = new FileWriter(filename, false);
 		BufferedWriter bw = new BufferedWriter(fw);
-		this.out = new PrintWriter(bw);
 
+		this.out = new PrintWriter(bw);
 	}
 
 	public void generateCode() {
-
 		generateHeader();
 		generateGlobals(root);
 		generateStatic();
 		generateFunctions();
 		out.close();
-
 	}
 
 	private void generateHeader() {
-
 		out.println(".class public " + root.value);
 		out.println(".super java/lang/Object" + "\n");
-
 	}
 
 	private void generateGlobals(SimpleNode node) {
-
-		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+		for (int i = 0; i < node.jjtGetNumChildren(); i++)
 			generateGlobals((SimpleNode) node.jjtGetChild(i));
-		}
 
-		if (node.id == YalTreeConstants.JJTDECLARATION) {
+		if (node.id == YalTreeConstants.JJTDECLARATION)
 			generateDeclaration(node);
-
-		}
-
 	}
 
 	private void generateStatic() {
@@ -56,12 +47,10 @@ public class CodeGenerator {
 	private void generateFunctions() {
 		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
 			SimpleNode childRoot = (SimpleNode) root.jjtGetChild(i);
-			if (childRoot.id == YalTreeConstants.JJTFUNCTION) {
+
+			if (childRoot.id == YalTreeConstants.JJTFUNCTION)
 				generateFunction(childRoot);
-
-			}
 		}
-
 	}
 
 	private void generateFunctionHeader(SimpleNode functionNode) {
@@ -76,12 +65,12 @@ public class CodeGenerator {
 
 				for (int i = 0; i < childFunction.jjtGetNumChildren(); i++)
 					out.print("I");
+
 				out.println(")V");
-			} else
+			} 
+			else
 				out.println("()V");
-
 		}
-
 	}
 
 	private void generateFunctionMainHeader(SimpleNode functionNode) {
@@ -104,15 +93,16 @@ public class CodeGenerator {
 				for (int i = 0; i < childFunction.jjtGetNumChildren(); i++)
 					out.print("I");
 				out.println(")I");
-			} else
+			} 
+			else
 				out.println("()I");
-
 		}
 
 	}
 
 	private void generateFunction(SimpleNode functionNode) {
 		out.println();
+
 		if (functionNode.value.equals("main"))
 			generateFunctionMainHeader(functionNode);
 		else if (functionNode.jjtGetNumChildren() >= 2
@@ -136,36 +126,35 @@ public class CodeGenerator {
 				out.println("ireturn");
 			else
 				out.println("areturn");
-		} else
+		} 
+		else
 			out.println("return");
 
 		out.println(".end method");
 		out.println();
-
 	}
 
 	private void generateBody(SimpleNode functionNode) {
 		for (int i = 0; i < functionNode.jjtGetNumChildren(); i++) {
 			SimpleNode functionChild = (SimpleNode) functionNode.jjtGetChild(i);
+
 			switch (functionChild.id) {
-			case YalTreeConstants.JJTCALL:
-				generateCall(functionChild);
-				break;
-
-			case YalTreeConstants.JJTASSIGN:
-				generateAssign(functionChild);
-				break;
-			case YalTreeConstants.JJTWHILE:
-
-				break;
-			case YalTreeConstants.JJTIF:
-
-				break;
-			default:
-				break;
+				case YalTreeConstants.JJTCALL:
+					generateCall(functionChild);
+					break;
+				case YalTreeConstants.JJTASSIGN:
+					generateAssign(functionChild);
+					break;
+				case YalTreeConstants.JJTWHILE:
+					//generateWhile();
+					break;
+				case YalTreeConstants.JJTIF:
+					//generateIf();
+					break;
+				default:
+					break;
 			}
 		}
-
 	}
 	
 	private void generateCall(SimpleNode functionChild) {
@@ -176,9 +165,10 @@ public class CodeGenerator {
 
 		out.print(")");
 		
-		if(((SimpleNode)functionChild.parent).id==YalTreeConstants.JJTTERM)
+		if(((SimpleNode)functionChild.parent).id == YalTreeConstants.JJTTERM)
 			out.print("I");
-		else out.print("V");
+		else 
+			out.print("V");
 
 		out.println();
 	}
@@ -191,7 +181,10 @@ public class CodeGenerator {
 		SimpleNode rhs = (SimpleNode) node.jjtGetChild(1);
 		out.print(rhs.generateCode());
 
-		//TODO: right now always assuming ArrayAccess and ScalarAccess are from static fields
+		//TODO: right now always assuming 
+		//ArrayAccess and ScalarAccess are 
+		// from static fields, need to cover
+		// local variables aswell
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
 		out.println("putstatic " + lhs.value + " I");
 
@@ -199,16 +192,16 @@ public class CodeGenerator {
 	}
 
 	private void generateDeclaration(SimpleNode node) {
-
 		SimpleNode scalarElement = (SimpleNode) node.children[0];
 		// out.println(".field static "+ scalarElement.value + " I" );
 
 		if (node.children.length == 2) {
 			SimpleNode assignedElement = (SimpleNode) node.children[1];
+			
 			if (assignedElement.id == YalTreeConstants.JJTSCALARASSIGNED)
 				out.println(".field static " + scalarElement.value + " I = " + assignedElement.value);
-		} else
+		} 
+		else
 			out.println(".field static " + scalarElement.value + " I");
-
 	}
 }

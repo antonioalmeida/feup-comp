@@ -2,17 +2,17 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTArrayAssigned extends SimpleNode {
-  public ASTArrayAssigned(int id) {
-    super(id);
-  }
+    public ASTArrayAssigned(int id) {
+        super(id);
+    }
 
-  public ASTArrayAssigned(Yal p, int id) {
-    super(p, id);
-  }
+    public ASTArrayAssigned(Yal p, int id) {
+        super(p, id);
+    }
 
-  public Symbol.Type getReturnType() {
-  	return Symbol.Type.ARRAY;	
-  }
+    public Symbol.Type getReturnType() {
+        return Symbol.Type.ARRAY;   
+    }
 
 }
 /* JavaCC - OriginalChecksum=c68a8e83588d152e06148d471857fc02 (do not edit this line) */

@@ -4,7 +4,6 @@ public
 class ASTTerm extends SimpleNode {
     protected String sign = null;
 
-
     public ASTTerm(int id) {
         super(id);
     }
@@ -27,13 +26,13 @@ class ASTTerm extends SimpleNode {
     	
     	if(children != null && children.length > 0) {
     		SimpleNode child = (SimpleNode) children[0];
+
     		if(child.toString().equals("ScalarAccess")) {
-    			if(! verifySymbolTypes(child.value, true, Symbol.Type.SCALAR, Symbol.Type.ARRAY)) {
-    				System.out.println("Semantic Error: "+child.value +" should have been initialized");
+    			if(!verifySymbolTypes(child.value, true, Symbol.Type.SCALAR, Symbol.Type.ARRAY)) {
+    				System.out.println("Semantic Error: " + child.value + " should have been initialized");
     				return false;
     			}
     		}
-    		
     		else if(child.toString().equals("Call")) {
     			//TODO Check that call returns a scalar
     		}
@@ -48,6 +47,7 @@ class ASTTerm extends SimpleNode {
         // when Term -> <INTEGER>
         if(children == null)
             generatedCode = "iload " + this.value + "\n";
+        //TODO: add remaining cases
 
         return generatedCode;
     }

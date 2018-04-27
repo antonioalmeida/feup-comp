@@ -2,31 +2,28 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTFunction extends SimpleNode {
-  public ASTFunction(int id) {
-    super(id, true);
-  }
+	public ASTFunction(int id) {
+		super(id, true);
+	}
 
-  public ASTFunction(Yal p, int id) {
-    super(p, id, true);
-  }
+	public ASTFunction(Yal p, int id) {
+		super(p, id, true);
+	}
 
-  public void analyseHeader() {
-  	System.out.println("Analysing Header " + toString(""));
+	public void analyseHeader() {
+		System.out.println("Analysing Header " + toString(""));
 
-  	//TODO: add header analysing logic
-  }
-
-  
+	  	//TODO: add header analysing logic
+	}
   
 	public String generateCode() {
 		String generatedCode = "";
-		generatedCode += ".method public static " + this.value;
+		generatedCode += ".method public static " + this.value + "\n";
 		
 		if(this.value.equals("main"))
 			generatedCode += "([Ljava/lang/String;)V\n";
 		//else 
 		//generatedCode += "Ljava/lang/String;)V";
-			
 
 		if (children != null) {
 			for (int i = 0; i < children.length; ++i) {

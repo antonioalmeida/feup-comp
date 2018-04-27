@@ -2,32 +2,31 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTCall extends SimpleNode {
-  protected String type = null;
+	protected String type = null;
 
-  public ASTCall(int id) {
-    super(id);
-  }
+	public ASTCall(int id) {
+		super(id);
+	}
 
-  public ASTCall(Yal p, int id) {
-    super(p, id);
-  }
-  
-  
-  public void set_type(String type){
-  	this.type = type;
-  }
-  
-  public String toString(String prefix) { 
-  	String node = prefix + toString();
+	public ASTCall(Yal p, int id) {
+		super(p, id);
+	}
 	
+	
+	public void set_type(String type){
+		this.type = type;
+	}
+	
+	public String toString(String prefix) { 
+		String node = prefix + toString();
 
-	if (this.type != null)
-		node += " [" + this.value + "." + this.type + "]";
-	else node += " [" + this.value + "]";
-
-    	 	
-  	return node; 
-  }
+		if (this.type != null)
+			node += " [" + this.value + "." + this.type + "]";
+		else 
+			node += " [" + this.value + "]";
+					
+		return node; 
+	}
 
 }
 /* JavaCC - OriginalChecksum=55d810e8e5bdaec6dc4563eb620a4c34 (do not edit this line) */

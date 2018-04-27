@@ -10,13 +10,6 @@ class ASTAssign extends SimpleNode {
         super(p, id);
     }
 
-    /*public boolean analyse() {
-        System.out.println("Analysing " + toString(""));
-        symbolTable = getAssignedSymbolTable();
-
-        return analyseSymbolTable();
-    }*/
-
     public boolean analyseSymbolTable() {
         if(children == null)
             return false;
@@ -24,49 +17,44 @@ class ASTAssign extends SimpleNode {
         // lhs
         SimpleNode lhsChild = (SimpleNode) children[0];
         
-        if(lhsChild.getSizeArray() == true) {
+        if(lhsChild.getSizeArray()) {
         	System.out.println("Semantic Error: Can't assign the size of array "+lhsChild.value);
         	return false;
         }
-      
         Symbol.Type lhsType = lhsChild.getReturnType();
         
 
         // rhs
         SimpleNode rhsChild = (SimpleNode) children[1];
-        
         Symbol.Type rhsType = rhsChild.getReturnType();
 
-        
         String lhsSymbol = (String) lhsChild.jjtGetValue();
-        
         String rhsSymbol = (String) rhsChild.jjtGetValue();
         
         if(rhsType.equals(Symbol.Type.ARRAY)) {
-        	if(! initializeSymbol(lhsSymbol, Symbol.Type.ARRAY, true)) {
-        		System.out.println("Semantic Error: "+lhsSymbol+ " has been declared as a scalar and now it has tried to be assigned to an array");
+        	if(!initializeSymbol(lhsSymbol, Symbol.Type.ARRAY, true)) {
+        		System.out.println("Semantic Error: " + lhsSymbol + " has been declared as a scalar, reassigned as an array");
         		return false;
         	}
-        	else
-        		return true;
+
+            return true;
         }
         else if(lhsChild.toString().equals("ArrayAccess"))
         	return true;
         else {
         	Symbol.Type type = Symbol.Type.SCALAR;
         	if(lhsType.equals(Symbol.Type.ARRAY))
-        		type = Symbol.Type.ARRAY;
+        	   type = Symbol.Type.ARRAY;
+            
         	initializeSymbol(lhsSymbol, type, true);
         }
 
         return true;
     }
 
-      public Symbol.Type getReturnType() {
+    public Symbol.Type getReturnType() {
         return Symbol.Type.VOID;  
     }
-
-
 
 }
 /* JavaCC - OriginalChecksum=8a81cbd863c4645c551a38479e4343a7 (do not edit this line) */

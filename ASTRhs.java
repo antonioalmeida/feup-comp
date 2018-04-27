@@ -2,7 +2,6 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTRhs extends SimpleNode {
-    
 
     public ASTRhs(int id) {
         super(id);
@@ -18,7 +17,6 @@ class ASTRhs extends SimpleNode {
 
         // Term OP Term
         if(children.length > 1) {
-            //TODO: add analyse on lhs and rhs before getting return type
             Symbol.Type lhsType = ((SimpleNode) children[0]).getReturnType();
             Symbol.Type rhsType = ((SimpleNode) children[1]).getReturnType();
 
@@ -30,9 +28,6 @@ class ASTRhs extends SimpleNode {
                 System.out.println("Semantic error: " + ((SimpleNode) children[1]).getRealValue() + " is of type " + rhsType + ", which is not allowed here ");
                 return false;
              }
-           
-
-           
         }
 
         return true;
@@ -42,8 +37,6 @@ class ASTRhs extends SimpleNode {
     	Symbol.Type lhsType = ((SimpleNode) children[0]).getReturnType();      
         return lhsType;
     }
-    
-    
 
     public String generateCode() {
         String generatedCode = "";

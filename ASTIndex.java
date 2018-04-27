@@ -2,23 +2,24 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTIndex extends SimpleNode {
-  public ASTIndex(int id) {
-    super(id);
-  }
+    public ASTIndex(int id) {
+        super(id);
+    }
 
-  public ASTIndex(Yal p, int id) {
-    super(p, id);
-  }
+    public ASTIndex(Yal p, int id) {
+        super(p, id);
+    }
  
-  public boolean analyseSymbolTable() {
-	  System.out.println("Analyzing Index");
-	  if(! Utils.isInteger(this.value))
-		  if(verifySymbolTypes(this.value, true, Symbol.Type.SCALAR ) == false) {
-			  System.out.println("Semantic Error: Index of an array " + this.value + " should have been initialized to a scalar");
-		  	return false;
-		  }
-	  return true;
-  }
+    public boolean analyseSymbolTable() {
+        System.out.println("Analyzing Index");
+        if(!Utils.isInteger(this.value))
+            if(!verifySymbolTypes(this.value, true, Symbol.Type.SCALAR)) {
+                System.out.println("Semantic Error: Index of an array " + this.value + " should have been initialized to a scalar");
+                return false;
+            }
+            
+        return true;
+    }
 
 }
 /* JavaCC - OriginalChecksum=c8a78f8c8f68646756fd3e8467b076ca (do not edit this line) */

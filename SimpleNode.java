@@ -3,221 +3,210 @@
 public
 class SimpleNode implements Node {
 
-  protected Node parent;
-  protected Node[] children;
-  protected int id;
-  protected String value;
-  protected Yal parser;
-  protected SymbolTable symbolTable;
-  protected boolean hasScope;
-  
-  public SimpleNode(int i) {
-	  	this.value = "";
-	    this.hasScope = false;
-	    id = i;
-  }
-  
-   
-  public SimpleNode(Yal p, int i) {
-	    this(i);
-	    parser = p;
-  }
-  
-  public SimpleNode(int i, boolean hasScope) {
-	this.value = "";
-	this.hasScope = hasScope;
-    id = i;
-  }
-
-  public SimpleNode(Yal p, int i, boolean hasScope) {
-    this(i, hasScope);
-    parser = p;
-  }
-
-  public SymbolTable getAssignedSymbolTable() {
-	  if(parent == null) {
-		 //System.out.println("b1null: "+toString());
-		 return null;
-	  }
-	  else if(hasScope) {
-		  //System.out.println("b1HasScope: "+toString());
-		  return new SymbolTable(parent.getSymbolTable());
-	  }
-	  else {
-		 //System.out.println("b1notParentnotHasScope: "+toString());
-		 return ((SimpleNode) parent).getSymbolTable();
-	  }
-  }
-  
-  public void jjtOpen() {
-
-  }
-
-  public void jjtClose() {
-  }
-
-  public void jjtSetParent(Node n) { parent = n; }
-  public Node jjtGetParent() { return parent; }
-
-  public void jjtAddChild(Node n, int i) {
-    if (children == null) {
-      children = new Node[i + 1];
-    } else if (i >= children.length) {
-      Node c[] = new Node[i + 1];
-      System.arraycopy(children, 0, c, 0, children.length);
-      children = c;
-    }
-    children[i] = n;
-  }
-
-  public Node jjtGetChild(int i) {
-    return children[i];
-  }
-
-  public int jjtGetNumChildren() {
-    return (children == null) ? 0 : children.length;
-  }
-
-  public void jjtAddValue(String value) { this.value = this.value + value; }
-  public Object jjtGetValue() { return value; }
-
-  /* You can override these two methods in subclasses of SimpleNode to
-     customize the way the node appears when the tree is dumped.  If
-     your output uses more than one line you should override
-     toString(String), otherwise overriding toString() is probably all
-     you need to do. */
-
-  public String toString() {
-    return YalTreeConstants.jjtNodeName[id]; 
-  }
-  
-  public String toString(String prefix) {
-	
-  	String node = prefix + toString();
-	
-	if (this.value != "")
-		node += " [" + this.value + "]";
-    	 	
-  	return node; 
-  }
-
-  /* Override this method if you want to customize how the node dumps
-     out its children. */
-
-  public void dump(String prefix) {
-    System.out.println(toString(prefix));
+    protected Node parent;
+    protected Node[] children;
+    protected int id;
+    protected String value;
+    protected Yal parser;
+    protected SymbolTable symbolTable;
+    protected boolean hasScope;
     
-    if (children != null) {
-      for (int i = 0; i < children.length; ++i) {
-        SimpleNode n = (SimpleNode)children[i];
-        if (n != null) {
-          n.dump(prefix + "   ");
+    public SimpleNode(int i) {
+            this.value = "";
+            this.hasScope = false;
+            id = i;
+    }
+     
+    public SimpleNode(Yal p, int i) {
+            this(i);
+            parser = p;
+    }
+    
+    public SimpleNode(int i, boolean hasScope) {
+    this.value = "";
+    this.hasScope = hasScope;
+        id = i;
+    }
+
+    public SimpleNode(Yal p, int i, boolean hasScope) {
+        this(i, hasScope);
+        parser = p;
+    }
+
+    public SymbolTable getAssignedSymbolTable() {
+        if(parent == null)
+            return null;
+        else if(hasScope)
+            return new SymbolTable(parent.getSymbolTable());
+        else
+            return ((SimpleNode) parent).getSymbolTable();
+    }
+    
+    public void jjtOpen() {}
+
+    public void jjtClose() {}
+
+    public void jjtSetParent(Node n) { parent = n; }
+
+    public Node jjtGetParent() { return parent; }
+
+    public void jjtAddChild(Node n, int i) {
+        if (children == null)
+            children = new Node[i + 1]; 
+        else if (i >= children.length) {
+            Node c[] = new Node[i + 1];
+
+            System.arraycopy(children, 0, c, 0, children.length);
+            children = c;
         }
-      }
+
+        children[i] = n;
+    }
+
+    public Node jjtGetChild(int i) {
+        return children[i];
+    }
+
+    public int jjtGetNumChildren() {
+        return (children == null) ? 0 : children.length;
+    }
+
+    public void jjtAddValue(String value) { this.value = this.value + value; }
+
+    public Object jjtGetValue() { return value; }
+
+    /* You can override these two methods in subclasses of SimpleNode to
+         customize the way the node appears when the tree is dumped.  If
+         your output uses more than one line you should override
+         toString(String), otherwise overriding toString() is probably all
+         you need to do. */
+
+    public String toString() {
+        return YalTreeConstants.jjtNodeName[id]; 
     }
     
-  }
-
-	public String generateCode() {
-		String generatedCode = "";
-
-		if (children != null) {
-			for (int i = 0; i < children.length; ++i) {
-				SimpleNode n = (SimpleNode) children[i];
-				if (n != null) {
-					generatedCode += n.generateCode();
-				}
-			}
-		}
-
-		return generatedCode;
-
-	}
-  
-  
-  /**
-   * If checkInitialized equals true, this function checks if a variable symbolName has been initialized to one of types
-   * If checkInitialized equals false, this function checks if a variable symbolName has not been initialized to any type different from types
-   */
-  public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types ) {
-		return symbolTable.verifySymbolTypes(symbolName, checkInitialized, types);
-  }
-  
-
-  public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized) {
-	   	   return symbolTable.initializeSymbol(symbolName, type, initialized);
-    }
-  
-  public int getId() {
-    return id;
-  }
-  
- 
-  
-  public SymbolTable getSymbolTable() {
-    return symbolTable;
-  }
-  
-  public boolean analyseSymbolTable() {
-	  return true;
-  }
-  
-  public boolean analyse() {
-    symbolTable = getAssignedSymbolTable();
-	boolean result = true;
+    public String toString(String prefix) {
+        String node = prefix + toString();
     
-	
-		//System.out.println("Analysing " + toString(""));
+        if(this.value != "")
+            node += " [" + this.value + "]";
 
-    /*if(children == null)
-     return false;*/ 
-    if(children != null) {
-    	for(Node child : children) {
-    		if(!child.analyse())
-    			result = false;
-    	}
+        return node; 
+    }
+
+    /* Override this method if you want to customize how the node dumps
+         out its children. */
+
+    public void dump(String prefix) {
+        System.out.println(toString(prefix));
+        
+        if(children != null) {
+            /*
+            for (int i = 0; i < children.length; ++i) {
+                SimpleNode n = (SimpleNode)children[i];
+                if (n != null) {
+                    n.dump(prefix + "   ");
+                }
+            }
+            */
+
+            for(Node child : children)
+                if(child != null)
+                    ((SimpleNode ) child).dump(prefix + "   ");
+        }
+    }
+
+    public String generateCode() {
+        String generatedCode = "";
+
+        if (children != null) {
+            for(int i = 0; i < children.length; ++i) {
+                SimpleNode n = (SimpleNode) children[i];
+
+                if(n != null) {
+                    generatedCode += n.generateCode();
+                }
+            }
+        }
+
+        return generatedCode;
     }
     
-    if(!analyseSymbolTable())
-		result = false;
+    /**
+     * If checkInitialized equals true, this function checks if a variable symbolName has been initialized to one of types
+     * If checkInitialized equals false, this function checks if a variable symbolName has not been initialized to any type different from types
+     */
+    public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types ) {
+        return symbolTable.verifySymbolTypes(symbolName, checkInitialized, types);
+    }
 
-    return result;
-  }
+    public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized) {
+        return symbolTable.initializeSymbol(symbolName, type, initialized);
+    }
+    
+    public int getId() {
+        return id;
+    }
+    
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+    
+    public boolean analyseSymbolTable() {
+        return true;
+    }
+    
+    public boolean analyse() {
+        symbolTable = getAssignedSymbolTable();
+        boolean result = true;
+    
+        if(children != null) {
+            for(Node child : children) {
+                if(!child.analyse())
+                    result = false;
+            }
+        }
+        
+        if(!analyseSymbolTable())
+            result = false;
 
-  //public void printSymbolTableScope(String prefix)
-  
-  public void printSymbolTable(String prefix) {
-	  if(hasScope) {
-		  System.out.println(toString(prefix+"@"));
-		  symbolTable.printSymbols(prefix+"   ");
-  	  }
-	    if (children != null) {
-	      for (int i = 0; i < children.length; ++i) {
-	        SimpleNode n = (SimpleNode)children[i];
-	        if (n != null) {
-	          n.printSymbolTable(prefix + "");
-	        }
-	      }
-	    }
-	  
-  }
-  
+        return result;
+    }
+
+    //public void printSymbolTableScope(String prefix)
+    
+    public void printSymbolTable(String prefix) {
+        if(hasScope) {
+            System.out.println(toString(prefix+"@"));
+            symbolTable.printSymbols(prefix+"   ");
+        }
+
+        if (children != null) {
+            for (int i = 0; i < children.length; ++i) {
+                SimpleNode n = (SimpleNode)children[i];
+                if (n != null) {
+                    n.printSymbolTable(prefix + "");
+                }
+            }
+        }
+    }
+    
     public Symbol.Type getReturnType() {
-        //TODO: is this the best default?
         return Symbol.Type.VOID;
     }
-    
+        
     public boolean getSizeArray() {
-    	return false;
+        return false;
     }
-    
+        
     public String getRealValue() {
-    	if(value.equals(""))
-    		if(children != null && children.length > 0)
-    			return ((SimpleNode) children[0]).getRealValue();
-    			
-    	return value;
+        if(value.equals(""))
+            if(children != null && children.length > 0)
+                return ((SimpleNode) children[0]).getRealValue();
+                
+        return value;
     }
+
 }
 
 /* JavaCC - OriginalChecksum=a536ad506ca058676615e1a3304534ab (do not edit this line) */

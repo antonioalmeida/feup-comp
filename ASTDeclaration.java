@@ -22,7 +22,9 @@ class ASTDeclaration extends SimpleNode {
         Symbol.Type type = typeLeftChild;
         boolean initialized = false;
 
-        // This boolean will be set to true if declaration is of the form a = 2;
+        // This boolean will be set to 
+        // true if declaration is of the 
+        // form LHS = RHS;
         boolean scalarInitialization = false; 
 
         if(children.length > 1) {
@@ -52,15 +54,8 @@ class ASTDeclaration extends SimpleNode {
     }
 
     public Symbol.Type getReturnType() {
-        /*if(toString().equals("ScalarElement") || toString().equals("ScalarAssigned"))
-            return Symbol.Type.SCALAR;
-        else if(toString().equals("ArrayElement") || toString().equals("ArrayAssigned"))
-            return Symbol.Type.ARRAY;
-
-        return null;*/
     	return Symbol.Type.VOID;
     }
-    
     
    	public String generateCode() {
    		String generatedCode = "";
