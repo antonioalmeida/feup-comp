@@ -13,9 +13,17 @@ public class FunctionSymbol extends Symbol{
 		returnVariable = "";
 	}
 	
-	public FunctionSymbol(Type type, boolean initialized, boolean print, String returnVariable) {
+	public FunctionSymbol(Type type, boolean initialized, boolean print, 
+			String returnVariable) {
 		super(type, initialized, print);
 		parameters = new Vector<Pair>();
+		this.returnVariable = returnVariable;
+	}
+	
+	public FunctionSymbol(Type type, boolean initialized, boolean print, 
+			String returnVariable, Vector<Pair> parameters) {
+		super(type, initialized, print);
+		this.parameters = parameters;
 		this.returnVariable = returnVariable;
 	}
 	
