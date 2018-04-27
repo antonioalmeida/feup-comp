@@ -159,6 +159,29 @@ public class CodeGenerator {
 		}
 	}
 	
+	private void loadString(String string){
+		out.println("ldc " + string);
+	}
+	
+	private void loadInt(String valueToLoad){
+		int value = Integer.parseInt(valueToLoad);
+		if ((value >= 0) && (value < 6)) {
+			out.println("iconst_" + value);
+		} else if (value == -1)
+			out.println("iconst_m1");
+		else
+			out.println("bipush " + value);
+	}
+	
+	private void loadGlobalVar(String varName) {
+		out.print("getstatic " + root.value + "/" + varName);
+
+		if (root.symbolTable.getSymbolType(varName) == Symbol.Type.SCALAR)
+			out.println(" I");
+		else
+			out.println(" [I");
+	}
+	
 	private void generateCallArgs(SimpleNode functionChild){
 		
 		for (int i = 0; i < functionChild.jjtGetNumChildren(); i++) {
@@ -166,25 +189,14 @@ public class CodeGenerator {
 			SimpleNode typeArgument = (SimpleNode) argument.jjtGetChild(0);
 
 			if (typeArgument.id == YalTreeConstants.JJTSTRING)
-				out.println("ldc " + argument.value);
+				loadString(argument.value);
 			else if (typeArgument.id == YalTreeConstants.JJTINTEGER) {
-				int value = Integer.parseInt(argument.value);
-				if ((value >= 0) && (value < 6)) {
-					out.println("iconst_" + argument.value);
-				} else if (value == -1)
-					out.println("iconst_m1");
-				else
-					out.println("bipush " + argument.value);
+				loadInt(argument.value);
 			} else {
 				if(root.symbolTable.containsSymbolName(argument.value)){
-					out.print("getstatic " + root.value + "/" + argument.value);
-					
-					if (root.symbolTable.getSymbolType(argument.value) == Symbol.Type.SCALAR)
-						out.println(" I");
-					else 
-						out.println(" [I");
+					loadGlobalVar(argument.value);
 				}
-				//else if(argument da funcao for variavel ou parâmetro
+				//TODO else if for local variables and parameters
 				
 			}
 
@@ -226,6 +238,89 @@ public class CodeGenerator {
 		out.println();
 		out.println();
 	}
+	
+	private void generateOperation(SimpleNode rhs) {
+		String operation = rhs.value;
+
+		switch (operation) {
+		case "+":
+			out.println("iadd");
+			break;
+		case "-":
+			out.println("isub");
+			break;
+		case "*":
+			out.println("imul");
+			break;
+		case "/":
+			out.println("idiv");
+			break;
+		case "<<":
+			out.println("ishl");
+			break;
+		case ">>":
+			out.println("ishr");
+			break;
+		case ">>>":
+			out.println("iushr");
+			break;
+		case "&":
+			out.println("iand");
+			break;
+		case "|":
+			out.println("ior");
+			break;
+		case "^":
+			out.println("ixor");
+			break;
+		default:
+			break;
+		}
+
+	}
+	
+	
+	private void generateRHS(SimpleNode rhs) {
+
+		for (int i = 0; i < rhs.jjtGetNumChildren(); i++) {
+
+			SimpleNode term = (SimpleNode) rhs.jjtGetChild(i);
+			SimpleNode termChild = (SimpleNode) term.jjtGetChild(0);
+
+			boolean isPositive = true;
+			if (term.value != null)
+				isPositive = false;
+
+			switch (termChild.id) {
+			case (YalTreeConstants.JJTINTEGER):
+				loadInt(termChild.value);
+				break;
+			case (YalTreeConstants.JJTSCALARACCESS):
+				if(root.symbolTable.containsSymbolName(termChild.value)){
+					loadGlobalVar(termChild.value);
+				}
+			
+			
+				//TODO else if for local variables and parameters
+			
+				//TODO .size
+				break;
+			case (YalTreeConstants.JJTCALL):
+				generateCall(termChild);
+				break;
+			default:
+				break;
+
+			}
+			
+		}
+		
+		if (rhs.jjtGetNumChildren() == 2){
+			generateOperation(rhs);
+		}
+		
+		
+	}
 
 	private void generateAssign(SimpleNode node) {
 		// Assign -> Lhs = Rhs
@@ -233,8 +328,23 @@ public class CodeGenerator {
 		// Term -> OP? ( INT | Call | ArrayAccess | ScalarAccess )
 
 		SimpleNode rhs = (SimpleNode) node.jjtGetChild(1);
-		out.print(rhs.generateCode());
+		generateRHS(rhs);
+		
+		
+		
+		
+		
+		
+		
+		
+		//out.print(rhs.generateCode());
 
+		
+		
+		
+		
+		
+		
 		//TODO: right now always assuming 
 		//ArrayAccess and ScalarAccess are 
 		// from static fields, need to cover
@@ -243,6 +353,18 @@ public class CodeGenerator {
 		out.println("putstatic " + lhs.value + " I");
 
 		out.println("");
+		
+		
+		
+		if(root.symbolTable.containsSymbolName(lhs.value)){
+			out.print("putstatic " + root.value + "/" + lhs.value);
+			
+			if (root.symbolTable.getSymbolType(lhs.value) == Symbol.Type.SCALAR)
+				out.println(" I");
+			else 
+				out.println(" [I");
+		}
+		//TODO else if for local variables and parameters
 	}
 
 	private void generateDeclaration(SimpleNode node) {

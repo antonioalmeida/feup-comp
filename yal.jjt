@@ -528,7 +528,7 @@ void Term() :
 {
   (t2=< ADDSUB_OP >{jjtThis.jjtAddValue(t2.image);})?
   (
-    t=< INTEGER >{jjtThis.jjtAddValue(t.image); }
+    t=< INTEGER >{jjtThis.jjtAddValue(t.image); }#Integer
   |
     ( 
       t = < ID > 
