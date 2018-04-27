@@ -40,4 +40,9 @@ public class FunctionSymbol extends Symbol{
 		else
 			return false;
 	}
+	
+	public void printSymbol(String prefix) {
+		System.out.println(prefix+"@params");
+		
+	}
 }
