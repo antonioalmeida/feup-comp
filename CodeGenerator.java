@@ -160,14 +160,25 @@ public class CodeGenerator {
 	private void generateCall(SimpleNode functionChild) {
 		out.print("invokestatic " + functionChild.value + "(");
 
-		for (int i = 0; i < functionChild.jjtGetNumChildren(); i++)
-			out.print("I");
+		for (int i = 0; i < functionChild.jjtGetNumChildren(); i++) {
+			SimpleNode argument = (SimpleNode) functionChild.jjtGetChild(i);
+			SimpleNode typeArgument = (SimpleNode) argument.jjtGetChild(0);
+
+			if (typeArgument.id == YalTreeConstants.JJTSTRING)
+				out.print("Ljava/lang/String");
+			else
+				out.print("I");
+
+			if (i + 1 != functionChild.jjtGetNumChildren())
+				out.print(";");
+
+		}
 
 		out.print(")");
-		
-		if(((SimpleNode)functionChild.parent).id == YalTreeConstants.JJTTERM)
+
+		if (((SimpleNode) functionChild.parent).id == YalTreeConstants.JJTTERM)
 			out.print("I");
-		else 
+		else
 			out.print("V");
 
 		out.println();

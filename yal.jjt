@@ -433,10 +433,10 @@ void Stmt() #void: { Token t; }
 }
 
 void NoPointAssignCallVirg(String id) #void:
-{}
+{Token t;}
 {
   (
-    < ID > CallVirg(id)) | (< SIZE > AssignNoPoint(id, true))
+    t=< ID > CallVirg(id+"/"+t.image)) | (< SIZE > AssignNoPoint(id, true))
 }
 
 void Assign() :
@@ -658,9 +658,9 @@ void Argument() :
 {Token t;}
 {
   (
-    t=< ID >
-  | t=< STRING > 
-  | t=< INTEGER > 
+    t=< ID > #Id
+  | t=< STRING >  #String 
+  | t=< INTEGER > #Integer
   )
   {jjtThis.jjtAddValue(t.image);}
 }
