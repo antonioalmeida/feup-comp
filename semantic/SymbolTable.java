@@ -11,11 +11,12 @@ import java.util.Vector;
 
 import utils.Pair;
 
-public class SymbolTable extends Table {
+public class SymbolTable {
 	
 	//private HashMap<String, Symbol> symbols;
 	//private Vector<Pair > symbolsVector;
 	private SymbolTable parent;
+	protected HashMap<String, Symbol> symbols;
 
 	public SymbolTable(SymbolTable parent) {
 		this.parent = parent;
@@ -27,28 +28,68 @@ public class SymbolTable extends Table {
 		return parent;
 	}
 	
+
+	
+	public boolean containsSymbolName(String symbolName) {
+		return symbols.containsKey(symbolName);
+	}
+	
+	public boolean containsSymbol(String symbolName, boolean checkInitialized, Symbol.Type... types) {
+		Symbol symbol = symbols.get(symbolName);
+		
+		if(symbol != null) {
+			Symbol.Type symbolType = symbol.getType();
+
+			if(Arrays.asList(types).contains(symbolType)) {
+				if(checkInitialized)
+					if(!symbols.get(symbolName).getInitialized())
+						return false;
+			
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean addSymbol(String symbolName, Symbol.Type type, boolean initialized) {
+		Symbol symbol = new Symbol(type, initialized);
+
+		if(!symbols.containsKey(symbolName)) {			
+			symbols.put(symbolName, symbol);
+			//symbolsVector.add(new Pair(symbolName, type));
+			return true;
+		}
+		else if(symbols.get(symbolName).getType().equals(type)) {
+			symbols.put(symbolName, symbol);
+			return true;
+		}
+		else
+			return false;
+	}
+	
 	
 	
 	/**
 	* If checkInitialized equals true, this function checks if a variable symbolName has been initialized to one of types
 	* If checkInitialized equals false, this function checks if a variable symbolName has not been declared to any type different from types
 	*/
-	public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, Symbol.Type... types ) {
+	public boolean verifySymbolTypes(String symbolName, boolean checkInitialized, boolean checkDeclared,  Symbol.Type... types ) {
 
 		if(this.containsSymbolName(symbolName))
 			return this.containsSymbol(symbolName, checkInitialized, types);
 
 		else {
 			if(parent != null)
-				return parent.verifySymbolTypes(symbolName, checkInitialized, types);
+				return parent.verifySymbolTypes(symbolName, checkInitialized, checkDeclared, types);
 			else
-				return !checkInitialized;
+				return !checkDeclared;
 		}
 	}
 	  
 
-	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized) {
-		if(! verifySymbolTypes(symbolName, false, type))
+	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean verify) {
+		if(verify && ! verifySymbolTypes(symbolName, false, false, type))
 			return false;
 
 		/*if(hasScope) {
@@ -59,8 +100,12 @@ public class SymbolTable extends Table {
 		return parent.initializeSymbol(symbolName, type, initialized, false);
 		else
 		return false;*/
-		this.addSymbol(symbolName, type, initialized);
-		return true;
+		else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
+			this.addSymbol(symbolName, type, initialized);
+			return true;
+		}
+		else
+			return parent.initializeSymbol(symbolName, type, initialized, false);
 	}
 
 	public Symbol.Type getSymbolType(String symbolName) {

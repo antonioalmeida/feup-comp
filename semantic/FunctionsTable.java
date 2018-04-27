@@ -1,10 +1,15 @@
 package semantic;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
-public class FunctionsTable extends Table {
+import utils.Pair;
+
+public class FunctionsTable /*extends Table*/ {
 	
-	public boolean initializeFunction(String functionName, Symbol.Type type, String returnVariable) {
+	protected HashMap<FunctionSignature, FunctionSymbol> functions;
+	
+	/*public boolean initializeFunction(String functionName, Symbol.Type type, String returnVariable) {
 		if(containsSymbolName(functionName))
 			return false;
 		else {
@@ -18,7 +23,7 @@ public class FunctionsTable extends Table {
 		if(! containsSymbolName(functionName))
 			return false;
 		return true;
-	}
+	}*/
 	
 	
 	
