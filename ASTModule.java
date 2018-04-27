@@ -7,15 +7,16 @@ class ASTModule extends SimpleNode {
     SymbolTable functions;
 
     public ASTModule(int id) {
-        super(id, true);
+        super(id, true, true);
     }
 
     public ASTModule(Yal p, int id) {
-        super(p, id, true);
+        super(p, id, true, true);
     }
 
     public boolean analyse() {
     	 symbolTable = getAssignedSymbolTable();
+    	 functionTable = getAssignedFunctionTable();
     	 boolean result = true;
     	   
     	if(!analyseSymbolTable())
@@ -25,27 +26,40 @@ class ASTModule extends SimpleNode {
         if(children == null)
             return false;
 
-        if(!analyseFunctionHeaders()) 
-            return false;
+        
 
         result = true;
 
         for(Node child : children) {
-            if(!child.analyse())
-                result = false;
+        	if(child.toString().equals("Declaration")) {
+        		if(!child.analyse())
+        			result = false;
+        	}
+        	else if(child.toString().equals("Function")) {
+        		if(!((ASTFunction) child).addFunctionEntry())
+        			result =  false;
+        	}
+        }
+        
+        for(Node child : children) {
+        	
+        	if(child.toString().equals("Function")) {
+        		if(!child.analyse())
+        			result = false;
+        	}
         }
 
         return result;
     }
 
-    public boolean analyseFunctionHeaders() {
+    /*public boolean analyseFunctionHeaders() {
         for(Node child : children) {
             if(child.toString().equals("Function"))
                 ((ASTFunction) child).analyseHeader();
         }
 
         return true;
-    }
+    }*/
     
 	public String generateCode() {
 		String generatedCode = "";

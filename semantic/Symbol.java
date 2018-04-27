@@ -2,7 +2,7 @@ package semantic;
 
 public class Symbol {
 	public static enum Type {
-		SCALAR, ARRAY, VOID 
+		SCALAR, ARRAY, VOID, UNDEFINED 
 		// void is not really a symbol type, 
 		// but useful to define as the return
 		// type of intermediate nodes that don't
@@ -10,22 +10,30 @@ public class Symbol {
 	}
 	
 	protected Type type;
+
 	protected boolean initialized;
-	protected boolean print; //if set to true it will print this symbol in the symbolTable
-	
-	
-	public Symbol(Type type, boolean initialized) {
+
+	//if set to true it will print this symbol in the symbolTable
+	protected boolean print; 
+
+	// symbols' position in it's scope
+	// -1 if it's a function or not a 
+	// local variable
+	protected int index;
+
+	public Symbol(Type type, boolean initialized, boolean print, int index) {
 		this.type = type;
 		this.initialized = initialized;
-		this.print = true;
-		
+		this.print = print;	
+		this.index = index;
+	}
+
+	public Symbol(Type type, boolean initialized, boolean print) {
+		this(type, initialized, print, -1);
 	}
 	
-	public Symbol(Type type, boolean initialized, boolean print) {
-		this.type = type;
-		this.initialized = initialized;
-		this.print = print;
-		
+	public Symbol(Type type, boolean initialized) {
+		this(type, initialized, true, -1);
 	}
 	
 	public Type getType() {
@@ -39,7 +47,11 @@ public class Symbol {
 	public boolean getPrint() {
 		return print;
 	}
-	
+
+	public int getIndex() {
+		return index;
+	}
+
 	@Override
 	public boolean equals(Object symbol) {
 		Symbol symbolCast = (Symbol) symbol;

@@ -307,7 +307,7 @@ void Function() : { Token t=null;}
           ArrayElementNoID(t.image)
         | ScalarElementNoID(t.image)
         )
-       	FunctionAssign()
+       	FunctionAssign() {jjtThis.jjtSetValue(""); }
         < LPAR >
         (
           Varlist()
