@@ -60,5 +60,22 @@ class ASTScalarAccess extends SimpleNode {
 		return symbolTable.getSymbolType(symbolName);
 	}
 
+	public String generateCode() {
+		String generatedCode = "";
+
+		//TODO: check if it's a static field
+		// or a local variable, right now we're 
+		//assuming it's always a static field
+
+		generatedCode += "getstatic " + this.value;
+		if(getReturnType().equals(Symbol.Type.ARRAY))
+			generatedCode += " [I";
+		else 
+			generatedCode += " I";
+
+		generatedCode += "\n";
+		return generatedCode;
+	}
+
 }
 /* JavaCC - OriginalChecksum=dc46aab5f6a610de55713f684578a33a (do not edit this line) */
