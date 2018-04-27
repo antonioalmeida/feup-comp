@@ -177,7 +177,7 @@ public class CodeGenerator {
 					out.println("bipush " + argument.value);
 			} else {
 				if(root.symbolTable.containsSymbolName(argument.value)){
-					out.print("putstatic " + root.value + "/" + argument.value);
+					out.print("getstatic " + root.value + "/" + argument.value);
 					
 					if (root.symbolTable.getSymbolType(argument.value) == Symbol.Type.SCALAR)
 						out.println(" I");
