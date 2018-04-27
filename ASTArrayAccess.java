@@ -25,5 +25,28 @@ class ASTArrayAccess extends SimpleNode {
 		return true;
 	}
 
+	public String generateCode() {
+		String code = "";
+
+		// ArrayAccess -> <ID> [ Index ]
+
+		//TODO: check if it's a static field
+		// or a local variable, right now we're 
+		//assuming it's always a static field
+
+		code += "getstatic " + this.value;
+		if(getReturnType().equals(Symbol.Type.ARRAY))
+			code += " [I";
+		else 
+			code += " I";
+		code += "\n";
+
+		code += ((SimpleNode) children[0]).generateCode();
+
+		code += "iaload\n";
+
+		return code;
+	}
+
 }
 /* JavaCC - OriginalChecksum=9555d33a34fc82551229c4905477e2a1 (do not edit this line) */

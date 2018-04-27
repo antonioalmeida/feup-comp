@@ -24,5 +24,29 @@ class ASTIndex extends SimpleNode {
         return true;
     }
 
+    public String generateCode() {
+        String generatedCode = "";
+
+        // when Index -> <INTEGER>
+        if(Utils.isInteger(this.value)) {
+            generatedCode = "iload " + this.value + "\n";
+            return generatedCode;  
+        }
+
+
+        //TODO: check if it's a static field
+        // or a local variable, right now we're 
+        //assuming it's always a static field
+
+        generatedCode += "getstatic " + this.value;
+        if(getReturnType().equals(Symbol.Type.ARRAY))
+            generatedCode += " [I";
+        else 
+            generatedCode += " I";
+
+        generatedCode += "\n";
+        return generatedCode;
+    }
+
 }
 /* JavaCC - OriginalChecksum=c8a78f8c8f68646756fd3e8467b076ca (do not edit this line) */

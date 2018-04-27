@@ -67,6 +67,7 @@ class ASTScalarAccess extends SimpleNode {
 		// or a local variable, right now we're 
 		//assuming it's always a static field
 
+
 		generatedCode += "getstatic " + this.value;
 		if(getReturnType().equals(Symbol.Type.ARRAY))
 			generatedCode += " [I";
