@@ -3,6 +3,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import semantic.Symbol;
+
 public class CodeGenerator {
 
 	private SimpleNode root;
@@ -157,8 +159,8 @@ public class CodeGenerator {
 		}
 	}
 	
-	private void generateCall(SimpleNode functionChild) {
-
+	private void generateCallArgs(SimpleNode functionChild){
+		
 		for (int i = 0; i < functionChild.jjtGetNumChildren(); i++) {
 			SimpleNode argument = (SimpleNode) functionChild.jjtGetChild(i);
 			SimpleNode typeArgument = (SimpleNode) argument.jjtGetChild(0);
@@ -174,6 +176,15 @@ public class CodeGenerator {
 				else
 					out.println("bipush " + argument.value);
 			} else {
+				if(root.symbolTable.containsSymbolName(argument.value)){
+					out.print("putstatic " + root.value + "/" + argument.value);
+					
+					if (root.symbolTable.getSymbolType(argument.value) == Symbol.Type.SCALAR)
+						out.println(" I");
+					else 
+						out.println(" [I");
+				}
+				//else if(argument da funcao for variavel ou parâmetro
 				
 			}
 
@@ -181,6 +192,13 @@ public class CodeGenerator {
 				out.print("");
 
 		}
+		
+	}
+	
+	
+	private void generateCall(SimpleNode functionChild) {
+
+		generateCallArgs(functionChild);
 		
 		out.print("invokestatic " + functionChild.value + "(");
 
@@ -193,7 +211,7 @@ public class CodeGenerator {
 			else
 				out.print("I");
 
-			if (i + 1 != functionChild.jjtGetNumChildren())
+			if ((i + 1 != functionChild.jjtGetNumChildren()) || (typeArgument.id == YalTreeConstants.JJTSTRING))
 				out.print(";");
 
 		}
@@ -205,6 +223,7 @@ public class CodeGenerator {
 		else
 			out.print("V");
 
+		out.println();
 		out.println();
 	}
 
