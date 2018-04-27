@@ -49,7 +49,9 @@ class ASTTerm extends SimpleNode {
         // when Term -> <INTEGER>
         if(children == null)
             generatedCode = "iload " + this.value + "\n";
-        //TODO: add remaining cases
+        else
+        // when Term -> ScalarAccess | Call | ArrayAccess
+            generatedCode = ((SimpleNode) children[0]).generateCode();
 
         return generatedCode;
     }

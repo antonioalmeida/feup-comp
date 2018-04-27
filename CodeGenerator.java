@@ -158,6 +158,30 @@ public class CodeGenerator {
 	}
 	
 	private void generateCall(SimpleNode functionChild) {
+
+		for (int i = 0; i < functionChild.jjtGetNumChildren(); i++) {
+			SimpleNode argument = (SimpleNode) functionChild.jjtGetChild(i);
+			SimpleNode typeArgument = (SimpleNode) argument.jjtGetChild(0);
+
+			if (typeArgument.id == YalTreeConstants.JJTSTRING)
+				out.println("ldc " + argument.value);
+			else if (typeArgument.id == YalTreeConstants.JJTINTEGER) {
+				int value = Integer.parseInt(argument.value);
+				if ((value >= 0) && (value < 6)) {
+					out.println("iconst_" + argument.value);
+				} else if (value == -1)
+					out.println("iconst_m1");
+				else
+					out.println("bipush " + argument.value);
+			} else {
+				
+			}
+
+			if (i + 1 != functionChild.jjtGetNumChildren())
+				out.print("");
+
+		}
+		
 		out.print("invokestatic " + functionChild.value + "(");
 
 		for (int i = 0; i < functionChild.jjtGetNumChildren(); i++) {

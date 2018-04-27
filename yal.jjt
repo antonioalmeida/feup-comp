@@ -700,12 +700,12 @@ void ScalarAccessNothing(String id, boolean size_array) #ScalarAccess:
 } 
 
 void PointCallScalarAccess(String id) #void:
-{
+{Token t=null; 
   
 }
 {
   (
-    < ID >  Call(id)) | (< SIZE > ScalarAccessNothing(id, true))
+    t=< ID >  Call(id + "/" + t.image) ) | (< SIZE > ScalarAccessNothing(id, true))
 }
 
 
