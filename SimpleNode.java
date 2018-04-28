@@ -166,6 +166,10 @@ class SimpleNode implements Node {
     public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print) {
         return symbolTable.initializeSymbol(symbolName, type, initialized, print);
     }
+
+    public int getSymbolIndex(String symbolName) {
+        return symbolTable.getSymbolIndex(symbolName);
+    }
     
     public int getId() {
         return id;
