@@ -154,6 +154,45 @@ class ASTFunction extends SimpleNode {
         	return value;
 	}
 	
+	public boolean isMainFunction() {
+		return value.equals("main");
+	}
+	
+	public boolean isAssignFunction() {
+		return this.jjtGetNumChildren() >= 2
+				&& ((SimpleNode) this.jjtGetChild(1)).id == YalTreeConstants.JJTFUNCTIONASSIGN;
+	}
+	
+	public boolean hasVarList() {
+		
+			for (int i = 0; i < jjtGetNumChildren(); i++){
+				SimpleNode functionChild = (SimpleNode) jjtGetChild(i);
+				if (functionChild.id == YalTreeConstants.JJTVARLIST)
+					return true;
+
+			}
+			return false;
+	}
+	
+	public SimpleNode getVarList() {		
+		for (int i = 0; i < jjtGetNumChildren(); i++){
+			SimpleNode functionChild = (SimpleNode) jjtGetChild(i);
+			if (functionChild.id == YalTreeConstants.JJTVARLIST)
+				return functionChild;
+		}
+		return null;
+}
+
+	public Type getFuncReturnType() {		
+		if(isAssignFunction()){
+			SimpleNode nodeReturn = (SimpleNode) jjtGetChild(0);
+			if(nodeReturn.id==YalTreeConstants.JJTSCALARELEMENT)
+				return Symbol.Type.SCALAR;
+			else return Symbol.Type.ARRAY;
+		}
+		return  Symbol.Type.VOID;
+				
+}
 	
 
 }
