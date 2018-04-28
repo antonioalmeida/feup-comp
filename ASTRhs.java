@@ -79,6 +79,10 @@ class ASTRhs extends SimpleNode {
 
         return generatedCode;
     }
+    
+    public boolean hasOperation(){
+    	return jjtGetNumChildren() == 2;
+    }
 
 }
 /* JavaCC - OriginalChecksum=f98f0d78c74a90d4cd0f52de8c8b26b9 (do not edit this line) */

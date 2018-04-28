@@ -53,7 +53,7 @@ public class CodeGenerator {
 		out.println(".field static " + varName + varType + varValue);
 
 	}
-	
+
 	private void generateGlobals() {
 		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
 			SimpleNode childRoot = (SimpleNode) root.jjtGetChild(i);
@@ -284,10 +284,9 @@ public class CodeGenerator {
 	private void generateCall(SimpleNode callNode) {
 
 		generateCallArgs(callNode);
-		
+
 		generateCallInvoke(callNode);
-		
-				
+
 	}
 
 	private void generateOperation(SimpleNode rhs) {
@@ -330,16 +329,17 @@ public class CodeGenerator {
 
 	}
 
-	private void generateRHS(SimpleNode rhs) {
+	private void generateRHS(ASTRhs rhs) {
 
 		for (int i = 0; i < rhs.jjtGetNumChildren(); i++) {
 
 			SimpleNode term = (SimpleNode) rhs.jjtGetChild(i);
 			SimpleNode termChild = (SimpleNode) term.jjtGetChild(0);
 
-			boolean isPositive = true;
-			if (term.value != null)
-				isPositive = false;
+			//TODO Special Case when a = 1 + - 1;
+//			boolean isPositive = true;
+//			if (term.value != null)
+//				isPositive = false;
 
 			switch (termChild.id) {
 			case (YalTreeConstants.JJTINTEGER):
@@ -364,9 +364,11 @@ public class CodeGenerator {
 
 		}
 
-		if (rhs.jjtGetNumChildren() == 2) {
+		if (rhs.hasOperation()) {
 			generateOperation(rhs);
+			
 		}
+		//TODO store result in variable
 
 	}
 
@@ -375,7 +377,7 @@ public class CodeGenerator {
 		/// Rhs -> Term OP Term | [ ArraySize ]
 		// Term -> OP? ( INT | Call | ArrayAccess | ScalarAccess )
 
-		SimpleNode rhs = (SimpleNode) node.jjtGetChild(1);
+		ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
 		generateRHS(rhs);
 
 		// out.print(rhs.generateCode());
@@ -384,21 +386,33 @@ public class CodeGenerator {
 		// ArrayAccess and ScalarAccess are
 		// from static fields, need to cover
 		// local variables aswell
+
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
-		out.println("putstatic " + lhs.value + " I");
+		generateLHS(lhs);
 
-		out.println("");
-
-		if (root.symbolTable.containsSymbolName(lhs.value)) {
-			out.print("putstatic " + root.value + "/" + lhs.value);
-
-			if (root.symbolTable.getSymbolType(lhs.value) == Symbol.Type.SCALAR)
-				out.println(" I");
-			else
-				out.println(" [I");
-		}
-		// TODO else if for local variables and parameters
 	}
 
+	private void generateLHS(SimpleNode lhs) {
+		String varName = lhs.value;
+
+		if (root.symbolTable.containsSymbolName(varName)) {
+			storeGlobalVar(varName);
+		}
+		// TODO else if for local variables and parameters
+
+	}
+
+	private void storeGlobalVar(String varName) {
+
+		String varType;
+
+		if (root.symbolTable.getSymbolType(varName) == Symbol.Type.SCALAR)
+			varType = " I";
+		else
+			varType = " [I";
+
+		out.println("putstatic " + root.value + "/" + varName + varType);
+
+	}
 
 }
