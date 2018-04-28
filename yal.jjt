@@ -439,7 +439,7 @@ void NoPointAssignCallVirg(String id) #void:
 {Token t;}
 {
   (
-    t=< ID > CallVirg(id+"/"+t.image)) | (< SIZE > AssignNoPoint(id, true))
+    t=< ID > CallVirg(id+"."+t.image)) | (< SIZE > AssignNoPoint(id, true))
 }
 
 void Assign() :
@@ -708,7 +708,7 @@ void PointCallScalarAccess(String id) #void:
 }
 {
   (
-    t=< ID >  Call(id + "/" + t.image) ) | (< SIZE > ScalarAccessNothing(id, true))
+    t=< ID >  Call(id + "." + t.image) ) | (< SIZE > ScalarAccessNothing(id, true))
 }
 
 
