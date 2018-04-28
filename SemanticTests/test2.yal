@@ -13,7 +13,7 @@ x4 = [5]; // error
 x7[];
 x9;
 function a=sqrt(vsqn, ad) { 
-	
+	x4 = 6;
 	x2 = x3[1]; //no error
 	x2 = x3[x1]; //error
 	x2 = x3[x2]; //no error
@@ -43,6 +43,7 @@ function a=sqrt(vsqn, ad) {
 	x15 = x2 + x10; //no error;
 	x9 = 5;
 	x1 = [4];
+	x15 = 7;
      	
 }
 

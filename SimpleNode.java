@@ -32,6 +32,7 @@ class SimpleNode implements Node {
     public SimpleNode(int i, boolean hasScope, boolean hasFunctionScope) {
     this.value = "";
     this.hasScope = hasScope;
+    this.hasFunctionScope = hasFunctionScope;
         id = i;
     }
 
@@ -52,7 +53,7 @@ class SimpleNode implements Node {
     public FunctionTable getAssignedFunctionTable() {
     	if(parent == null)
     		return null;
-    	else if(hasScope)
+    	else if(hasFunctionScope)
     		return new FunctionTable();
     	else
     		return ((SimpleNode) parent).getFunctionTable();
@@ -162,6 +163,10 @@ class SimpleNode implements Node {
         return symbolTable.initializeSymbol(symbolName, type, initialized, true);
     }
     
+    public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print) {
+        return symbolTable.initializeSymbol(symbolName, type, initialized, print);
+    }
+    
     public int getId() {
         return id;
     }
@@ -203,7 +208,11 @@ class SimpleNode implements Node {
     
     public void printSymbolTable(String prefix) {
         if(hasScope) {
-            System.out.println(toString(prefix+"@"));
+        	 String printMessage = prefix+"@" + toString();
+        	    
+             printMessage += " [" + this.getRealValue() + "]";
+
+            System.out.println(printMessage);
             symbolTable.printSymbols(prefix+"   ");
         }
 
@@ -211,7 +220,23 @@ class SimpleNode implements Node {
             for (int i = 0; i < children.length; ++i) {
                 SimpleNode n = (SimpleNode)children[i];
                 if (n != null) {
-                    n.printSymbolTable(prefix + "");
+                    n.printSymbolTable(prefix + "   ");
+                }
+            }
+        }
+    }
+    
+    public void printFunctionTable(String prefix) {
+    	if(hasFunctionScope) {
+            System.out.println(toString(prefix+"@"));
+            functionTable.printFunctions(prefix+"   ");
+        }
+
+        if (children != null) {
+            for (int i = 0; i < children.length; ++i) {
+                SimpleNode n = (SimpleNode)children[i];
+                if (n != null) {
+                    n.printFunctionTable(prefix + "");
                 }
             }
         }

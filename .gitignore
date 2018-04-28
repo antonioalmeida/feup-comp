@@ -10,7 +10,6 @@
 /yal.jj
 /ASTProgram.java
 /ASTFunctionAssign.java
-/ASTVarlist.java
 /ASTWhile.java
 /ASTIf.java
 /ASTArgument.java

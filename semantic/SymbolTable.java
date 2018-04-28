@@ -55,8 +55,8 @@ public class SymbolTable {
 		return false;
 	}
 
-	public boolean addSymbol(String symbolName, Symbol.Type type, boolean initialized, int index) {
-		Symbol symbol = new Symbol(type, initialized, true, index);
+	public boolean addSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print, int index) {
+		Symbol symbol = new Symbol(type, initialized, print, index);
 
 		if(!symbols.containsKey(symbolName)) {			
 			symbols.put(symbolName, symbol);
@@ -88,24 +88,25 @@ public class SymbolTable {
 		}
 	}
 
-	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean verify, boolean useIndex) {
+	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print, boolean verify, boolean useIndex) {
 		if(verify && ! verifySymbolTypes(symbolName, false, false, type))
 			return false;
 		else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
+			this.addSymbol(symbolName, type, initialized, print, this.indexCount);
 			if(useIndex) {
-				this.addSymbol(symbolName, type, initialized, this.indexCount);
+				
 				this.indexCount++;
 			}
 			else
-				this.addSymbol(symbolName, type, initialized, -1);
+				this.addSymbol(symbolName, type, initialized, print, -1);
 			return true;
 		}
 		else
 			return parent.initializeSymbol(symbolName, type, initialized, false);
 	}
 	  
-	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean verify) {
-		return initializeSymbol(symbolName, type, initialized, verify, false);
+	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print) {
+		return initializeSymbol(symbolName, type, initialized, print, true, false);
 	}
 
 	public Symbol.Type getSymbolType(String symbolName) {
@@ -124,8 +125,7 @@ public class SymbolTable {
 		return symbolsVector;
 	}*/
 	
-	public void printSymbols(String prefix) {
-		System.out.println("Print Symbols");
+	public void printSymbols(String prefix) {		
 
 		Iterator<Entry<String, Symbol>> symbolsIt = symbols.entrySet().iterator();
 		while(symbolsIt.hasNext()) {

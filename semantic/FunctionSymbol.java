@@ -42,7 +42,15 @@ public class FunctionSymbol extends Symbol{
 	}
 	
 	public void printSymbol(String prefix) {
-		System.out.println(prefix+"@params");
+		if(parameters.size() > 0)
+			System.out.println(prefix+"@params:");
+		for(Pair p : parameters)
+				System.out.println(prefix+"   "+p.getKey()+": "+p.getValue());
+		
+		if(returnVariable.equals(""))
+			System.out.println(prefix+"@return: "+type);
+		else
+			System.out.println(prefix+"@return["+returnVariable+"]: "+type);
 		
 	}
 }

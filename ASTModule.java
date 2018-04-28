@@ -30,6 +30,8 @@ class ASTModule extends SimpleNode {
 
         result = true;
 
+        
+
         for(Node child : children) {
         	if(child.toString().equals("Declaration")) {
         		if(!child.analyse())

@@ -34,8 +34,11 @@ public class Yal
       	System.out.println("\nAST Tree:");
     	root.dump(""); // imprime no ecrã a árvore
     	 root.analyse();
+    	System.out.println("\nFunction Table:");
+    	root.printFunctionTable("");
 		System.out.println("\nSymbol Table:");
 		root.printSymbolTable("");
+		
 
 		//generateCode(root);
 		CodeGenerator codeGenerator = new CodeGenerator(root, "test.j");

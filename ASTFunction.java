@@ -8,17 +8,24 @@ import utils.Pair;
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTFunction extends SimpleNode {
+	private String returnValue;
+	private Symbol.Type returnType;
 	public ASTFunction(int id) {
 		super(id, true, false);
+		returnValue = "";
+		returnType = Symbol.Type.VOID;
 	}
 
 	public ASTFunction(Yal p, int id) {
 		super(p, id, true, false);
+		returnValue = "";
+		returnType = Symbol.Type.VOID;
 	}
 	
 	//TODO: See what this means
 	@SuppressWarnings("unchecked")
 	public boolean addFunctionEntry() {
+		boolean ret = true;
 		System.out.println("addFunction " + toString(""));
 		symbolTable = getAssignedSymbolTable();
         functionTable = getAssignedFunctionTable();
@@ -50,17 +57,53 @@ class ASTFunction extends SimpleNode {
         	}
         }
         
+        this.returnValue = returnValue;
+        this.returnType = returnType;
+        if(! returnValue.equals(""))
+        	if(symbolTable.verifySymbolTypes((String) returnValue, false, true, Symbol.Type.ARRAY, Symbol.Type.SCALAR)) {
+        		System.out.println("Semantic Error: Return Value "+returnValue+" has already been declared.");
+        		ret = false;
+        	}
+        	else if(! initializeSymbol((String) returnValue, (Symbol.Type) returnType, false, false)){
+        		System.out.println("Semantic Error: Could not initialize "+returnValue+" .");
+        		ret = false;
+        	}
+        for(Pair pair : parameters) {
+        	if(pair.getKey().equals(returnValue)) {
+        		System.out.println("Semantic Error: Argument "+pair.getKey()+" is being has both a return value and a parameter.");
+        		ret = false;
+        	}
+        	else if(symbolTable.verifySymbolTypes((String) pair.getKey(), false, true, Symbol.Type.ARRAY, Symbol.Type.SCALAR)) {
+        		System.out.println("Semantic Error: Argument "+pair.getKey()+" has already been declared.");
+        		ret = false;
+        	}
+        	else if(! initializeSymbol((String) pair.getKey(), (Symbol.Type) pair.getValue(), false, false)){
+        		System.out.println("Semantic Error: Could not initialize "+pair.getKey()+" .");
+        		ret = false;
+        	}
+        }
         if(! functionTable.initializeFunction(functionName, argumentTypes, parameters, returnType, returnValue)) {
-        	System.out.println("Semantic Error: A function with the same signature has already been defined");
-        	return false;
+        	System.out.println("Semantic Error: Function "+functionName+ " with argument types "+argumentTypes+" and return Type "+returnType +" has already been defined");
+        	ret = false;;
         }
 		
 		
-		return true;
+		return ret;
 
-	  	//TODO: add header analysing logic
+	  	
 	}
-  
+	
+	
+	public boolean analyseSymbolTable() {
+		
+		if(!returnValue.equals(""))
+			if(!verifySymbolTypes(returnValue, true, returnType)) {
+				System.out.println("Semantic Error: In function "+getRealValue()+", return value "+returnValue+" should have been initialized");
+			}
+
+		return true;
+	}
+	
 	public String generateCode() {
 		String generatedCode = "";
 		generatedCode += ".method public static " + this.value + "\n";
@@ -101,6 +144,17 @@ class ASTFunction extends SimpleNode {
 
         return result;
 	}
+	
+	public String getRealValue() {
+
+        if(children != null && children.length > 1 && 
+        		children[1].toString().equals("FunctionAssign"))
+        	return ((SimpleNode) children[1]).value;
+        else 
+        	return value;
+	}
+	
+	
 
 }
 /* JavaCC - OriginalChecksum=87cbf5972d530f3221d99b5c8270925a (do not edit this line) */
