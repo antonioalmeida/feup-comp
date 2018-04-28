@@ -102,7 +102,7 @@ public class SymbolTable {
 			return true;
 		}
 		else
-			return parent.initializeSymbol(symbolName, type, initialized, false);
+			return parent.initializeSymbol(symbolName, type, initialized, print);
 	}
 	  
 	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print) {
