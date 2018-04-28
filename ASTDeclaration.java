@@ -74,6 +74,16 @@ class ASTDeclaration extends SimpleNode {
 
    		return generatedCode;
    	}
+   	
+   	boolean isVarScalarAssigned(){
+   		return jjtGetNumChildren() == 2 && ((SimpleNode) this.jjtGetChild(1)).id ==YalTreeConstants.JJTSCALARASSIGNED;
+   	}
+   	
+   	
+	boolean isVarArray() {
+		return ((SimpleNode) this.jjtGetChild(0)).id == YalTreeConstants.JJTARRAYELEMENT || (jjtGetNumChildren() == 2
+				&& ((SimpleNode) this.jjtGetChild(1)).id == YalTreeConstants.JJTARRAYASSIGNED);
+	}
 
 }
 /* JavaCC - OriginalChecksum=f0ec2df2bb99c0df69ade4aa7071b5f6 (do not edit this line) */
