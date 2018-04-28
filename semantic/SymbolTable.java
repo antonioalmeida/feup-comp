@@ -19,19 +19,18 @@ public class SymbolTable {
 	protected HashMap<String, Symbol> symbols;
 
 	private int indexCount;
+	private boolean isFunction;
 
-	public SymbolTable(SymbolTable parent) {
+	public SymbolTable(SymbolTable parent, boolean isFunction) {
 		this.parent = parent;
 		symbols = new HashMap<String, Symbol>();
 		indexCount = 0;
-		//symbolsVector = new Vector<Pair>();
+		this.isFunction = isFunction;
 	}
-	
-	public SymbolTable getParent() {
-		return parent;
-	}
-	
 
+	public SymbolTable(SymbolTable parent) {
+		this(parent, false);
+	}
 	
 	public boolean containsSymbolName(String symbolName) {
 		return symbols.containsKey(symbolName);
@@ -92,9 +91,8 @@ public class SymbolTable {
 		if(verify && ! verifySymbolTypes(symbolName, false, false, type))
 			return false;
 		else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
-			this.addSymbol(symbolName, type, initialized, print, this.indexCount);
 			if(useIndex) {
-				
+				this.addSymbol(symbolName, type, initialized, print, this.indexCount);
 				this.indexCount++;
 			}
 			else
@@ -106,7 +104,7 @@ public class SymbolTable {
 	}
 	  
 	public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print) {
-		return initializeSymbol(symbolName, type, initialized, print, true, false);
+		return initializeSymbol(symbolName, type, initialized, print, true, isFunction);
 	}
 
 	public Symbol.Type getSymbolType(String symbolName) {
