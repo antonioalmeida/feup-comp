@@ -49,9 +49,9 @@ class ASTFunction extends SimpleNode {
         }
         else {
         	functionName = value;
-        	if(children != null && children.length > 1
-        			&& children[1].toString().equals("Varlist")) {
-        		Pair pair = ((ASTVarlist) children[1]).getArguments();
+        	if(children != null && children.length > 0
+        			&& children[0].toString().equals("Varlist")) {
+        		Pair pair = ((ASTVarlist) children[0]).getArguments();
         		argumentTypes = (Vector<Type>) pair.getValue();
         		parameters = (Vector<Pair>) pair.getKey(); 
         	}
@@ -77,7 +77,7 @@ class ASTFunction extends SimpleNode {
         		System.out.println("Semantic Error: Argument "+pair.getKey()+" has already been declared.");
         		ret = false;
         	}
-        	else if(! initializeSymbol((String) pair.getKey(), (Symbol.Type) pair.getValue(), false, false)){
+        	else if(! initializeSymbol((String) pair.getKey(), (Symbol.Type) pair.getValue(), true, false)){
         		System.out.println("Semantic Error: Could not initialize "+pair.getKey()+" .");
         		ret = false;
         	}
