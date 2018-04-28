@@ -33,12 +33,33 @@ public class CodeGenerator {
 		out.println(".super java/lang/Object" + "\n");
 	}
 
+	private void generateDeclaration(ASTDeclaration declaration) {
+		String varName, varType, varValue = "";
+		SimpleNode element = (SimpleNode) declaration.children[0];
+
+		varName = element.value;
+
+		if (declaration.isVarArray())
+			varType = " [I ";
+		else {
+			varType = " I ";
+			if (declaration.isVarScalarAssigned()) {
+				SimpleNode assignedScalar = (SimpleNode) declaration.children[1];
+				varValue = "= " + assignedScalar.value;
+			}
+
+		}
+
+		out.println(".field static " + varName + varType + varValue);
+
+	}
+	
 	private void generateGlobals() {
 		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
 			SimpleNode childRoot = (SimpleNode) root.jjtGetChild(i);
 
 			if (childRoot.id == YalTreeConstants.JJTDECLARATION)
-				generateDeclaration(childRoot);
+				generateDeclaration((ASTDeclaration) childRoot);
 		}
 
 	}
@@ -129,7 +150,7 @@ public class CodeGenerator {
 
 	private void generateFunctionFooter(ASTFunction functionNode) {
 		String returnType;
-		
+
 		switch (functionNode.getFuncReturnType()) {
 		case SCALAR:
 			returnType = "a";
@@ -189,68 +210,84 @@ public class CodeGenerator {
 	}
 
 	private void loadGlobalVar(String varName) {
-		out.print("getstatic " + root.value + "/" + varName);
+		String varType;
 
 		if (root.symbolTable.getSymbolType(varName) == Symbol.Type.SCALAR)
-			out.println(" I");
+			varType = " I";
 		else
-			out.println(" [I");
+			varType = " [I";
+
+		out.println("getstatic " + root.value + "/" + varName + varType);
 	}
 
-	private void generateCallArgs(SimpleNode functionChild) {
+	private void generateCallArgs(SimpleNode callNode) {
+		for (int i = 0; i < callNode.jjtGetNumChildren(); i++) {
+			ASTArgument argument = (ASTArgument) callNode.jjtGetChild(i);
 
-		for (int i = 0; i < functionChild.jjtGetNumChildren(); i++) {
-			SimpleNode argument = (SimpleNode) functionChild.jjtGetChild(i);
-			SimpleNode typeArgument = (SimpleNode) argument.jjtGetChild(0);
-
-			if (typeArgument.id == YalTreeConstants.JJTSTRING)
+			switch (argument.getArgumentType()) {
+			case YalTreeConstants.JJTSTRING:
 				loadString(argument.value);
-			else if (typeArgument.id == YalTreeConstants.JJTINTEGER) {
+				break;
+			case YalTreeConstants.JJTINTEGER:
 				loadInt(argument.value);
-			} else {
+				break;
+			case YalTreeConstants.JJTID:
 				if (root.symbolTable.containsSymbolName(argument.value)) {
 					loadGlobalVar(argument.value);
 				}
 				// TODO else if for local variables and parameters
+				break;
+			default:
+				break;
+			}
+		}
+	}
 
+	private void generateCallInvoke(SimpleNode callNode) {
+		String funcName, funcRetType, funcArgs = "";
+
+		funcName = callNode.value;
+
+		for (int i = 0; i < callNode.jjtGetNumChildren(); i++) {
+			ASTArgument argument = (ASTArgument) callNode.jjtGetChild(i);
+
+			switch (argument.getArgumentType()) {
+			case YalTreeConstants.JJTSTRING:
+				funcArgs += "Ljava/lang/String";
+				break;
+			case YalTreeConstants.JJTINTEGER:
+				funcArgs += "I";
+				break;
+			case YalTreeConstants.JJTID:
+				funcArgs += "I";
+				// TODO Vars can be arrays
+				break;
+			default:
+				break;
 			}
 
-			if (i + 1 != functionChild.jjtGetNumChildren())
-				out.print("");
+			if ((i + 1 != callNode.jjtGetNumChildren()) || (argument.getArgumentType() == YalTreeConstants.JJTSTRING))
+				funcArgs += ";";
 
 		}
+
+		if (((SimpleNode) callNode.parent).id == YalTreeConstants.JJTTERM)
+			funcRetType = "I";
+		else
+			funcRetType = "V";
+
+		out.println("invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
+		out.println();
 
 	}
 
-	private void generateCall(SimpleNode functionChild) {
+	private void generateCall(SimpleNode callNode) {
 
-		generateCallArgs(functionChild);
-
-		out.print("invokestatic " + functionChild.value + "(");
-
-		for (int i = 0; i < functionChild.jjtGetNumChildren(); i++) {
-			SimpleNode argument = (SimpleNode) functionChild.jjtGetChild(i);
-			SimpleNode typeArgument = (SimpleNode) argument.jjtGetChild(0);
-
-			if (typeArgument.id == YalTreeConstants.JJTSTRING)
-				out.print("Ljava/lang/String");
-			else
-				out.print("I");
-
-			if ((i + 1 != functionChild.jjtGetNumChildren()) || (typeArgument.id == YalTreeConstants.JJTSTRING))
-				out.print(";");
-
-		}
-
-		out.print(")");
-
-		if (((SimpleNode) functionChild.parent).id == YalTreeConstants.JJTTERM)
-			out.print("I");
-		else
-			out.print("V");
-
-		out.println();
-		out.println();
+		generateCallArgs(callNode);
+		
+		generateCallInvoke(callNode);
+		
+				
 	}
 
 	private void generateOperation(SimpleNode rhs) {
@@ -363,16 +400,5 @@ public class CodeGenerator {
 		// TODO else if for local variables and parameters
 	}
 
-	private void generateDeclaration(SimpleNode node) {
-		SimpleNode scalarElement = (SimpleNode) node.children[0];
-		// out.println(".field static "+ scalarElement.value + " I" );
 
-		if (node.children.length == 2) {
-			SimpleNode assignedElement = (SimpleNode) node.children[1];
-
-			if (assignedElement.id == YalTreeConstants.JJTSCALARASSIGNED)
-				out.println(".field static " + scalarElement.value + " I = " + assignedElement.value);
-		} else
-			out.println(".field static " + scalarElement.value + " I");
-	}
 }
