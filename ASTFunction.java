@@ -64,7 +64,7 @@ class ASTFunction extends SimpleNode {
         		System.out.println("Semantic Error: Return Value "+returnValue+" has already been declared.");
         		ret = false;
         	}
-        	else if(! initializeSymbol((String) returnValue, (Symbol.Type) returnType, false, false)){
+        	else if(! initializeSymbol((String) returnValue, (Symbol.Type) returnType, false, true, false)){
         		System.out.println("Semantic Error: Could not initialize "+returnValue+" .");
         		ret = false;
         	}
