@@ -134,7 +134,7 @@ public class SymbolTable {
             Symbol symbol = pair.getValue();
             
             if(symbol.getPrint())
-                System.out.println(prefix+symbolName+": "+symbol.getType() + " " + symbol.getIndex());
+                System.out.println(prefix+symbolName+": "+symbol.getType() /*+ " " + symbol.getIndex()*/);
         }
     }
 
