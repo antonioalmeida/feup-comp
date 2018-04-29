@@ -13,7 +13,7 @@ class ASTDeclaration extends SimpleNode {
     }
 
     public boolean analyseSymbolTable() {
-        System.out.println("Analysing " + toString(""));
+        
         if(children == null)
             return false;
 

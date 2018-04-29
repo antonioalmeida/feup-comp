@@ -22,7 +22,7 @@ class ASTAssign extends SimpleNode {
         SimpleNode lhsChild = (SimpleNode) children[0];
         
         if(lhsChild.getSizeArray()) {
-        	System.out.println("Semantic Error: Can't assign the size of array "+lhsChild.value);
+        	System.out.println("Semantic Error: Can't assign the size of array "+lhsChild.value+".");
         	return false;
         }
         Symbol.Type lhsType = lhsChild.getReturnType();
@@ -31,18 +31,17 @@ class ASTAssign extends SimpleNode {
         // rhs
         SimpleNode rhsChild = (SimpleNode) children[1];
        Vector<Symbol.Type> rhsTypes = ((ASTRhs) rhsChild).getReturnTypes();
-       System.out.println("Assign: "+rhsTypes);
 
         String lhsSymbol = (String) lhsChild.jjtGetValue();
         String rhsSymbol = (String) rhsChild.jjtGetValue();
         
         if(!rhsTypes.contains(Symbol.Type.SCALAR) && !rhsTypes.contains(Symbol.Type.ARRAY)) {
-        	System.out.println("Semantic Error on expression assignement of "+lhsSymbol+" .");
+        	System.out.println("Semantic Error: On expression assignement of "+lhsSymbol+".");
         	return false;
         }
         else if(!rhsTypes.contains(Symbol.Type.SCALAR) && rhsTypes.contains(Symbol.Type.ARRAY)) {
         	if(!initializeSymbol(lhsSymbol, Symbol.Type.ARRAY, true)) {
-        		System.out.println("Semantic Error: " + lhsSymbol + " has been declared as a scalar, reassigned as an array");
+        		System.out.println("Semantic Error: " + lhsSymbol + " has been declared as a scalar, reassigned as an array.");
         		return false;
         	}
 

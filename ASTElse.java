@@ -3,11 +3,11 @@
 public
 class ASTElse extends SimpleNode {
   public ASTElse(int id) {
-    super(id);
+    super(id, true, false);
   }
 
   public ASTElse(Yal p, int id) {
-    super(p, id);
+    super(p, id, true, false);
   }
 
 }

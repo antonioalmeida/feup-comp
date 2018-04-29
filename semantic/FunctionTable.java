@@ -44,11 +44,7 @@ public class FunctionTable {
 			
 	}
 	
-	/*public boolean addParameter(String functionName, String parameter, Symbol.Type parameterType) {
-		if(! containsSymbolName(functionName))
-			return false;
-		return true;
-	}*/
+	
 	public void printFunctions(String prefix) {
 
 		Iterator<Entry<FunctionSignature, FunctionSymbol>> functionsIt = functions.entrySet().iterator();

@@ -14,7 +14,7 @@ class ASTIndex extends SimpleNode {
     }
  
     public boolean analyseSymbolTable() {
-        System.out.println("Analyzing Index");
+       
         if(!Utils.isInteger(this.value))
             if(!verifySymbolTypes(this.value, true, Symbol.Type.SCALAR)) {
                 System.out.println("Semantic Error: Index of an array " + this.value + " should have been initialized to a scalar");

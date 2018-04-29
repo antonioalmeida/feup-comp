@@ -13,8 +13,7 @@ import utils.Pair;
 
 public class SymbolTable {
     
-    //private HashMap<String, Symbol> symbols;
-    //private Vector<Pair > symbolsVector;
+   
     private SymbolTable parent;
     protected HashMap<String, Symbol> symbols;
 
@@ -59,7 +58,6 @@ public class SymbolTable {
 
         if(!symbols.containsKey(symbolName)) {          
             symbols.put(symbolName, symbol);
-            //symbolsVector.add(new Pair(symbolName, type));
             return true;
         }
         else if(symbols.get(symbolName).getType().equals(type)) {
@@ -139,5 +137,9 @@ public class SymbolTable {
                 System.out.println(prefix+symbolName+": "+symbol.getType() + " " + symbol.getIndex());
         }
     }
+
+	public HashMap<String, Symbol> getSymbols() {
+		return symbols;
+	}
     
 }

@@ -28,7 +28,6 @@ class ASTCall extends SimpleNode {
 	}*/
 	
 	public boolean analyseSymbolTable() {
-		System.out.println("Analysing Call");
 		Vector<Symbol.Type> argumentTypes = new Vector<Symbol.Type>();
 		boolean result = true;
 		if(children != null && children.length > 0) {

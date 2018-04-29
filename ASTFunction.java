@@ -27,7 +27,6 @@ class ASTFunction extends SimpleNode {
 	@SuppressWarnings("unchecked")
 	public boolean addFunctionEntry() {
 		boolean ret = true;
-		System.out.println("addFunction " + toString(""));
 		symbolTable = getAssignedSymbolTable();
         functionTable = getAssignedFunctionTable();
         String functionName = "";

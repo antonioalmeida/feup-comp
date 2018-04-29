@@ -22,7 +22,7 @@ class ASTModule extends SimpleNode {
     	if(!analyseSymbolTable())
     			result = false;
     	
-        System.out.println("Analysing " + toString(""));
+        
         if(children == null)
             return false;
 

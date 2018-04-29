@@ -33,6 +33,7 @@ public class Yal
      
       	System.out.println("\nAST Tree:");
     	root.dump(""); // imprime no ecrã a árvore
+    	System.out.println("");
     	 root.analyse();
     	System.out.println("\nFunction Table:");
     	root.printFunctionTable("");
@@ -410,7 +411,7 @@ void Stmt() #void: { Token t; }
 {
   try { 
     While()
-  | If() 
+  | IfStatement() 
   |(
     t = < ID >
   ( 
@@ -562,6 +563,12 @@ void While():
     Stmtlst() < RCHAVETA >
 }
 
+void IfStatement() :
+{  }
+{
+  If() (Else())?
+}
+
 void If() :
 {}
 {
@@ -572,11 +579,18 @@ void If() :
     errorSkipTo(e, "IF statement",  new SkipToken(RCHAVETA, true));
   }
 
+
+  
+}
+
+void Else() :
+{}
+{
   try {
     (
       < ELSE > < LCHAVETA >
       Stmtlst() < RCHAVETA >
-    )?
+    )
   }
   catch (ParseException e) {
     System.out.println("Syntatic error on ELSE statement. " + e.toString());

@@ -213,9 +213,11 @@ class SimpleNode implements Node {
     public void printSymbolTable(String prefix) {
         if(hasScope) {
         	 String printMessage = prefix+"@" + toString();
-        	    
-             printMessage += " [" + this.getRealValue() + "]";
-
+        	 if(toString().equals("Function"))   
+        		 printMessage += " [" + this.getRealValue() + "]";
+        	 else if(! this.value.equals(""))
+        		 printMessage += " [" + this.value + "]";
+        	
             System.out.println(printMessage);
             symbolTable.printSymbols(prefix+"   ");
         }

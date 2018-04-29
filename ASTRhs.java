@@ -16,7 +16,7 @@ class ASTRhs extends SimpleNode {
     }
 
     public boolean analyseSymbolTable() {
-        System.out.println("Analysing " + toString(""));
+   
         // Rhs -> Term (OP Term)? | [ArraySize]
 
         // Term OP Term

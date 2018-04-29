@@ -33,7 +33,7 @@ class ASTScalarAccess extends SimpleNode {
 	}
 
 	public boolean analyseSymbolTable() {
-		System.out.println("Analysing " + toString(""));
+		
 
 		if(size_array) {    	
 			if(!symbolTable.getSymbolType(value).equals(Symbol.Type.ARRAY)) {

@@ -9,12 +9,6 @@ public class FunctionSymbol extends Symbol{
 	
 	
 	
-	/*public FunctionSymbol(Type type, boolean initialized, boolean print, 
-			String returnVariable) {
-		super(type, initialized, print);
-		parameters = new Vector<Pair>();
-		this.returnVariable = returnVariable;
-	}*/
 	
 	public FunctionSymbol(Type type, String returnVariable, Vector<Pair> parameters) {
 		super(type, true, true);
@@ -25,9 +19,7 @@ public class FunctionSymbol extends Symbol{
 		this.returnVariable = returnVariable;
 	}
 	
-	/*public void addParameter(String name, Symbol.Type type) {
-		parameters.add(new Pair(name, type));
-	}*/
+	
 	
 	@Override
 	public boolean equals(Object symbol) {

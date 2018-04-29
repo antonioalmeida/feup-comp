@@ -41,10 +41,10 @@ class ASTTerm extends SimpleNode {
     	
     	if(children != null && children.length > 0) {
     		SimpleNode child = (SimpleNode) children[0];
-    		System.out.println("TERM: "+child.toString());
+    		
     		if(child.toString().equals("ScalarAccess")) {
     			if(!verifySymbolTypes(child.value, true, Symbol.Type.SCALAR, Symbol.Type.ARRAY)) {
-    				System.out.println("Semantic Error: " + child.value + " should have been initialized");
+    				System.out.println("Semantic Error: " + child.value + " should have been initialized.");
     				return false;
     			}
     		}
