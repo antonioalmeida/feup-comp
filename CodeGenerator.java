@@ -11,8 +11,10 @@ public class CodeGenerator {
 
 	private PrintWriter out;
 
-	public CodeGenerator(SimpleNode root, String filename) throws IOException {
+	public CodeGenerator(SimpleNode root) throws IOException {
 		this.root = (SimpleNode) root.children[0];
+		
+		String filename = this.root.value + ".j";
 
 		FileWriter fw = new FileWriter(filename, false);
 		BufferedWriter bw = new BufferedWriter(fw);
@@ -90,7 +92,7 @@ public class CodeGenerator {
 	private void generateFuncHeader(ASTFunction functionNode) {
 		String funcName, funcReturnType, funcArgs = "";
 
-		funcName = functionNode.value;
+		funcName = functionNode.getFuncName();
 
 		if (functionNode.hasVarList()) {
 			SimpleNode varList = functionNode.getVarList();
@@ -132,8 +134,8 @@ public class CodeGenerator {
 			generateFuncHeader(functionNode);
 
 		// TODOLater: limit
-		out.println(".limit locals 10");
 		out.println(".limit stack 10");
+		out.println(".limit locals 10");
 		out.println();
 
 	}
@@ -154,9 +156,12 @@ public class CodeGenerator {
 		switch (functionNode.getFuncReturnType()) {
 		case SCALAR:
 			returnType = "i";
+			String varToReturn =functionNode.getVarNameToReturn();
+			loadLocalVar(functionNode, varToReturn);
 			break;
 		case ARRAY:
 			returnType = "a";
+			//TODOLater loadLocalVar(functionNode, String varName);
 			break;
 		case VOID:
 			returnType = "";
@@ -165,7 +170,7 @@ public class CodeGenerator {
 			returnType = "";
 			break;
 		}
-		//TODO load result in stack if not void
+		
 			
 		out.println(returnType + "return");
 		out.println(".end method");
@@ -220,6 +225,26 @@ public class CodeGenerator {
 
 		out.println("getstatic " + root.value + "/" + varName + varType);
 	}
+	
+	private void loadLocalVar(SimpleNode node, String varName) {
+		
+		int varIndex = node.getSymbolIndex(varName);		
+		
+		String varType;
+		String load;
+
+		if (node.symbolTable.getSymbolType(varName) == Symbol.Type.SCALAR)
+			varType = "i";
+		else
+			varType = "a";
+
+		if(varIndex<=3)
+			load="load_";
+		else load="load ";
+		
+
+		out.println(varType+load+varIndex);	
+	}
 
 	private void generateCallArgs(SimpleNode callNode) {
 		for (int i = 0; i < callNode.jjtGetNumChildren(); i++) {
@@ -233,9 +258,11 @@ public class CodeGenerator {
 				loadInt(argument.value);
 				break;
 			case YalTreeConstants.JJTID:
-				if (root.symbolTable.containsSymbolName(argument.value)) {
-					loadGlobalVar(argument.value);
+				String varName= argument.value;
+				if (root.symbolTable.containsSymbolName(varName)) {
+					loadGlobalVar(varName);
 				}
+				else this.loadLocalVar(callNode, varName);
 				// TODO else if for local variables and parameters
 				break;
 			default:
@@ -254,7 +281,7 @@ public class CodeGenerator {
 
 			switch (argument.getArgumentType()) {
 			case YalTreeConstants.JJTSTRING:
-				funcArgs += "Ljava/lang/String";
+				funcArgs += "Ljava/lang/String;";
 				break;
 			case YalTreeConstants.JJTINTEGER:
 				funcArgs += "I";
@@ -266,16 +293,16 @@ public class CodeGenerator {
 			default:
 				break;
 			}
-
-			if ((i + 1 != callNode.jjtGetNumChildren()) || (argument.getArgumentType() == YalTreeConstants.JJTSTRING))
-				funcArgs += ";";
-
 		}
 
 		if (((SimpleNode) callNode.parent).id == YalTreeConstants.JJTTERM)
 			funcRetType = "I";
 		else
 			funcRetType = "V";
+		
+		
+		funcName = funcName.replace('.', '/');
+		
 
 		out.println("invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
 		out.println();
@@ -347,10 +374,11 @@ public class CodeGenerator {
 				loadInt(termChild.value);
 				break;
 			case (YalTreeConstants.JJTSCALARACCESS):
-				if (root.symbolTable.containsSymbolName(termChild.value)) {
-					loadGlobalVar(termChild.value);
+				String varName= termChild.value;
+				if (root.symbolTable.containsSymbolName(varName)) {
+					loadGlobalVar(varName);
 				}
-
+				else  this.loadLocalVar(rhs, varName);
 				// TODO else if for local variables and parameters
 
 				// TODOLater .size
@@ -369,7 +397,7 @@ public class CodeGenerator {
 			generateOperation(rhs);
 			
 		}
-		//TODO store result in variable
+
 
 	}
 
@@ -399,6 +427,7 @@ public class CodeGenerator {
 		if (root.symbolTable.containsSymbolName(varName)) {
 			storeGlobalVar(varName);
 		}
+		else storeLocalVar(lhs, varName); 
 		// TODO else if for local variables and parameters
 
 	}
@@ -413,6 +442,21 @@ public class CodeGenerator {
 			varType = " [I";
 
 		out.println("putstatic " + root.value + "/" + varName + varType);
+
+	}
+	
+	private void storeLocalVar(SimpleNode node, String varName) {
+		
+		//TODOLater for arrays
+		int varIndex = node.getSymbolIndex(varName);
+		String varType = "i";
+		String store = "store";
+		
+		if(varIndex<=3)
+			store="store_";
+		else store="store ";
+		
+		out.println(varType+store+varIndex);	
 
 	}
 

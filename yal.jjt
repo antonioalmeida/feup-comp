@@ -41,7 +41,7 @@ public class Yal
 		
 
 		//generateCode(root);
-		CodeGenerator codeGenerator = new CodeGenerator(root, "test.j");
+		CodeGenerator codeGenerator = new CodeGenerator(root);
 		codeGenerator.generateCode();
     }
   }

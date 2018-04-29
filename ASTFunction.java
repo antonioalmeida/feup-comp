@@ -198,6 +198,25 @@ class ASTFunction extends SimpleNode {
 		return new SymbolTable(parent.getSymbolTable(), true);
 	}
 	
+	public String getVarNameToReturn(){
+		SimpleNode element = (SimpleNode) jjtGetChild(0);
+		
+		return element.value;
+		
+	}
+	
+	public String getFuncName() {
+		String funcName;
+		
+		if (this.jjtGetNumChildren() >= 2 && ((SimpleNode) jjtGetChild(1)).id == YalTreeConstants.JJTFUNCTIONASSIGN)
+			funcName =  ((SimpleNode) jjtGetChild(1)).value;
+
+		else
+			funcName = this.value;
+		
+		return funcName;
+
+	}
 
 }
 /* JavaCC - OriginalChecksum=87cbf5972d530f3221d99b5c8270925a (do not edit this line) */
