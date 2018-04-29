@@ -256,12 +256,21 @@ public class CodeGenerator {
 				break;
 			}
 		}
+	}	
+	
+	//TODO Refactor this
+	private String addModuleToFunction(String funcName) {
+		if(funcName.contains("."))
+			return funcName;
+		else return root.value + "." + funcName;
+	
 	}
 
 	private void generateCallInvoke(SimpleNode callNode) {
 		String funcName, funcRetType, funcArgs = "";
 
 		funcName = callNode.value;
+		funcName = addModuleToFunction(funcName);
 
 		for (int i = 0; i < callNode.jjtGetNumChildren(); i++) {
 			ASTArgument argument = (ASTArgument) callNode.jjtGetChild(i);
