@@ -65,7 +65,7 @@ public class CodeGenerator {
 	}
 
 	private void generateStatic() {
-		// TODO Auto-generated method stub
+		// TODOLater Auto-generated method stub
 
 	}
 
@@ -131,7 +131,7 @@ public class CodeGenerator {
 		else
 			generateFuncHeader(functionNode);
 
-		// TODO: limit
+		// TODOLater: limit
 		out.println(".limit locals 10");
 		out.println(".limit stack 10");
 		out.println();
@@ -153,10 +153,10 @@ public class CodeGenerator {
 
 		switch (functionNode.getFuncReturnType()) {
 		case SCALAR:
-			returnType = "a";
+			returnType = "i";
 			break;
 		case ARRAY:
-			returnType = "i";
+			returnType = "a";
 			break;
 		case VOID:
 			returnType = "";
@@ -165,7 +165,8 @@ public class CodeGenerator {
 			returnType = "";
 			break;
 		}
-
+		//TODO load result in stack if not void
+			
 		out.println(returnType + "return");
 		out.println(".end method");
 		out.println();
@@ -260,7 +261,7 @@ public class CodeGenerator {
 				break;
 			case YalTreeConstants.JJTID:
 				funcArgs += "I";
-				// TODO Vars can be arrays
+				// TODOLater Vars can be arrays
 				break;
 			default:
 				break;
@@ -336,7 +337,7 @@ public class CodeGenerator {
 			SimpleNode term = (SimpleNode) rhs.jjtGetChild(i);
 			SimpleNode termChild = (SimpleNode) term.jjtGetChild(0);
 
-			//TODO Special Case when a = 1 + - 1;
+			//TODOLater Special Case when a = 1 + - 1;
 //			boolean isPositive = true;
 //			if (term.value != null)
 //				isPositive = false;
@@ -352,7 +353,7 @@ public class CodeGenerator {
 
 				// TODO else if for local variables and parameters
 
-				// TODO .size
+				// TODOLater .size
 				break;
 			case (YalTreeConstants.JJTCALL):
 				generateCall(termChild);
@@ -382,7 +383,7 @@ public class CodeGenerator {
 
 		// out.print(rhs.generateCode());
 
-		// TODO: right now always assuming
+		// right now always assuming
 		// ArrayAccess and ScalarAccess are
 		// from static fields, need to cover
 		// local variables aswell
