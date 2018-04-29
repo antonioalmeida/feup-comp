@@ -7,6 +7,7 @@ import semantic.Symbol;
 
 public class CodeGenerator {
 
+	private static String TAB = "\t";
 	private SimpleNode root;
 	private PrintWriter out;
 
@@ -126,8 +127,8 @@ public class CodeGenerator {
 			generateFuncHeader(functionNode);
 
 		// TODO: limit
-		out.println(".limit stack 10");
-		out.println(".limit locals 10");
+		out.println(TAB + ".limit stack 10");
+		out.println(TAB + ".limit locals 10");
 		out.println();
 
 	}
@@ -159,7 +160,8 @@ public class CodeGenerator {
 			break;
 		}
 
-		out.println(returnType + "return");
+		out.println(TAB + returnType + "return");
+		out.println();
 		out.println(".end method");
 		out.println();
 
@@ -172,6 +174,7 @@ public class CodeGenerator {
 			switch (functionChild.id) {
 			case YalTreeConstants.JJTCALL:
 				generateCall(functionChild);
+				out.println();
 				break;
 			case YalTreeConstants.JJTASSIGN:
 				generateAssign(functionChild);
@@ -189,17 +192,17 @@ public class CodeGenerator {
 	}
 
 	private void loadString(String string) {
-		out.println("ldc " + string);
+		out.println(TAB + "ldc " + string);
 	}
 
 	private void loadInt(String valueToLoad) {
 		int value = Integer.parseInt(valueToLoad);
 		if ((value >= 0) && (value <= 5)) {
-			out.println("iconst_" + value);
+			out.println(TAB + "iconst_" + value);
 		} else if (value == -1)
-			out.println("iconst_m1");
+			out.println(TAB + "iconst_m1");
 		else
-			out.println("bipush " + value);
+			out.println(TAB + "bipush " + value);
 	}
 
 	private void loadGlobalVar(String varName) {
@@ -210,7 +213,7 @@ public class CodeGenerator {
 		else
 			varType = " [I";
 
-		out.println("getstatic " + root.value + "/" + varName + varType);
+		out.println(TAB + "getstatic " + root.value + "/" + varName + varType);
 	}
 
 	private void loadLocalVar(SimpleNode node, String varName) {
@@ -228,7 +231,7 @@ public class CodeGenerator {
 		else
 			load = "load ";
 
-		out.println(varType + load + varIndex);
+		out.println(TAB + varType + load + varIndex);
 	}
 
 	private void generateCallArgs(SimpleNode callNode) {
@@ -286,8 +289,7 @@ public class CodeGenerator {
 
 		funcName = funcName.replace('.', '/');
 
-		out.println("invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
-		out.println();
+		out.println(TAB + "invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
 	}
 
 	private void generateCall(SimpleNode callNode) {
@@ -300,38 +302,39 @@ public class CodeGenerator {
 
 		switch (operation) {
 		case "+":
-			out.println("iadd");
+			operation = "iadd";
 			break;
 		case "-":
-			out.println("isub");
+			operation = "isub";
 			break;
 		case "*":
-			out.println("imul");
+			operation = "imul";
 			break;
 		case "/":
-			out.println("idiv");
+			operation = "idiv";
 			break;
 		case "<<":
-			out.println("ishl");
+			operation = "ishl";
 			break;
 		case ">>":
-			out.println("ishr");
+			operation = "ishr";
 			break;
 		case ">>>":
-			out.println("iushr");
+			operation = "iushr";
 			break;
 		case "&":
-			out.println("iand");
+			operation = "iand";
 			break;
 		case "|":
-			out.println("ior");
+			operation = "ior";
 			break;
 		case "^":
-			out.println("ixor");
+			operation = "ixor";
 			break;
 		default:
 			break;
 		}
+		out.println(TAB + operation);
 
 	}
 
@@ -392,6 +395,8 @@ public class CodeGenerator {
 		} else
 			storeLocalVar(lhs, varName);
 
+		out.println();
+
 	}
 
 	private void storeGlobalVar(String varName) {
@@ -402,7 +407,7 @@ public class CodeGenerator {
 		else
 			varType = " [I";
 
-		out.println("putstatic " + root.value + "/" + varName + varType);
+		out.println(TAB + "putstatic " + root.value + "/" + varName + varType);
 	}
 
 	private void storeLocalVar(SimpleNode node, String varName) {
@@ -416,6 +421,6 @@ public class CodeGenerator {
 		else
 			store = "store ";
 
-		out.println(varType + store + varIndex);
+		out.println(TAB + varType + store + varIndex);
 	}
 }
