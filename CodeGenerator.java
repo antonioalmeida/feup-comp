@@ -8,12 +8,11 @@ import semantic.Symbol;
 public class CodeGenerator {
 
 	private SimpleNode root;
-
 	private PrintWriter out;
 
 	public CodeGenerator(SimpleNode root) throws IOException {
 		this.root = (SimpleNode) root.children[0];
-		
+
 		String filename = this.root.value + ".j";
 
 		FileWriter fw = new FileWriter(filename, false);
@@ -38,7 +37,6 @@ public class CodeGenerator {
 	private void generateDeclaration(ASTDeclaration declaration) {
 		String varName, varType, varValue = "";
 		SimpleNode element = (SimpleNode) declaration.children[0];
-
 		varName = element.value;
 
 		if (declaration.isVarArray())
@@ -49,11 +47,9 @@ public class CodeGenerator {
 				SimpleNode assignedScalar = (SimpleNode) declaration.children[1];
 				varValue = "= " + assignedScalar.value;
 			}
-
 		}
 
 		out.println(".field static " + varName + varType + varValue);
-
 	}
 
 	private void generateGlobals() {
@@ -63,12 +59,10 @@ public class CodeGenerator {
 			if (childRoot.id == YalTreeConstants.JJTDECLARATION)
 				generateDeclaration((ASTDeclaration) childRoot);
 		}
-
 	}
 
 	private void generateStatic() {
-		// TODOLater Auto-generated method stub
-
+		// TODO Auto-generated method stub
 	}
 
 	private void generateFunctions() {
@@ -86,7 +80,6 @@ public class CodeGenerator {
 		else if (var.id == YalTreeConstants.JJTSCALARELEMENT)
 			return "I";
 		return null;
-
 	}
 
 	private void generateFuncHeader(ASTFunction functionNode) {
@@ -118,7 +111,6 @@ public class CodeGenerator {
 		}
 
 		out.println(".method public static " + funcName + "(" + funcArgs + ")" + funcReturnType);
-
 	}
 
 	private void generateFunctionMainHeader(SimpleNode functionNode) {
@@ -133,7 +125,7 @@ public class CodeGenerator {
 		else
 			generateFuncHeader(functionNode);
 
-		// TODOLater: limit
+		// TODO: limit
 		out.println(".limit stack 10");
 		out.println(".limit locals 10");
 		out.println();
@@ -141,13 +133,9 @@ public class CodeGenerator {
 	}
 
 	private void generateFunction(ASTFunction functionNode) {
-
 		generateFunctionHeader(functionNode);
-
 		generateBody(functionNode);
-
 		generateFunctionFooter(functionNode);
-
 	}
 
 	private void generateFunctionFooter(ASTFunction functionNode) {
@@ -156,12 +144,12 @@ public class CodeGenerator {
 		switch (functionNode.getFuncReturnType()) {
 		case SCALAR:
 			returnType = "i";
-			String varToReturn =functionNode.getVarNameToReturn();
+			String varToReturn = functionNode.getVarNameToReturn();
 			loadLocalVar(functionNode, varToReturn);
 			break;
 		case ARRAY:
 			returnType = "a";
-			//TODOLater loadLocalVar(functionNode, String varName);
+			// TODO loadLocalVar(functionNode, String varName);
 			break;
 		case VOID:
 			returnType = "";
@@ -170,8 +158,7 @@ public class CodeGenerator {
 			returnType = "";
 			break;
 		}
-		
-			
+
 		out.println(returnType + "return");
 		out.println(".end method");
 		out.println();
@@ -225,11 +212,9 @@ public class CodeGenerator {
 
 		out.println("getstatic " + root.value + "/" + varName + varType);
 	}
-	
+
 	private void loadLocalVar(SimpleNode node, String varName) {
-		
-		int varIndex = node.getSymbolIndex(varName);		
-		
+		int varIndex = node.getSymbolIndex(varName);
 		String varType;
 		String load;
 
@@ -238,12 +223,12 @@ public class CodeGenerator {
 		else
 			varType = "a";
 
-		if(varIndex<=3)
-			load="load_";
-		else load="load ";
-		
+		if (varIndex <= 3)
+			load = "load_";
+		else
+			load = "load ";
 
-		out.println(varType+load+varIndex);	
+		out.println(varType + load + varIndex);
 	}
 
 	private void generateCallArgs(SimpleNode callNode) {
@@ -258,12 +243,11 @@ public class CodeGenerator {
 				loadInt(argument.value);
 				break;
 			case YalTreeConstants.JJTID:
-				String varName= argument.value;
+				String varName = argument.value;
 				if (root.symbolTable.containsSymbolName(varName)) {
 					loadGlobalVar(varName);
-				}
-				else this.loadLocalVar(callNode, varName);
-				// TODO else if for local variables and parameters
+				} else
+					this.loadLocalVar(callNode, varName);
 				break;
 			default:
 				break;
@@ -288,7 +272,7 @@ public class CodeGenerator {
 				break;
 			case YalTreeConstants.JJTID:
 				funcArgs += "I";
-				// TODOLater Vars can be arrays
+				// TODO Vars can be arrays
 				break;
 			default:
 				break;
@@ -299,22 +283,16 @@ public class CodeGenerator {
 			funcRetType = "I";
 		else
 			funcRetType = "V";
-		
-		
+
 		funcName = funcName.replace('.', '/');
-		
 
 		out.println("invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
 		out.println();
-
 	}
 
 	private void generateCall(SimpleNode callNode) {
-
 		generateCallArgs(callNode);
-
 		generateCallInvoke(callNode);
-
 	}
 
 	private void generateOperation(SimpleNode rhs) {
@@ -364,61 +342,46 @@ public class CodeGenerator {
 			SimpleNode term = (SimpleNode) rhs.jjtGetChild(i);
 			SimpleNode termChild = (SimpleNode) term.jjtGetChild(0);
 
-			//TODOLater Special Case when a = 1 + - 1;
-//			boolean isPositive = true;
-//			if (term.value != null)
-//				isPositive = false;
+			// TODO Special Case when a = 1 + - 1;
+			// boolean isPositive = true;
+			// if (term.value != null)
+			// isPositive = false;
 
 			switch (termChild.id) {
 			case (YalTreeConstants.JJTINTEGER):
 				loadInt(termChild.value);
 				break;
 			case (YalTreeConstants.JJTSCALARACCESS):
-				String varName= termChild.value;
+				String varName = termChild.value;
 				if (root.symbolTable.containsSymbolName(varName)) {
 					loadGlobalVar(varName);
-				}
-				else  this.loadLocalVar(rhs, varName);
-				// TODO else if for local variables and parameters
+				} else
+					this.loadLocalVar(rhs, varName);
 
-				// TODOLater .size
+				// TODO .size
 				break;
 			case (YalTreeConstants.JJTCALL):
 				generateCall(termChild);
 				break;
 			default:
 				break;
-
 			}
-
 		}
 
 		if (rhs.hasOperation()) {
 			generateOperation(rhs);
-			
 		}
-
-
 	}
 
 	private void generateAssign(SimpleNode node) {
 		// Assign -> Lhs = Rhs
 		/// Rhs -> Term OP Term | [ ArraySize ]
 		// Term -> OP? ( INT | Call | ArrayAccess | ScalarAccess )
-
 		ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
 		generateRHS(rhs);
 
-		// out.print(rhs.generateCode());
-
-		// right now always assuming
-		// ArrayAccess and ScalarAccess are
-		// from static fields, need to cover
-		// local variables aswell
-
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
 		generateLHS(lhs);
-
 	}
 
 	private void generateLHS(SimpleNode lhs) {
@@ -426,14 +389,12 @@ public class CodeGenerator {
 
 		if (root.symbolTable.containsSymbolName(varName)) {
 			storeGlobalVar(varName);
-		}
-		else storeLocalVar(lhs, varName); 
-		// TODO else if for local variables and parameters
+		} else
+			storeLocalVar(lhs, varName);
 
 	}
 
 	private void storeGlobalVar(String varName) {
-
 		String varType;
 
 		if (root.symbolTable.getSymbolType(varName) == Symbol.Type.SCALAR)
@@ -442,22 +403,19 @@ public class CodeGenerator {
 			varType = " [I";
 
 		out.println("putstatic " + root.value + "/" + varName + varType);
-
 	}
-	
+
 	private void storeLocalVar(SimpleNode node, String varName) {
-		
-		//TODOLater for arrays
+		// TODO for arrays
 		int varIndex = node.getSymbolIndex(varName);
 		String varType = "i";
 		String store = "store";
-		
-		if(varIndex<=3)
-			store="store_";
-		else store="store ";
-		
-		out.println(varType+store+varIndex);	
 
+		if (varIndex <= 3)
+			store = "store_";
+		else
+			store = "store ";
+
+		out.println(varType + store + varIndex);
 	}
-
 }

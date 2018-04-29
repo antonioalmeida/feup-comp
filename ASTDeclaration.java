@@ -58,22 +58,6 @@ class ASTDeclaration extends SimpleNode {
     public Symbol.Type getReturnType() {
     	return Symbol.Type.VOID;
     }
-    
-   	public String generateCode() {
-   		String generatedCode = "";
-   		generatedCode += ".field static " + this.value + " I" + "\n";
-
-   		if (children != null) {
-   			for (int i = 0; i < children.length; ++i) {
-   				SimpleNode n = (SimpleNode) children[i];
-   				if (n != null) {
-   					generatedCode += n.generateCode();
-   				}
-   			}
-   		}
-
-   		return generatedCode;
-   	}
    	
    	boolean isVarScalarAssigned(){
    		return jjtGetNumChildren() == 2 && ((SimpleNode) this.jjtGetChild(1)).id ==YalTreeConstants.JJTSCALARASSIGNED;
