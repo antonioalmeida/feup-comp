@@ -22,6 +22,7 @@ public class Yal
 {
 		
   private static Yal myYal;
+  private static boolean error = false;
   
   public static void main(String args []) throws ParseException, IOException
   {
@@ -33,15 +34,17 @@ public class Yal
      
       	System.out.println("\nAST Tree:");
     	root.dump(""); // imprime no ecrã a árvore
-    	System.out.println("");
-    	 root.analyse();
-    	System.out.println("\nFunction Table:");
-    	root.printFunctionTable("");
-		System.out.println("\nSymbol Table:");
-		root.printSymbolTable("");
+    	if(error == false) { 
+    		System.out.println("");
+    	 	root.analyse();
+    		System.out.println("\nFunction Table:");
+    		root.printFunctionTable("");
+			System.out.println("\nSymbol Table:");
+			root.printSymbolTable("");
 		
-		CodeGenerator codeGenerator = new CodeGenerator(root);
-		codeGenerator.generateCode();
+			CodeGenerator codeGenerator = new CodeGenerator(root);
+			codeGenerator.generateCode();
+		}
     }
   }
 
@@ -101,26 +104,46 @@ public class Yal
  
   	
   public static void errorSkipTo(ParseException e, String errorMessage,  SkipToken... skipTargets) {
+    error = true;
     System.out.println("Syntatic Error on " + errorMessage + ". " + e.toString());
-    Token t1;
-    boolean foundTarget = false;
 
-	 //System.out.println(token);
+    skipTokens(skipTargets);
+
+  }
+
+  
+
+  public static void errorSkipTo(ParseException e, String errorMessage, Integer leftToken, Integer rightToken, SkipToken... skipTargets) {
+   error = true;
+   System.out.println("Syntatic Error on " + errorMessage + ". " + e.toString());
 	
-    do {
-      t1 = getToken(1);
+	Integer token = skipTokens(skipTargets);
+
+	if(token == leftToken) {
+		Token t;
+
+		do {
+			t = getNextToken();
+		}while(t.kind != rightToken);
+
+	}
+  	
+  }
+
+  public static Integer skipTokens(SkipToken... skipTargets) {
+
+  	boolean foundTarget = false;
+	Token t;
+	
+  	do {
+      t = getToken(1);
 
 	  for(int i = 0; i < skipTargets.length && foundTarget == false; i++)
-	  	 if(skipTargets[i].getToken() == t1.kind) {
+	  	 if(skipTargets[i].getToken() == t.kind) {
 	  	 	foundTarget = true;
 	  	 	if(skipTargets[i].isConsumed() == true)
 	  	 	  getNextToken();
-
-	  	 	/*else {
-	  	 	  System.out.println(t1); 
-	  	 	  System.out.println(skipTargets[i].token);	  	 	 
-	  	 	 
-	  	 	}*/
+	  	 	
 	  	 }
 	  
      
@@ -130,7 +153,8 @@ public class Yal
       	
     } while (!foundTarget);
 
-     //System.out.println(token);
+    return t.kind;
+
   }
 
   public static void coverageBlock() throws ParseException {
@@ -147,11 +171,8 @@ public class Yal
   	t = getToken(1);
 	
   	if(Arrays.asList(tokens).contains(t.kind)) {
-  	    System.out.println("contains");
   		getNextToken();
-  	}
-  
-  	  
+  	}	  
   }
 }
 
@@ -593,7 +614,7 @@ void Else() :
     )
   }
   catch (ParseException e) {
-    System.out.println("Syntatic error on ELSE statement. " + e.toString());
+    /*System.out.println("Syntatic error on ELSE statement. " + e.toString());
     Token t1;
     boolean hasBrackets = false;
     // If left brackets is found, skip to right bracket
@@ -612,7 +633,8 @@ void Else() :
       do {
         t1 = getNextToken();
       } while (t1.kind != RCHAVETA);
-    }
+    }*/
+	errorSkipTo(e, "ELSE statement", LCHAVETA, RCHAVETA, new SkipToken(PVIRG, true));
   }
 }
 
