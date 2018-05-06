@@ -269,15 +269,15 @@ void Module() :
 {
   try { 
   < MODULE > t=< ID >{jjtThis.jjtAddValue(t.image);} < LCHAVETA > }catch(ParseException e) {
+	error = true;
     System.out.println("Syntatic error on module declaration. " + e.toString());
-    Token t1;
     return;    
   }
   try { 
   (
     Declaration()
   )* }catch(ParseException e) {
-		errorSkipTo(e, "declarations module area", new SkipToken(PVIRG, true));
+		errorSkipTo(e, "declarations module area", new SkipToken(PVIRG, true), new SkipToken(FUNCTION, false));
      }
   try { 
   (
@@ -291,6 +291,7 @@ void Module() :
 void Declaration() :
 {}
 {
+  try { 
   (
     Element()
   )
@@ -301,7 +302,9 @@ void Declaration() :
     | ScalarAssigned() 
     )
   )?
-  < PVIRG >
+  < PVIRG > } catch(ParseException e) {
+		errorSkipTo(e, "declaration", new SkipToken(PVIRG, true), new SkipToken(FUNCTION, false));
+    }
 }
 
 void ArrayAssigned() : { }
