@@ -54,7 +54,13 @@ class ASTAssign extends SimpleNode {
         	if(lhsType.equals(Symbol.Type.ARRAY))
         	   type = Symbol.Type.ARRAY;
             
-        	initializeSymbol(lhsSymbol, type, true);
+        
+        	if(type.equals(Symbol.Type.ARRAY) && !verifySymbolTypes(lhsSymbol, true, Symbol.Type.ARRAY)) {
+        		 System.out.println("Semantic Error: Can't initialize array " + lhsSymbol+" as its size should have been declared before.");
+                 return false;
+        	}
+        	else
+        		initializeSymbol(lhsSymbol, type, true);
         }
 
         return true;

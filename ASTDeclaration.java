@@ -28,28 +28,47 @@ class ASTDeclaration extends SimpleNode {
         // true if declaration is of the 
         // form LHS = RHS;
         boolean scalarInitialization = false; 
-
+       	
+        boolean alreadyChecked = false;
         if(children.length > 1) {
-        	initialized = true;
+        	initialized = true;        	
         	SimpleNode rightChild = (SimpleNode) children[1];
-        	Symbol.Type typeRightChild = rightChild.getReturnType();
-        	
+            Symbol.Type typeRightChild = rightChild.getReturnType();
         	if(! typeLeftChild.equals(typeRightChild)) {
         		type = Symbol.Type.ARRAY;
         	}
         	else if(typeLeftChild.equals(Symbol.Type.SCALAR))
         		scalarInitialization = true;
+        	
+        	 if(typeLeftChild.equals(Symbol.Type.ARRAY) && typeRightChild.equals(Symbol.Type.SCALAR)) {
+        		alreadyChecked = true;
+        		if(! verifySymbolTypes(symbolName, true, Symbol.Type.ARRAY)){ //scalarInitialization is always valid
+            		 	System.out.println("Semantic Error: Can't initialize array " + symbolName+" as its size should have been declared before.");
+            		 	return false;
+                }
+             	/*else {
+             		initializeSymbol(symbolName, Symbol.Type.ARRAY, true);
+            			return true;
+             	}*/
+             	
+             }
         }
         	
-        if(!initializeSymbol(symbolName, type, initialized)) {
+        
+        if(alreadyChecked == false && !initializeSymbol(symbolName, type, initialized)) {
             if(!scalarInitialization) {
                System.out.println("Semantic Error: Can't initialize " + symbolName);
                return false;
             }
-        	else { //scalarInitialization is always valid
-                initializeSymbol(symbolName, Symbol.Type.ARRAY, true);
-                return true;
+        	else if(! verifySymbolTypes(symbolName, true, Symbol.Type.ARRAY)){ //scalarInitialization is always valid
+        		 System.out.println("Semantic Error: Can't initialize array " + symbolName+" as its size should have been declared before.");
+                return false;
             }
+        	
+        	/*else {
+        		initializeSymbol(symbolName, Symbol.Type.ARRAY, true);
+                return true;
+        	}*/
         }
 
        return true;
