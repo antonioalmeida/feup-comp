@@ -16,6 +16,25 @@ class SimpleNode implements Node {
     protected FunctionTable functionTable;
     protected boolean hasScope;
     protected boolean hasFunctionScope;
+    protected Token firstToken;
+    protected Token lastToken;
+    
+    public Token jjtGetFirstToken() {
+        return firstToken;
+    }
+
+    public void jjtSetFirstToken(Token token) {
+        firstToken = token;
+    }
+
+    public Token jjtGetLastToken() {
+        return lastToken;
+    }
+
+    public void jjtSetLastToken(Token token) {
+        lastToken = token;
+    }
+
     
     public SimpleNode(int i) {
             this.value = "";
@@ -266,6 +285,10 @@ class SimpleNode implements Node {
                 return ((SimpleNode) children[0]).getRealValue();
                 
         return value;
+    }
+    
+    public void printSemanticError() {
+    	
     }
 
 }

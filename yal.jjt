@@ -4,6 +4,7 @@ options
 {
   LOOKAHEAD= 1;
   MULTI = true;
+  TRACK_TOKENS = true;
 }
 
 PARSER_BEGIN(Yal)
@@ -48,14 +49,7 @@ public class Yal
     }
   }
 
-  public static void generateCode(SimpleNode root) throws IOException
-  {
-    FileOutputStream outputStream = new FileOutputStream("test.j");
-    String codeString = root.generateCode();
-    byte [] strToBytes = codeString.getBytes();
-    outputStream.write(strToBytes);
-    outputStream.close();
-  }
+ 
 
   public static File validFilePath(String filePath) {
 		File file = new File(filePath);
@@ -66,11 +60,13 @@ public class Yal
 			return null;
 			
   }
+
   	
   public static boolean validArgs(String args []) {
 
 		if(args.length > 1) { 
-			System.out.println("Invalid number of arguments");
+			System.out.println("Error: Invalid number of arguments");
+			System.out.println("Usage: java Yal [filePath]");
 			return false;
 		}
 		
@@ -80,7 +76,8 @@ public class Yal
 		else if(args.length == 1) {
                         File file;
                         if( (file = validFilePath(args[0])) == null) {
-                                System.out.println("Invalid file Path");
+                                System.out.println("Error: Invalid file Path");
+                                System.out.println("Usage: java Yal [filePath]");
                                 return false;
                         }
                         else {
@@ -90,6 +87,7 @@ public class Yal
 									myYal = new Yal(stream);
 								} catch (FileNotFoundException e) {
 									System.out.println("Error in stream constructor: ");
+									System.out.println("Usage: java Yal [filePath]");
 									e.printStackTrace();
 									return false;
 								}
@@ -102,6 +100,14 @@ public class Yal
   }
 
  
+   public static void generateCode(SimpleNode root) throws IOException
+  {
+    FileOutputStream outputStream = new FileOutputStream("test.j");
+    String codeString = root.generateCode();
+    byte [] strToBytes = codeString.getBytes();
+    outputStream.write(strToBytes);
+    outputStream.close();
+  }
   	
   public static void errorSkipTo(ParseException e, String errorMessage,  SkipToken... skipTargets) {
     error = true;
