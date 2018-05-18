@@ -11,6 +11,8 @@ public class CodeGenerator {
 	private SimpleNode root;
 	private PrintWriter out;
 
+	private int number_of_loops = 1;
+
 	public CodeGenerator(SimpleNode root) throws IOException {
 		this.root = (SimpleNode) root.children[0];
 
@@ -180,7 +182,7 @@ public class CodeGenerator {
 				generateAssign(functionChild);
 				break;
 			case YalTreeConstants.JJTWHILE:
-				// generateWhile();
+				generateWhile(functionChild);
 				break;
 			case YalTreeConstants.JJTIF:
 				// generateIf();
@@ -190,6 +192,53 @@ public class CodeGenerator {
 			}
 		}
 	}
+
+	private void generateWhile(SimpleNode functionChild) {
+		int loop_number = number_of_loops;
+		out.println("loop" + loop_number + ":");
+
+		SimpleNode exprTest = (SimpleNode) functionChild.jjtGetChild(0);
+		SimpleNode lhs = (SimpleNode) exprTest.jjtGetChild(0);
+		ASTRhs rhs = (ASTRhs) exprTest.jjtGetChild(1);
+
+		generateLHS2(lhs);
+		generateRHS(rhs);
+
+		String relation = generate_relation_op(exprTest.value);
+		
+		out.println(relation + " loop" + loop_number + "_end");
+
+		// generate body while
+		generateBody(functionChild);
+
+		out.println("goto loop" + loop_number);
+		out.println("loop" + loop_number + "_end:");
+
+		number_of_loops++;
+	}
+
+	private String generate_relation_op(String rela_op) {
+		switch (rela_op) {
+		case ">":
+			return "if_icmple";
+		case "<":
+			return "if_icmpge";
+		case "<=":
+			return "if_icmpgt";
+		case ">=":
+			return "if_icmplt";
+		case "==":
+			return "if_icmpne";
+		case "!=":
+			return "if_icmpeq";
+		default:
+			break;
+		}
+		return "";
+
+	}
+
+	
 
 	private void loadString(String string) {
 		out.println(TAB + "ldc " + string);
@@ -256,14 +305,15 @@ public class CodeGenerator {
 				break;
 			}
 		}
-	}	
-	
-	//TODO Refactor this
+	}
+
+	// TODO Refactor this
 	private String addModuleToFunction(String funcName) {
-		if(funcName.contains("."))
+		if (funcName.contains("."))
 			return funcName;
-		else return root.value + "." + funcName;
-	
+		else
+			return root.value + "." + funcName;
+
 	}
 
 	private void generateCallInvoke(SimpleNode callNode) {
@@ -403,6 +453,18 @@ public class CodeGenerator {
 			storeGlobalVar(varName);
 		} else
 			storeLocalVar(lhs, varName);
+
+		out.println();
+
+	}
+	
+	private void generateLHS2(SimpleNode lhs) {
+		String varName = lhs.value;
+
+		if (root.symbolTable.containsSymbolName(varName)) {
+			loadGlobalVar(varName);
+		} else
+			loadLocalVar(lhs, varName);
 
 		out.println();
 
