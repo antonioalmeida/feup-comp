@@ -184,8 +184,8 @@ public class CodeGenerator {
 			case YalTreeConstants.JJTWHILE:
 				generateWhile(functionChild);
 				break;
-			case YalTreeConstants.JJTIF:
-				// generateIf();
+			case YalTreeConstants.JJTIFSTATEMENT:
+				generateIfStatement(functionChild);
 				break;
 			default:
 				break;
@@ -215,6 +215,45 @@ public class CodeGenerator {
 		out.println("loop" + loop_number + "_end:");
 
 		number_of_loops++;
+	}
+
+	private void generateIfStatement(SimpleNode node) {
+		SimpleNode ifNode = (SimpleNode) node.jjtGetChild(0);
+		boolean hasElse = node.jjtGetNumChildren() > 1;
+
+		int loopId = number_of_loops++;
+
+		generateIf(ifNode, loopId, hasElse);
+
+		if(node.jjtGetNumChildren() > 1) {
+			SimpleNode elseNode = (SimpleNode) node.jjtGetChild(1);
+			generateElse(elseNode, loopId);
+		}
+	}
+
+	private void generateIf(SimpleNode node, int loopId, boolean hasElse) {
+		SimpleNode exprTest = (SimpleNode) node.jjtGetChild(0);
+		SimpleNode lhs = (SimpleNode) exprTest.jjtGetChild(0);
+		ASTRhs rhs = (ASTRhs) exprTest.jjtGetChild(1);
+
+		generateLHS2(lhs);
+		generateRHS(rhs);
+
+		String relation = generate_relation_op(exprTest.value);
+		out.println(relation + " loop" + loopId + "_end");
+
+		// generate If body
+		generateBody(node);
+
+		if(hasElse)
+			out.println("goto loop" + loopId + "_next");
+		out.println("loop" + loopId + "_end:");
+	}
+
+	private void generateElse(SimpleNode node, int loopId) {
+		generateBody(node);
+
+		out.println("loop" + loopId + "_next:");
 	}
 
 	private String generate_relation_op(String rela_op) {
