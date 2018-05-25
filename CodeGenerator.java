@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 import semantic.Symbol;
 import utils.Utils;
 
+//arrays como argumento - [i em vez de i
+
 public class CodeGenerator {
 
 	private static String TAB = "\t";
@@ -414,7 +416,12 @@ public class CodeGenerator {
 				funcArgs += "I";
 				break;
 			case YalTreeConstants.JJTID:
-				funcArgs += "I";
+				//if()
+				if (argument.getSymbolTable().getSymbolType(argument.value)==Symbol.Type.SCALAR)
+					funcArgs += "I";
+				else 
+					funcArgs += "[I";
+				
 				// TODO Vars can be arrays
 				break;
 			default:
@@ -500,7 +507,8 @@ public class CodeGenerator {
 				} else
 					this.loadLocalVar(rhs, varName);
 
-				// TODO .size
+				if (((ASTScalarAccess) termChild).getSizeArray())
+					out.println(TAB + "arraylength");
 				break;
 			case (YalTreeConstants.JJTCALL):
 				generateCall(termChild);
@@ -546,9 +554,6 @@ public class CodeGenerator {
 
 		}
 
-		
-	
-
 	}
 
 	private void generateRHS(ASTRhs rhs) {
@@ -590,7 +595,7 @@ public class CodeGenerator {
 		if (((ASTAssign) node).isArrayAcess()) {
 			generateArrayAcess(lhs);
 			generateRHS(rhs);
-			out.println(TAB+"iastore");
+			out.println(TAB + "iastore");
 			out.println();
 		} else {
 			generateRHS(rhs);
