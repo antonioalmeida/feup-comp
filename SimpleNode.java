@@ -287,10 +287,21 @@ class SimpleNode implements Node {
         return value;
     }
     
-    public void printSemanticError() {
-    	
+    public void printSemanticError(String errorMsg) {
+    	String functionName = getFunction();
+    	String functionModuleMsg = ", module "+getModule();
+    	if(! functionName.equals(""))
+    		functionModuleMsg += ", function "+functionName;
+    	System.out.println("Semantic Error at line "+firstToken.beginLine +  ", column "+firstToken.beginColumn  +functionModuleMsg+": "+errorMsg + ".");
     }
-
+    
+    public String getFunction() {
+    	return ((SimpleNode) parent).getFunction();
+    }
+    
+    public String getModule() {
+    	return ((SimpleNode) parent).getModule();
+    }
 }
 
 /* JavaCC - OriginalChecksum=a536ad506ca058676615e1a3304534ab (do not edit this line) */

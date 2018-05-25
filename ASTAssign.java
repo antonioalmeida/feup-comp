@@ -22,7 +22,8 @@ class ASTAssign extends SimpleNode {
         SimpleNode lhsChild = (SimpleNode) children[0];
         
         if(lhsChild.getSizeArray()) {
-        	System.out.println("Semantic Error: Can't assign the size of array "+lhsChild.value+".");
+        	//System.out.println("Semantic Error: Can't assign the size of array "+lhsChild.value+".");
+        	printSemanticError("Can't assign the size of array "+lhsChild.value);
         	return false;
         }
         Symbol.Type lhsType = lhsChild.getReturnType();
@@ -36,12 +37,14 @@ class ASTAssign extends SimpleNode {
         String rhsSymbol = (String) rhsChild.jjtGetValue();
         
         if(!rhsTypes.contains(Symbol.Type.SCALAR) && !rhsTypes.contains(Symbol.Type.ARRAY)) {
-        	System.out.println("Semantic Error: On expression assignement of "+lhsSymbol+".");
+        	//System.out.println("Semantic Error: On expression assignement of "+lhsSymbol+".");
+        	printSemanticError("On expression assignement of "+lhsSymbol);
         	return false;
         }
         else if(!rhsTypes.contains(Symbol.Type.SCALAR) && rhsTypes.contains(Symbol.Type.ARRAY)) {
         	if(!initializeSymbol(lhsSymbol, Symbol.Type.ARRAY, true)) {
-        		System.out.println("Semantic Error: " + lhsSymbol + " has been declared as a scalar, reassigned as an array.");
+        		//System.out.println("Semantic Error: " + lhsSymbol + " has been declared as a scalar, reassigned as an array.");
+        		printSemanticError(lhsSymbol + " has been declared as a scalar, reassigned as an array");
         		return false;
         	}
 
@@ -56,8 +59,9 @@ class ASTAssign extends SimpleNode {
             
         
         	if(type.equals(Symbol.Type.ARRAY) && !verifySymbolTypes(lhsSymbol, true, Symbol.Type.ARRAY)) {
-        		 System.out.println("Semantic Error: Can't initialize array " + lhsSymbol+" as its size should have been declared before.");
-                 return false;
+        		 //System.out.println("Semantic Error: Can't initialize array " + lhsSymbol+" as its size should have been declared before.");
+                 printSemanticError("Can't initialize array " + lhsSymbol+" as its size should have been declared before");
+        		 return false;
         	}
         	else
         		initializeSymbol(lhsSymbol, type, true);

@@ -12,6 +12,10 @@ module test4{
  function e = olamundo3(d[], b, c[]){
 	
  }
+
+ function d[] = olamundo4(){
+
+ }
  
 
 

@@ -46,6 +46,7 @@ class ASTCall extends SimpleNode {
 			this.types = functionsTypes;
 			if(functionsTypes.size() == 0) {
 				System.out.println("Semantic Error: Function "+value+" with parameter types "+argumentTypes +"  has not been defined");
+				printSemanticError("Function "+value+" with parameter types "+argumentTypes +"  has not been defined");
 				return false;
 			}
 		}

@@ -21,7 +21,8 @@ class ASTArraySize extends SimpleNode {
             String symbolName = ((SimpleNode) children[0]).value;
 
             if(!verifySymbolTypes(symbolName, true, Symbol.Type.SCALAR)) {
-                System.out.println("Semantic Error: " + symbolName + " should have been initialized as a scalar");
+                //System.out.println("Semantic Error: " + symbolName + " should have been initialized as a scalar");
+                printSemanticError(symbolName + " should have been initialized as a scalar");
                 return false;
             }
         }

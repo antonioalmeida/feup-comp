@@ -43,8 +43,9 @@ class ASTDeclaration extends SimpleNode {
         	 if(typeLeftChild.equals(Symbol.Type.ARRAY) && typeRightChild.equals(Symbol.Type.SCALAR)) {
         		alreadyChecked = true;
         		if(! verifySymbolTypes(symbolName, true, Symbol.Type.ARRAY)){ //scalarInitialization is always valid
-            		 	System.out.println("Semantic Error: Can't initialize array " + symbolName+" as its size should have been declared before.");
-            		 	return false;
+            		 	//System.out.println("Semantic Error: Can't initialize array " + symbolName+" as its size should have been declared before.");
+            		 	printSemanticError("Can't initialize array " + symbolName+" as its size should have been declared before");
+        				return false;
                 }
              	/*else {
              		initializeSymbol(symbolName, Symbol.Type.ARRAY, true);
@@ -57,12 +58,14 @@ class ASTDeclaration extends SimpleNode {
         
         if(alreadyChecked == false && !initializeSymbol(symbolName, type, initialized)) {
             if(!scalarInitialization) {
-               System.out.println("Semantic Error: Can't initialize " + symbolName);
+               //System.out.println("Semantic Error: Can't initialize " + symbolName);
+               printSemanticError("Can't initialize " + symbolName);
                return false;
             }
         	else if(! verifySymbolTypes(symbolName, true, Symbol.Type.ARRAY)){ //scalarInitialization is always valid
-        		 System.out.println("Semantic Error: Can't initialize array " + symbolName+" as its size should have been declared before.");
-                return false;
+        		 //System.out.println("Semantic Error: Can't initialize array " + symbolName+" as its size should have been declared before.");
+                 printSemanticError("Can't initialize array " + symbolName+" as its size should have been declared before");
+        		 return false;
             }
         	
         	/*else {

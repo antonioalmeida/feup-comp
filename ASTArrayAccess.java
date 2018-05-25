@@ -18,7 +18,8 @@ class ASTArrayAccess extends SimpleNode {
 	
 	public boolean analyseSymbolTable() {
 		if(!verifySymbolTypes(value, true, Symbol.Type.ARRAY)) {
-			System.out.println("Semantic Error: " + value + " should have been initialized as an array");
+			//System.out.println("Semantic Error: " + value + " should have been initialized as an array");
+			printSemanticError(value + " should have been initialized as an array");
 			return false;
 		}
 
