@@ -65,7 +65,62 @@ public class CodeGenerator {
 	}
 
 	private void generateStatic() {
-		// TODO Auto-generated method stub
+		out.println();
+		out.println(".method static public <clinit>()V");
+		out.println(TAB + ".limit stack 10");
+		out.println(TAB + ".limit locals 0");
+		out.println();
+		
+		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
+			SimpleNode childRoot = (SimpleNode) root.jjtGetChild(i);
+
+			if (childRoot.id == YalTreeConstants.JJTDECLARATION)
+				if(((ASTDeclaration)childRoot).isVarArrayInitialized())
+					generateArrayInitilization(childRoot);
+			//	generateArray
+		}
+		
+		
+		out.println(TAB + "return");
+		out.println(".end method");
+		
+		
+		
+		
+		
+	}
+
+	private void generateArrayInitilization(SimpleNode declaration) {
+		SimpleNode scalarElement = ((SimpleNode)declaration.jjtGetChild(0));
+		SimpleNode arraySize = (SimpleNode)declaration.jjtGetChild(1).jjtGetChild(0);
+		
+		String nameModule = this.root.value;		
+		String nameVariable = scalarElement.value;
+		
+		String sizeArray; 
+		//= arraySize.value;
+		
+		if(arraySize.jjtGetNumChildren()!=0){
+			SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);						
+			sizeArray= scalarAccess.value;
+			loadGlobalVar(sizeArray);
+		}
+		else {
+			sizeArray = arraySize.value; 
+			out.println(TAB + "bipush " + sizeArray);
+		}
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		out.println(TAB + "newarray int");
+		out.println(TAB + "putstatic " + nameModule + "/" + nameVariable + " [I");  
+		out.println();
 	}
 
 	private void generateFunctions() {
@@ -192,19 +247,27 @@ public class CodeGenerator {
 			}
 		}
 	}
+	
+	private String generateExprtest(SimpleNode exprTest) {
+		
+		
+		SimpleNode lhs = (SimpleNode) exprTest.jjtGetChild(0);
+		ASTRhs rhs = (ASTRhs) exprTest.jjtGetChild(1);
+
+		generateLHSCompare(lhs);
+		generateRHS(rhs);
+
+		return generate_relation_op(exprTest.value);
+		
+	}
 
 	private void generateWhile(SimpleNode functionChild) {
 		int loop_number = number_of_loops;
 		out.println("loop" + loop_number + ":");
-
+		
 		SimpleNode exprTest = (SimpleNode) functionChild.jjtGetChild(0);
-		SimpleNode lhs = (SimpleNode) exprTest.jjtGetChild(0);
-		ASTRhs rhs = (ASTRhs) exprTest.jjtGetChild(1);
 
-		generateLHS2(lhs);
-		generateRHS(rhs);
-
-		String relation = generate_relation_op(exprTest.value);
+		String relation = generateExprtest(exprTest);
 		
 		out.println(relation + " loop" + loop_number + "_end");
 
@@ -443,10 +506,10 @@ public class CodeGenerator {
 		generateRHS(rhs);
 
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
-		generateLHS(lhs);
+		generateLHSAssign(lhs);
 	}
 
-	private void generateLHS(SimpleNode lhs) {
+	private void generateLHSAssign(SimpleNode lhs) {
 		String varName = lhs.value;
 
 		if (root.symbolTable.containsSymbolName(varName)) {
@@ -458,7 +521,7 @@ public class CodeGenerator {
 
 	}
 	
-	private void generateLHS2(SimpleNode lhs) {
+	private void generateLHSCompare(SimpleNode lhs) {
 		String varName = lhs.value;
 
 		if (root.symbolTable.containsSymbolName(varName)) {
