@@ -91,5 +91,9 @@ class ASTDeclaration extends SimpleNode {
 				&& ((SimpleNode) this.jjtGetChild(1)).id == YalTreeConstants.JJTARRAYASSIGNED);
 	}
 
+	boolean isVarArrayInitialized() {
+		return (jjtGetNumChildren() == 2 && ((SimpleNode) this.jjtGetChild(1)).id == YalTreeConstants.JJTARRAYASSIGNED);
+	}
+
 }
 /* JavaCC - OriginalChecksum=f0ec2df2bb99c0df69ade4aa7071b5f6 (do not edit this line) */

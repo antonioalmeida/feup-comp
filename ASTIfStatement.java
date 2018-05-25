@@ -17,7 +17,7 @@ class ASTIfStatement extends SimpleNode {
   public ASTIfStatement(Yal p, int id) {
     super(p, id);
   }
-  
+
   public boolean analyseSymbolTable() {
 	  if(children != null && children.length == 2) {
 		  ASTIf ifChild = (ASTIf) children[0];

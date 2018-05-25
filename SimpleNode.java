@@ -287,6 +287,7 @@ class SimpleNode implements Node {
         return value;
     }
     
+
     public void printSemanticError(String errorMsg) {
     	String functionName = getFunction();
     	String functionModuleMsg = ", module "+getModule();
@@ -302,6 +303,13 @@ class SimpleNode implements Node {
     public String getModule() {
     	return ((SimpleNode) parent).getModule();
     }
+
+    
+
+    public int getLastIndex() {
+        return symbolTable.getIndexCount();
+    }
+
 }
 
 /* JavaCC - OriginalChecksum=a536ad506ca058676615e1a3304534ab (do not edit this line) */
