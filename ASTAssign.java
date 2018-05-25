@@ -69,6 +69,25 @@ class ASTAssign extends SimpleNode {
     public Symbol.Type getReturnType() {
         return Symbol.Type.VOID;  
     }
+    
+    public boolean isArrayAssigned() {
+    	SimpleNode rhs = (SimpleNode) this.jjtGetChild(1);
+
+    	SimpleNode arrayAssigned = (SimpleNode) rhs.jjtGetChild(0);
+    	
+        if (arrayAssigned.id==YalTreeConstants.JJTARRAYASSIGNED)
+        	return true;
+        return false;
+    }
+    
+    public boolean isArrayAcess() {
+    	SimpleNode lhs = (SimpleNode) this.jjtGetChild(0);
+
+    	
+        if (lhs.id==YalTreeConstants.JJTARRAYACCESS)
+        	return true;
+        return false;
+    }
 
 }
 /* JavaCC - OriginalChecksum=8a81cbd863c4645c551a38479e4343a7 (do not edit this line) */

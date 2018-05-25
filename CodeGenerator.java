@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import semantic.Symbol;
+import utils.Utils;
 
 public class CodeGenerator {
 
@@ -70,56 +71,42 @@ public class CodeGenerator {
 		out.println(TAB + ".limit stack 10");
 		out.println(TAB + ".limit locals 0");
 		out.println();
-		
+
 		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
 			SimpleNode childRoot = (SimpleNode) root.jjtGetChild(i);
 
 			if (childRoot.id == YalTreeConstants.JJTDECLARATION)
-				if(((ASTDeclaration)childRoot).isVarArrayInitialized())
+				if (((ASTDeclaration) childRoot).isVarArrayInitialized())
 					generateArrayInitilization(childRoot);
-			//	generateArray
+			// generateArray
 		}
-		
-		
+
 		out.println(TAB + "return");
 		out.println(".end method");
-		
-		
-		
-		
-		
+
 	}
 
 	private void generateArrayInitilization(SimpleNode declaration) {
-		SimpleNode scalarElement = ((SimpleNode)declaration.jjtGetChild(0));
-		SimpleNode arraySize = (SimpleNode)declaration.jjtGetChild(1).jjtGetChild(0);
-		
-		String nameModule = this.root.value;		
+		SimpleNode scalarElement = ((SimpleNode) declaration.jjtGetChild(0));
+		SimpleNode arraySize = (SimpleNode) declaration.jjtGetChild(1).jjtGetChild(0);
+
+		String nameModule = this.root.value;
 		String nameVariable = scalarElement.value;
-		
-		String sizeArray; 
-		//= arraySize.value;
-		
-		if(arraySize.jjtGetNumChildren()!=0){
-			SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);						
-			sizeArray= scalarAccess.value;
+
+		String sizeArray;
+		// = arraySize.value;
+
+		if (arraySize.jjtGetNumChildren() != 0) {
+			SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);
+			sizeArray = scalarAccess.value;
 			loadGlobalVar(sizeArray);
-		}
-		else {
-			sizeArray = arraySize.value; 
+		} else {
+			sizeArray = arraySize.value;
 			out.println(TAB + "bipush " + sizeArray);
 		}
-			
-		
-		
-		
-		
-		
-		
-		
-		
+
 		out.println(TAB + "newarray int");
-		out.println(TAB + "putstatic " + nameModule + "/" + nameVariable + " [I");  
+		out.println(TAB + "putstatic " + nameModule + "/" + nameVariable + " [I");
 		out.println();
 	}
 
@@ -247,10 +234,9 @@ public class CodeGenerator {
 			}
 		}
 	}
-	
+
 	private String generateExprtest(SimpleNode exprTest) {
-		
-		
+
 		SimpleNode lhs = (SimpleNode) exprTest.jjtGetChild(0);
 		ASTRhs rhs = (ASTRhs) exprTest.jjtGetChild(1);
 
@@ -258,17 +244,17 @@ public class CodeGenerator {
 		generateRHS(rhs);
 
 		return generate_relation_op(exprTest.value);
-		
+
 	}
 
 	private void generateWhile(SimpleNode functionChild) {
 		int loop_number = number_of_loops;
 		out.println("loop" + loop_number + ":");
-		
+
 		SimpleNode exprTest = (SimpleNode) functionChild.jjtGetChild(0);
 
 		String relation = generateExprtest(exprTest);
-		
+
 		out.println(relation + " loop" + loop_number + "_end");
 
 		// generate body while
@@ -288,7 +274,7 @@ public class CodeGenerator {
 
 		generateIf(ifNode, loopId, hasElse);
 
-		if(node.jjtGetNumChildren() > 1) {
+		if (node.jjtGetNumChildren() > 1) {
 			SimpleNode elseNode = (SimpleNode) node.jjtGetChild(1);
 			generateElse(elseNode, loopId);
 		}
@@ -296,14 +282,14 @@ public class CodeGenerator {
 
 	private void generateIf(SimpleNode node, int loopId, boolean hasElse) {
 		SimpleNode exprTest = (SimpleNode) node.jjtGetChild(0);
-		
+
 		String relation = generateExprtest(exprTest);
 		out.println(relation + " loop" + loopId + "_end");
 
 		// generate If body
 		generateBody(node);
 
-		if(hasElse)
+		if (hasElse)
 			out.println("goto loop" + loopId + "_next");
 		out.println("loop" + loopId + "_end:");
 	}
@@ -334,8 +320,6 @@ public class CodeGenerator {
 		return "";
 
 	}
-
-	
 
 	private void loadString(String string) {
 		out.println(TAB + "ldc " + string);
@@ -494,8 +478,7 @@ public class CodeGenerator {
 
 	}
 
-	private void generateRHS(ASTRhs rhs) {
-
+	private void generateTerm(ASTRhs rhs) {
 		for (int i = 0; i < rhs.jjtGetNumChildren(); i++) {
 
 			SimpleNode term = (SimpleNode) rhs.jjtGetChild(i);
@@ -522,6 +505,11 @@ public class CodeGenerator {
 			case (YalTreeConstants.JJTCALL):
 				generateCall(termChild);
 				break;
+
+			case (YalTreeConstants.JJTARRAYACCESS):
+				generateArrayAcess(termChild);
+				out.println(TAB + "iaload");
+				break;
 			default:
 				break;
 			}
@@ -530,17 +518,86 @@ public class CodeGenerator {
 		if (rhs.hasOperation()) {
 			generateOperation(rhs);
 		}
+
+	}
+
+	private void generateArrayAcess(SimpleNode arrayAcess) {
+		String varName = arrayAcess.value;
+		SimpleNode indexNode = (SimpleNode) arrayAcess.jjtGetChild(0);
+		String indexValue = indexNode.value;
+
+		// ai = a[i]
+
+		// Load array a
+		if (root.symbolTable.containsSymbolName(varName)) {
+			loadGlobalVar(varName);
+		} else
+			this.loadLocalVar(arrayAcess, varName);
+
+		// Load i value
+		if (Utils.isInteger(indexValue)) {
+			loadInt(indexValue);
+		} else {
+
+			if (root.symbolTable.containsSymbolName(indexValue)) {
+				loadGlobalVar(indexValue);
+			} else
+				this.loadLocalVar(indexNode, indexValue);
+
+		}
+
+		
+	
+
+	}
+
+	private void generateRHS(ASTRhs rhs) {
+		SimpleNode rhsChild = (SimpleNode) rhs.jjtGetChild(0);
+
+		if (rhsChild.id == YalTreeConstants.JJTTERM)
+			generateTerm(rhs);
+		else {
+			generateArrayAssigned(rhsChild);
+		}
+
+	}
+
+	private void generateArrayAssigned(SimpleNode arrayAssigned) {
+		SimpleNode arraySize = (SimpleNode) arrayAssigned.jjtGetChild(0);
+		SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);
+
+		String varName = scalarAccess.value;
+		if (root.symbolTable.containsSymbolName(varName)) {
+			loadGlobalVar(varName);
+		} else
+			this.loadLocalVar(scalarAccess, varName);
+
+		out.println(TAB + "newarray int");
+
 	}
 
 	private void generateAssign(SimpleNode node) {
 		// Assign -> Lhs = Rhs
 		/// Rhs -> Term OP Term | [ ArraySize ]
 		// Term -> OP? ( INT | Call | ArrayAccess | ScalarAccess )
-		ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
-		generateRHS(rhs);
 
+		// if (((ASTAssign) node).isArrayAssigned()) {
+		//
+		// } else {
+		ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
-		generateLHSAssign(lhs);
+
+		if (((ASTAssign) node).isArrayAcess()) {
+			generateArrayAcess(lhs);
+			generateRHS(rhs);
+			out.println(TAB+"iastore");
+			out.println();
+		} else {
+			generateRHS(rhs);
+			generateLHSAssign(lhs);
+
+		}
+
 	}
 
 	private void generateLHSAssign(SimpleNode lhs) {
@@ -554,7 +611,7 @@ public class CodeGenerator {
 		out.println();
 
 	}
-	
+
 	private void generateLHSCompare(SimpleNode lhs) {
 		String varName = lhs.value;
 
@@ -581,7 +638,13 @@ public class CodeGenerator {
 	private void storeLocalVar(SimpleNode node, String varName) {
 		// TODO for arrays
 		int varIndex = node.getSymbolIndex(varName);
-		String varType = "i";
+
+		String varType;
+		if (((ASTAssign) node.parent).isArrayAssigned())
+			varType = "a";
+		else
+			varType = "i";
+
 		String store = "store";
 
 		if (varIndex <= 3)
