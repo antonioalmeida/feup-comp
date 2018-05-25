@@ -287,8 +287,13 @@ class SimpleNode implements Node {
         return value;
     }
     
+    //TODO: what is this for?
     public void printSemanticError() {
     	
+    }
+
+    public int getLastIndex() {
+        return symbolTable.getIndexCount();
     }
 
 }

@@ -18,13 +18,20 @@ public class SymbolTable {
     protected HashMap<String, Symbol> symbols;
 
     private int indexCount;
-    private boolean isFunction;
+    private boolean useIndex;
 
-    public SymbolTable(SymbolTable parent, boolean isFunction) {
+    public SymbolTable(SymbolTable parent, boolean useIndex, int firstIndex) {
+       this.parent = parent;
+        symbols = new HashMap<String, Symbol>();
+        indexCount = firstIndex;
+        this.useIndex = useIndex;
+    }
+
+    public SymbolTable(SymbolTable parent, boolean useIndex) {
         this.parent = parent;
         symbols = new HashMap<String, Symbol>();
         indexCount = 0;
-        this.isFunction = isFunction;
+        this.useIndex = useIndex;
     }
 
     public SymbolTable(SymbolTable parent) {
@@ -90,8 +97,14 @@ public class SymbolTable {
             return false;
         else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
             if(useIndex) {
-                this.addSymbol(symbolName, type, initialized, print, this.indexCount);
-                this.indexCount++;
+                if(containsSymbol(symbolName, true, type)) {
+                    int symbolIndex = getSymbolIndex(symbolName);
+                    this.addSymbol(symbolName, type, initialized, print, symbolIndex);
+                }
+                else {
+                    this.addSymbol(symbolName, type, initialized, print, this.indexCount);
+                    this.indexCount++;
+                }
             }
             else
                 this.addSymbol(symbolName, type, initialized, print, -1);
@@ -102,7 +115,7 @@ public class SymbolTable {
     }
       
     public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print) {
-        return initializeSymbol(symbolName, type, initialized, print, true, isFunction);
+        return initializeSymbol(symbolName, type, initialized, print, true, useIndex);
     }
 
     public Symbol.Type getSymbolType(String symbolName) {
@@ -120,8 +133,12 @@ public class SymbolTable {
     public int getSymbolIndex(String symbolName) {
         if(containsSymbolName(symbolName))
             return symbols.get(symbolName).getIndex();
-        else 
-            return -1;
+        else {
+            if(parent != null)
+                return parent.getSymbolIndex(symbolName);
+            else
+                return -1;
+        }
     }
     
     public void printSymbols(String prefix) {       
@@ -134,12 +151,16 @@ public class SymbolTable {
             Symbol symbol = pair.getValue();
             
             if(symbol.getPrint())
-                System.out.println(prefix+symbolName+": "+symbol.getType() /*+ " " + symbol.getIndex()*/);
+                System.out.println(prefix+symbolName+": "+symbol.getType() + " - " + symbol.getIndex());
         }
     }
 
 	public HashMap<String, Symbol> getSymbols() {
 		return symbols;
 	}
+
+    public int getIndexCount() {
+        return indexCount;
+    }
     
 }
