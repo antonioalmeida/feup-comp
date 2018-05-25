@@ -569,13 +569,19 @@ public class CodeGenerator {
 
 	private void generateArrayAssigned(SimpleNode arrayAssigned) {
 		SimpleNode arraySize = (SimpleNode) arrayAssigned.jjtGetChild(0);
+		
+		if(arraySize.jjtGetNumChildren()!=0){
+		
 		SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);
 
 		String varName = scalarAccess.value;
 		if (root.symbolTable.containsSymbolName(varName)) {
 			loadGlobalVar(varName);
 		} else
-			this.loadLocalVar(scalarAccess, varName);
+			this.loadLocalVar(scalarAccess, varName);}
+		else {
+			loadInt(arraySize.value);
+		}
 
 		out.println(TAB + "newarray int");
 
