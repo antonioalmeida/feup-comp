@@ -296,13 +296,8 @@ public class CodeGenerator {
 
 	private void generateIf(SimpleNode node, int loopId, boolean hasElse) {
 		SimpleNode exprTest = (SimpleNode) node.jjtGetChild(0);
-		SimpleNode lhs = (SimpleNode) exprTest.jjtGetChild(0);
-		ASTRhs rhs = (ASTRhs) exprTest.jjtGetChild(1);
-
-		generateLHS2(lhs);
-		generateRHS(rhs);
-
-		String relation = generate_relation_op(exprTest.value);
+		
+		String relation = generateExprtest(exprTest);
 		out.println(relation + " loop" + loopId + "_end");
 
 		// generate If body
