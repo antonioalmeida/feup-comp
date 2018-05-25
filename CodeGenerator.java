@@ -2,11 +2,14 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Vector;
 
 import semantic.Symbol;
+import semantic.Symbol.Type;
 import utils.Utils;
 
-//arrays como argumento - [i em vez de i
+//invoke call nao distingue return array ou inteiro DOne
+// quando faz a = 1 e "a" é array, espera que inicializa todos os elementos do array com 1
 
 public class CodeGenerator {
 
@@ -186,17 +189,18 @@ public class CodeGenerator {
 	}
 
 	private void generateFunctionFooter(ASTFunction functionNode) {
-		String returnType;
+		String returnType, varToReturn;
 
 		switch (functionNode.getFuncReturnType()) {
 		case SCALAR:
 			returnType = "i";
-			String varToReturn = functionNode.getVarNameToReturn();
+			 varToReturn = functionNode.getVarNameToReturn();
 			loadLocalVar(functionNode, varToReturn);
 			break;
 		case ARRAY:
 			returnType = "a";
-			// TODO loadLocalVar(functionNode, String varName);
+			varToReturn = functionNode.getVarNameToReturn();
+			loadLocalVar(functionNode,  varToReturn);
 			break;
 		case VOID:
 			returnType = "";
@@ -404,6 +408,7 @@ public class CodeGenerator {
 
 		funcName = callNode.value;
 		funcName = addModuleToFunction(funcName);
+		Vector<Symbol.Type> typesArgs = new Vector<Symbol.Type>();
 
 		for (int i = 0; i < callNode.jjtGetNumChildren(); i++) {
 			ASTArgument argument = (ASTArgument) callNode.jjtGetChild(i);
@@ -414,14 +419,18 @@ public class CodeGenerator {
 				break;
 			case YalTreeConstants.JJTINTEGER:
 				funcArgs += "I";
+				typesArgs.add(Symbol.Type.SCALAR);
 				break;
 			case YalTreeConstants.JJTID:
-				//if()
-				if (argument.getSymbolTable().getSymbolType(argument.value)==Symbol.Type.SCALAR)
+				// if()
+				if (argument.getSymbolTable().getSymbolType(argument.value) == Symbol.Type.SCALAR) {
 					funcArgs += "I";
-				else 
+					typesArgs.add(Symbol.Type.SCALAR);
+				} else {
 					funcArgs += "[I";
-				
+					typesArgs.add(Symbol.Type.ARRAY);
+				}
+
 				// TODO Vars can be arrays
 				break;
 			default:
@@ -429,10 +438,40 @@ public class CodeGenerator {
 			}
 		}
 
-		if (((SimpleNode) callNode.parent).id == YalTreeConstants.JJTTERM)
-			funcRetType = "I";
-		else
+//		if (((SimpleNode) callNode.parent).id == YalTreeConstants.JJTTERM)
+//			funcRetType = "I";
+//		else
+//			funcRetType = "V";
+		
+
+
+//		System.out.println(callNode.value);
+//		System.out.println(typesArgs.size());
+//		System.out.println(typesArgs.get(0));
+//		root.getFunctionTable().printFunctions("    ");
+		
+		
+		
+		
+		
+//		
+		Vector<Type> typeReturnVector = root.getFunctionTable().getFunctionReturnType(callNode.value, typesArgs);
+
+		// How to know the return type of external library
+		if (typeReturnVector.size() == 0)
 			funcRetType = "V";
+		else {
+			Symbol.Type returnType = root.getFunctionTable().getFunctionReturnType(callNode.value, typesArgs).get(0);
+
+			if (returnType == Symbol.Type.SCALAR)
+				funcRetType = "I";
+			else if (returnType == Symbol.Type.ARRAY)
+				funcRetType = "[I";
+			else
+				funcRetType = "V";
+
+		}
+		
 
 		funcName = funcName.replace('.', '/');
 
@@ -651,7 +690,7 @@ public class CodeGenerator {
 		int varIndex = node.getSymbolIndex(varName);
 
 		String varType;
-		if (((ASTAssign) node.parent).isArrayAssigned())
+		if (node.symbolTable.getSymbolType(varName) == Symbol.Type.ARRAY)
 			varType = "a";
 		else
 			varType = "i";
