@@ -383,7 +383,7 @@ public class CodeGenerator {
 
 			switch (argument.getArgumentType()) {
 			case YalTreeConstants.JJTSTRING:
-				loadString(prefix, argument.value);
+				loadString(argument.value, prefix);
 				break;
 			case YalTreeConstants.JJTINTEGER:
 				loadInt(argument.value, prefix);
