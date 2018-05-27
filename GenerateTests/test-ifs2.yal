@@ -1,8 +1,14 @@
 module library1 {
 function m=max(a,b) {
-		if(a > b) {
-			m = a;
+		x = 0;
+
+		if(a >= b) {
+			x = 1;
+			d = 3;
+			f = 2;
 		} else {
+			f = 2;
+			g = 3;
 			m = b;
 		}
 }

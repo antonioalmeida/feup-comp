@@ -62,7 +62,13 @@ class ASTModule extends SimpleNode {
 
         return true;
     }*/
+    public String getFunction() {
+    	return "";
+    }
     
+    public String getModule() {
+    	return value;
+    }
 
 }
 /* JavaCC - OriginalChecksum=172febbc9f462a34b5659db8744215af (do not edit this line) */

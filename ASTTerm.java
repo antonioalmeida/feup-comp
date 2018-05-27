@@ -44,7 +44,8 @@ class ASTTerm extends SimpleNode {
     		
     		if(child.toString().equals("ScalarAccess")) {
     			if(!verifySymbolTypes(child.value, true, Symbol.Type.SCALAR, Symbol.Type.ARRAY)) {
-    				System.out.println("Semantic Error: " + child.value + " should have been initialized.");
+    				//System.out.println("Semantic Error: " + child.value + " should have been initialized.");
+    				printSemanticError(child.value + " should have been initialized");
     				return false;
     			}
     		}
@@ -52,7 +53,8 @@ class ASTTerm extends SimpleNode {
     			System.out.println("ReturnTypes: "+((ASTCall) child).getReturnTypes());
     			Vector<Symbol.Type> returnTypes = getReturnTypes();
     			if(!returnTypes.contains(Symbol.Type.SCALAR) && !returnTypes.contains(Symbol.Type.ARRAY)) {
-    				System.out.println("Semantic Error: In order to be used here, function "+child.value+" should return a SCALAR or an ARRAY.");
+    				//System.out.println("Semantic Error: In order to be used here, function "+child.value+" should return a SCALAR or an ARRAY.");
+    				printSemanticError("In order to be used here, function "+child.value+" should return a SCALAR or an ARRAY");
     				return false;
     			}
     			//TODO Check that call returns a scalar

@@ -5,6 +5,7 @@ options
   LOOKAHEAD= 1;
   MULTI = true;
   TRACK_TOKENS = true;
+  
 }
 
 PARSER_BEGIN(Yal)

@@ -17,8 +17,9 @@ class ASTIndex extends SimpleNode {
        
         if(!Utils.isInteger(this.value))
             if(!verifySymbolTypes(this.value, true, Symbol.Type.SCALAR)) {
-                System.out.println("Semantic Error: Index of an array " + this.value + " should have been initialized to a scalar");
-                return false;
+                //System.out.println("Semantic Error: Index of an array " + this.value + " should have been initialized to a scalar");
+                printSemanticError("Index of an array " + this.value + " should have been initialized to a scalar");
+            	return false;
             }
             
         return true;

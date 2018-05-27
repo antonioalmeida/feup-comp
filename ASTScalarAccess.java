@@ -37,7 +37,8 @@ class ASTScalarAccess extends SimpleNode {
 
 		if(size_array) {    	
 			if(!symbolTable.getSymbolType(value).equals(Symbol.Type.ARRAY)) {
-				System.out.println("Semantic Error: " + this.value + " has not been previously declared as an array");
+				//System.out.println("Semantic Error: " + this.value + " has not been previously declared as an array");
+				printSemanticError(this.value + " has not been previously declared as an array");
 				return false;
 			}
 		}

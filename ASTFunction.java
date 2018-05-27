@@ -60,30 +60,36 @@ class ASTFunction extends SimpleNode {
         this.returnValue = returnValue;
         this.returnType = returnType;
         if(! returnValue.equals(""))
-        	if(symbolTable.verifySymbolTypes((String) returnValue, false, true, Symbol.Type.ARRAY, Symbol.Type.SCALAR)) {
-        		System.out.println("Semantic Error: Return Value "+returnValue+" has already been declared.");
+        	if(!verifySymbolTypes((String) returnValue, false, returnType)) {
+        		//System.out.println("Semantic Error: Return Value "+returnValue+" has already been declared.");
+        		printSemanticError("Return Value "+returnValue+" has previously been declared with a type different from "+returnType);
         		ret = false;
         	}
         	else if(! initializeSymbol((String) returnValue, (Symbol.Type) returnType, false, true, false)){
-        		System.out.println("Semantic Error: Could not initialize "+returnValue+" .");
+        		//System.out.println("Semantic Error: Could not initialize "+returnValue+" .");
+        		printSemanticError("Could not initialize "+returnValue);
         		ret = false;
         	}
         for(Pair pair : parameters) {
         	if(pair.getKey().equals(returnValue)) {
-        		System.out.println("Semantic Error: Argument "+pair.getKey()+" is being has both a return value and a parameter.");
+        		//System.out.println("Semantic Error: Argument "+pair.getKey()+" is being has both a return value and a parameter.");
+        		printSemanticError("Argument "+pair.getKey()+" is being has both a return value and a parameter");
         		ret = false;
         	}
         	else if(symbolTable.verifySymbolTypes((String) pair.getKey(), false, true, Symbol.Type.ARRAY, Symbol.Type.SCALAR)) {
-        		System.out.println("Semantic Error: Argument "+pair.getKey()+" has already been declared.");
+        		//System.out.println("Semantic Error: Argument "+pair.getKey()+" has already been declared.");
+        		printSemanticError("Argument "+pair.getKey()+" has already been declared");
         		ret = false;
         	}
         	else if(! initializeSymbol((String) pair.getKey(), (Symbol.Type) pair.getValue(), true, false)){
-        		System.out.println("Semantic Error: Could not initialize "+pair.getKey()+" .");
+        		//System.out.println("Semantic Error: Could not initialize "+pair.getKey()+" .");
+        		printSemanticError("Could not initialize "+pair.getKey());
         		ret = false;
         	}
         }
         if(! functionTable.initializeFunction(functionName, argumentTypes, parameters, returnType, returnValue)) {
-        	System.out.println("Semantic Error: Function "+functionName+ " with argument types "+argumentTypes+" and return Type "+returnType +" has already been defined");
+        	//System.out.println("Semantic Error: Function "+functionName+ " with argument types "+argumentTypes+" and return Type "+returnType +" has already been defined");
+        	printSemanticError("Function "+functionName+ " with argument types "+argumentTypes+" and return Type "+returnType +" has already been defined");
         	ret = false;;
         }
 		
@@ -96,11 +102,12 @@ class ASTFunction extends SimpleNode {
 	
 	public boolean analyseSymbolTable() {
 		
-		if(!returnValue.equals(""))
+		/*if(!returnValue.equals(""))
 			if(!verifySymbolTypes(returnValue, true, returnType)) {
-				System.out.println("Semantic Error: In function "+getRealValue()+", return value "+returnValue+" should have been initialized");
+				//System.out.println("Semantic Error: In function "+getRealValue()+", return value "+returnValue+" should have been initialized");
+				printSemanticError("In function "+getRealValue()+", return value "+returnValue+" should have been initialized");
 			}
-
+		*/
 		return true;
 	}
 	
@@ -191,6 +198,10 @@ class ASTFunction extends SimpleNode {
 		
 		return funcName;
 
+	}
+	
+	public String getFunction() {
+		return getRealValue();
 	}
 
 }

@@ -25,12 +25,14 @@ class ASTRhs extends SimpleNode {
             Vector<Symbol.Type> rhsTypes = ((ASTTerm) children[1]).getReturnTypes();
 
             if(! lhsTypes.contains(Symbol.Type.SCALAR)) {
-               System.out.println("Semantic error: " + ((SimpleNode) children[0]).getRealValue() + " should be of Type SCALAR in order to be used in here.");
+               //System.out.println("Semantic error: " + ((SimpleNode) children[0]).getRealValue() + " should be of Type SCALAR in order to be used in here.");
+               printSemanticError(((SimpleNode) children[0]).getRealValue() + " should be of Type SCALAR in order to be used in here");
                return false;
             }
             else if(! rhsTypes.contains(Symbol.Type.SCALAR)) {
-                System.out.println("Semantic error: " + ((SimpleNode) children[1]).getRealValue() + " should be of Type SCALAR in order to be used in here.");
-                return false;
+                //System.out.println("Semantic error: " + ((SimpleNode) children[1]).getRealValue() + " should be of Type SCALAR in order to be used in here.");
+                printSemanticError(((SimpleNode) children[1]).getRealValue() + " should be of Type SCALAR in order to be used in here");
+            	return false;
              }
         }
 

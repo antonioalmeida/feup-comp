@@ -27,7 +27,8 @@ class ASTExprtest extends SimpleNode {
         SimpleNode rhslhsChild = (SimpleNode) rhsChild.children[0];
 
         if(rhslhsChild.toString().equals("ArrayAssigned")) {
-            System.out.println("Semantic Error: The size of an array can't be used in a comparision");
+            //System.out.println("Semantic Error: The size of an array can't be used in a comparision");
+            printSemanticError("The size of an array can't be used in a comparision");
             return false;
         }
 
@@ -40,11 +41,13 @@ class ASTExprtest extends SimpleNode {
             return true;
         else {
             if(lhsChild.toString().equals("ScalarAccess") && !lhsChild.getSizeArray() && !verifySymbolTypes(lhsSymbol, true, Symbol.Type.SCALAR)) {
-                System.out.println("Semantic error: " + lhsChild.getRealValue() + " should have been initialized to a scalar in order to be used in the comparison");
-                return false;
+                //System.out.println("Semantic error: " + lhsChild.getRealValue() + " should have been initialized to a scalar in order to be used in the comparison");
+                printSemanticError(lhsChild.getRealValue() + " should have been initialized to a scalar in order to be used in the comparison");
+            	return false;
             }
             else if(!rhsType.equals(Symbol.Type.SCALAR)) {
-                System.out.println("Semantic error: " + rhsChild.getRealValue() + " should have been initialized to a scalar in order to be used in the comparison");
+                //System.out.println("Semantic error: " + rhsChild.getRealValue() + " should have been initialized to a scalar in order to be used in the comparison");
+                printSemanticError(rhsChild.getRealValue() + " should have been initialized to a scalar in order to be used in the comparison");
                 return false;
             }
         }
