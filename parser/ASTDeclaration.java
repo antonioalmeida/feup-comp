@@ -15,10 +15,10 @@ class ASTDeclaration extends SimpleNode {
 
     public boolean analyseSymbolTable() {
         
-        if(children == null)
+        if(getChildren() == null)
             return false;
 
-        SimpleNode leftChild = (SimpleNode) children[0];
+        SimpleNode leftChild = (SimpleNode) getChildren()[0];
         Symbol.Type typeLeftChild = leftChild.getReturnType();
         String symbolName = (String) leftChild.jjtGetValue();
         
@@ -31,9 +31,9 @@ class ASTDeclaration extends SimpleNode {
         boolean scalarInitialization = false; 
        	
         boolean alreadyChecked = false;
-        if(children.length > 1) {
+        if(getChildren().length > 1) {
         	initialized = true;        	
-        	SimpleNode rightChild = (SimpleNode) children[1];
+        	SimpleNode rightChild = (SimpleNode) getChildren()[1];
             Symbol.Type typeRightChild = rightChild.getReturnType();
         	if(! typeLeftChild.equals(typeRightChild)) {
         		type = Symbol.Type.ARRAY;
@@ -82,17 +82,17 @@ class ASTDeclaration extends SimpleNode {
     	return Symbol.Type.VOID;
     }
    	
-   	boolean isVarScalarAssigned(){
+   	public boolean isVarScalarAssigned(){
    		return jjtGetNumChildren() == 2 && ((SimpleNode) this.jjtGetChild(1)).id ==YalTreeConstants.JJTSCALARASSIGNED;
    	}
    	
    	
-	boolean isVarArray() {
+	public boolean isVarArray() {
 		return ((SimpleNode) this.jjtGetChild(0)).id == YalTreeConstants.JJTARRAYELEMENT || (jjtGetNumChildren() == 2
 				&& ((SimpleNode) this.jjtGetChild(1)).id == YalTreeConstants.JJTARRAYASSIGNED);
 	}
 
-	boolean isVarArrayInitialized() {
+	public boolean isVarArrayInitialized() {
 		return (jjtGetNumChildren() == 2 && ((SimpleNode) this.jjtGetChild(1)).id == YalTreeConstants.JJTARRAYASSIGNED);
 	}
 

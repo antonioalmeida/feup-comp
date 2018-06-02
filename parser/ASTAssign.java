@@ -14,22 +14,22 @@ class ASTAssign extends SimpleNode {
     }
 
     public boolean analyseSymbolTable() {
-        if(children == null)
+        if(getChildren() == null)
             return false;
 
         // lhs
-        SimpleNode lhsChild = (SimpleNode) children[0];
+        SimpleNode lhsChild = (SimpleNode) getChildren()[0];
         
         if(lhsChild.getSizeArray()) {
         	//System.out.println("Semantic Error: Can't assign the size of array "+lhsChild.value+".");
-        	printSemanticError("Can't assign the size of array "+lhsChild.value);
+        	printSemanticError("Can't assign the size of array "+lhsChild.getValue());
         	return false;
         }
         Symbol.Type lhsType = lhsChild.getReturnType();
         
 
         // rhs
-        SimpleNode rhsChild = (SimpleNode) children[1];
+        SimpleNode rhsChild = (SimpleNode) getChildren()[1];
        Vector<Symbol.Type> rhsTypes = ((ASTRhs) rhsChild).getReturnTypes();
 
         String lhsSymbol = (String) lhsChild.jjtGetValue();

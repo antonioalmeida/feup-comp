@@ -35,23 +35,23 @@ class ASTFunction extends SimpleNode {
         Vector<Symbol.Type> argumentTypes = new Vector<Symbol.Type>();
         Vector<Pair> parameters = new Vector<Pair>();
        
-        if(children != null && children.length > 1 && 
-        		children[1].toString().equals("FunctionAssign")) {
-        	returnValue = ((SimpleNode) children[0]).value;
-        	returnType = ((SimpleNode) children[0]).getReturnType();
-        	functionName = ((SimpleNode) children[1]).value;
-        	if(children.length > 2 && children[2].toString().equals("Varlist")) {
-        		Pair pair = ((ASTVarlist) children[2]).getArguments();
+        if(getChildren() != null && getChildren().length > 1 && 
+        		getChildren()[1].toString().equals("FunctionAssign")) {
+        	returnValue = ((SimpleNode) getChildren()[0]).getValue();
+        	returnType = ((SimpleNode) getChildren()[0]).getReturnType();
+        	functionName = ((SimpleNode) getChildren()[1]).getValue();
+        	if(getChildren().length > 2 && getChildren()[2].toString().equals("Varlist")) {
+        		Pair pair = ((ASTVarlist) getChildren()[2]).getArguments();
         		argumentTypes = (Vector<Type>) pair.getValue();
         		parameters = (Vector<Pair>) pair.getKey();
         	}
         	
         }
         else {
-        	functionName = value;
-        	if(children != null && children.length > 0
-        			&& children[0].toString().equals("Varlist")) {
-        		Pair pair = ((ASTVarlist) children[0]).getArguments();
+        	functionName = getValue();
+        	if(getChildren() != null && getChildren().length > 0
+        			&& getChildren()[0].toString().equals("Varlist")) {
+        		Pair pair = ((ASTVarlist) getChildren()[0]).getArguments();
         		argumentTypes = (Vector<Type>) pair.getValue();
         		parameters = (Vector<Pair>) pair.getKey(); 
         	}
@@ -114,8 +114,8 @@ class ASTFunction extends SimpleNode {
 	public boolean analyse() {
 		boolean result = true;
 	    
-        if(children != null) {
-            for(Node child : children) {
+        if(getChildren() != null) {
+            for(Node child : getChildren()) {
                 if(!((SimpleNode) child).analyse())
                     result = false;
             }
@@ -130,15 +130,15 @@ class ASTFunction extends SimpleNode {
 	
 	public String getRealValue() {
 
-        if(children != null && children.length > 1 && 
-        		children[1].toString().equals("FunctionAssign"))
-        	return ((SimpleNode) children[1]).value;
+        if(getChildren() != null && getChildren().length > 1 && 
+        		getChildren()[1].toString().equals("FunctionAssign"))
+        	return ((SimpleNode) getChildren()[1]).getValue();
         else 
-        	return value;
+        	return getValue();
 	}
 	
 	public boolean isMainFunction() {
-		return value.equals("main");
+		return getValue().equals("main");
 	}
 	
 	public boolean isAssignFunction() {
@@ -183,7 +183,7 @@ class ASTFunction extends SimpleNode {
 	public String getVarNameToReturn(){
 		SimpleNode element = (SimpleNode) jjtGetChild(0);
 		
-		return element.value;
+		return element.getValue();
 		
 	}
 	
@@ -191,10 +191,10 @@ class ASTFunction extends SimpleNode {
 		String funcName;
 		
 		if (this.jjtGetNumChildren() >= 2 && ((SimpleNode) jjtGetChild(1)).id == YalTreeConstants.JJTFUNCTIONASSIGN)
-			funcName =  ((SimpleNode) jjtGetChild(1)).value;
+			funcName =  ((SimpleNode) jjtGetChild(1)).getValue();
 
 		else
-			funcName = this.value;
+			funcName = this.getValue();
 		
 		return funcName;
 

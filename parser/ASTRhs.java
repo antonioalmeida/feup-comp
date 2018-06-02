@@ -20,18 +20,18 @@ class ASTRhs extends SimpleNode {
         // Rhs -> Term (OP Term)? | [ArraySize]
 
         // Term OP Term
-        if(children.length > 1) {
-            Vector<Symbol.Type> lhsTypes = ((ASTTerm) children[0]).getReturnTypes();
-            Vector<Symbol.Type> rhsTypes = ((ASTTerm) children[1]).getReturnTypes();
+        if(getChildren().length > 1) {
+            Vector<Symbol.Type> lhsTypes = ((ASTTerm) getChildren()[0]).getReturnTypes();
+            Vector<Symbol.Type> rhsTypes = ((ASTTerm) getChildren()[1]).getReturnTypes();
 
             if(! lhsTypes.contains(Symbol.Type.SCALAR)) {
                //System.out.println("Semantic error: " + ((SimpleNode) children[0]).getRealValue() + " should be of Type SCALAR in order to be used in here.");
-               printSemanticError(((SimpleNode) children[0]).getRealValue() + " should be of Type SCALAR in order to be used in here");
+               printSemanticError(((SimpleNode) getChildren()[0]).getRealValue() + " should be of Type SCALAR in order to be used in here");
                return false;
             }
             else if(! rhsTypes.contains(Symbol.Type.SCALAR)) {
                 //System.out.println("Semantic error: " + ((SimpleNode) children[1]).getRealValue() + " should be of Type SCALAR in order to be used in here.");
-                printSemanticError(((SimpleNode) children[1]).getRealValue() + " should be of Type SCALAR in order to be used in here");
+                printSemanticError(((SimpleNode) getChildren()[1]).getRealValue() + " should be of Type SCALAR in order to be used in here");
             	return false;
              }
         }
@@ -40,17 +40,17 @@ class ASTRhs extends SimpleNode {
     }
 
     public Symbol.Type getReturnType() {
-    	Symbol.Type lhsType = ((SimpleNode) children[0]).getReturnType();      
+    	Symbol.Type lhsType = ((SimpleNode) getChildren()[0]).getReturnType();      
         return lhsType;
     }
     
     public Vector<Symbol.Type> getReturnTypes(){
     	
     	
-    	if(children.length > 1)
-    		return  ((ASTTerm) children[0]).getReturnTypes();
-    	else if(children[0].toString().equals("Term"))
-    		return  ((ASTTerm) children[0]).getReturnTypes();
+    	if(getChildren().length > 1)
+    		return  ((ASTTerm) getChildren()[0]).getReturnTypes();
+    	else if(getChildren()[0].toString().equals("Term"))
+    		return  ((ASTTerm) getChildren()[0]).getReturnTypes();
     	else {
     		Vector<Symbol.Type> types = new Vector<Symbol.Type>();
     		types.add(getReturnType());
@@ -61,13 +61,13 @@ class ASTRhs extends SimpleNode {
     public String generateCode() {
         String generatedCode = "";
 
-        if(children != null)
-            for(Node child : children)
+        if(getChildren() != null)
+            for(Node child : getChildren())
                 generatedCode += ((SimpleNode) child).generateCode();
 
         // if Rhs -> Term OP Term
-        if(children.length > 1) {
-                switch(this.value) {
+        if(getChildren().length > 1) {
+                switch(this.getValue()) {
                     case "+":
                         generatedCode += "iadd";
                         break;

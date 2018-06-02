@@ -8,9 +8,9 @@ public
 class SimpleNode implements Node {
 
     protected Node parent;
-    protected Node[] children;
+    private Node[] children;
     protected int id;
-    protected String value;
+    private String value;
     protected Yal parser;
     protected SymbolTable symbolTable;
     protected FunctionTable functionTable;
@@ -37,7 +37,7 @@ class SimpleNode implements Node {
 
     
     public SimpleNode(int i) {
-            this.value = "";
+            this.setValue("");
             this.hasScope = false;
             this.hasFunctionScope = false;
             id = i;
@@ -49,7 +49,7 @@ class SimpleNode implements Node {
     }
     
     public SimpleNode(int i, boolean hasScope, boolean hasFunctionScope) {
-    this.value = "";
+    this.setValue("");
     this.hasScope = hasScope;
     this.hasFunctionScope = hasFunctionScope;
         id = i;
@@ -87,31 +87,31 @@ class SimpleNode implements Node {
     public Node jjtGetParent() { return parent; }
 
     public void jjtAddChild(Node n, int i) {
-        if (children == null)
-            children = new Node[i + 1]; 
-        else if (i >= children.length) {
+        if (getChildren() == null)
+            setChildren(new Node[i + 1]); 
+        else if (i >= getChildren().length) {
             Node c[] = new Node[i + 1];
 
-            System.arraycopy(children, 0, c, 0, children.length);
-            children = c;
+            System.arraycopy(getChildren(), 0, c, 0, getChildren().length);
+            setChildren(c);
         }
 
-        children[i] = n;
+        getChildren()[i] = n;
     }
 
     public Node jjtGetChild(int i) {
-        return children[i];
+        return getChildren()[i];
     }
 
     public int jjtGetNumChildren() {
-        return (children == null) ? 0 : children.length;
+        return (getChildren() == null) ? 0 : getChildren().length;
     }
 
-    public void jjtAddValue(String value) { this.value = this.value + value; }
+    public void jjtAddValue(String value) { this.setValue(this.getValue() + value); }
     
-    public void jjtSetValue(String value) {this.value = value;}
+    public void jjtSetValue(String value) {this.setValue(value);}
 
-    public Object jjtGetValue() { return value; }
+    public Object jjtGetValue() { return getValue(); }
 
     /* You can override these two methods in subclasses of SimpleNode to
          customize the way the node appears when the tree is dumped.  If
@@ -126,8 +126,8 @@ class SimpleNode implements Node {
     public String toString(String prefix) {
         String node = prefix + toString();
     
-        if(this.value != "")
-            node += " [" + this.value + "]";
+        if(this.getValue() != "")
+            node += " [" + this.getValue() + "]";
 
         return node; 
     }
@@ -138,7 +138,7 @@ class SimpleNode implements Node {
     public void dump(String prefix) {
         System.out.println(toString(prefix));
         
-        if(children != null) {
+        if(getChildren() != null) {
             /*
             for (int i = 0; i < children.length; ++i) {
                 SimpleNode n = (SimpleNode)children[i];
@@ -148,7 +148,7 @@ class SimpleNode implements Node {
             }
             */
 
-            for(Node child : children)
+            for(Node child : getChildren())
                 if(child != null)
                     ((SimpleNode ) child).dump(prefix + "   ");
         }
@@ -157,9 +157,9 @@ class SimpleNode implements Node {
     public String generateCode() {
         String generatedCode = "";
 
-        if (children != null) {
-            for(int i = 0; i < children.length; ++i) {
-                SimpleNode n = (SimpleNode) children[i];
+        if (getChildren() != null) {
+            for(int i = 0; i < getChildren().length; ++i) {
+                SimpleNode n = (SimpleNode) getChildren()[i];
 
                 if(n != null) {
                     generatedCode += n.generateCode();
@@ -217,8 +217,8 @@ class SimpleNode implements Node {
         functionTable = getAssignedFunctionTable();
         boolean result = true;
     
-        if(children != null) {
-            for(Node child : children) {
+        if(getChildren() != null) {
+            for(Node child : getChildren()) {
                 if(!((SimpleNode) child).analyse())
                     result = false;
             }
@@ -238,16 +238,16 @@ class SimpleNode implements Node {
         	 String printMessage = prefix+"@" + toString();
         	 if(toString().equals("Function"))   
         		 printMessage += " [" + this.getRealValue() + "]";
-        	 else if(! this.value.equals(""))
-        		 printMessage += " [" + this.value + "]";
+        	 else if(! this.getValue().equals(""))
+        		 printMessage += " [" + this.getValue() + "]";
         	
             System.out.println(printMessage);
             symbolTable.printSymbols(prefix+"   ");
         }
 
-        if (children != null) {
-            for (int i = 0; i < children.length; ++i) {
-                SimpleNode n = (SimpleNode)children[i];
+        if (getChildren() != null) {
+            for (int i = 0; i < getChildren().length; ++i) {
+                SimpleNode n = (SimpleNode)getChildren()[i];
                 if (n != null) {
                     n.printSymbolTable(prefix + "   ");
                 }
@@ -261,9 +261,9 @@ class SimpleNode implements Node {
             functionTable.printFunctions(prefix+"   ");
         }
 
-        if (children != null) {
-            for (int i = 0; i < children.length; ++i) {
-                SimpleNode n = (SimpleNode)children[i];
+        if (getChildren() != null) {
+            for (int i = 0; i < getChildren().length; ++i) {
+                SimpleNode n = (SimpleNode)getChildren()[i];
                 if (n != null) {
                     n.printFunctionTable(prefix + "");
                 }
@@ -280,11 +280,11 @@ class SimpleNode implements Node {
     }
         
     public String getRealValue() {
-        if(value.equals(""))
-            if(children != null && children.length > 0)
-                return ((SimpleNode) children[0]).getRealValue();
+        if(getValue().equals(""))
+            if(getChildren() != null && getChildren().length > 0)
+                return ((SimpleNode) getChildren()[0]).getRealValue();
                 
-        return value;
+        return getValue();
     }
     
 
@@ -309,6 +309,22 @@ class SimpleNode implements Node {
     public int getLastIndex() {
         return symbolTable.getIndexCount();
     }
+
+	public Node[] getChildren() {
+		return children;
+	}
+
+	public void setChildren(Node[] children) {
+		this.children = children;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 }
 

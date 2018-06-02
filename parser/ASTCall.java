@@ -30,8 +30,8 @@ class ASTCall extends SimpleNode {
 	public boolean analyseSymbolTable() {
 		Vector<Symbol.Type> argumentTypes = new Vector<Symbol.Type>();
 		boolean result = true;
-		if(children != null && children.length > 0) {
-			for(Node child : children) {
+		if(getChildren() != null && getChildren().length > 0) {
+			for(Node child : getChildren()) {
 				Symbol.Type type = ((SimpleNode) child).getReturnType();
 				if(type.equals(Symbol.Type.SCALAR) || type.equals(Symbol.Type.ARRAY) ) {
 					argumentTypes.add(type);
@@ -41,12 +41,12 @@ class ASTCall extends SimpleNode {
 			}
 		}
 		
-		if(result == true && ! value.contains(".")) {
-			Vector<Type> functionsTypes = functionTable.getFunctionReturnType(value, argumentTypes);
+		if(result == true && ! getValue().contains(".")) {
+			Vector<Type> functionsTypes = functionTable.getFunctionReturnType(getValue(), argumentTypes);
 			this.types = functionsTypes;
 			if(functionsTypes.size() == 0) {
-				System.out.println("Semantic Error: Function "+value+" with parameter types "+argumentTypes +"  has not been defined");
-				printSemanticError("Function "+value+" with parameter types "+argumentTypes +"  has not been defined");
+				System.out.println("Semantic Error: Function "+getValue()+" with parameter types "+argumentTypes +"  has not been defined");
+				printSemanticError("Function "+getValue()+" with parameter types "+argumentTypes +"  has not been defined");
 				return false;
 			}
 		}
@@ -58,9 +58,9 @@ class ASTCall extends SimpleNode {
 		String node = prefix + toString();
 
 		if (this.functionName != null)
-			node += " [" + this.value + "." + this.functionName + "]";
+			node += " [" + this.getValue() + "." + this.functionName + "]";
 		else 
-			node += " [" + this.value + "]";
+			node += " [" + this.getValue() + "]";
 					
 		return node; 
 	}

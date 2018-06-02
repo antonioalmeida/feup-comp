@@ -19,9 +19,9 @@ class ASTIfStatement extends SimpleNode {
   }
 
   public boolean analyseSymbolTable() {
-	  if(children != null && children.length == 2) {
-		  ASTIf ifChild = (ASTIf) children[0];
-		  ASTElse elseChild = (ASTElse) children[1];
+	  if(getChildren() != null && getChildren().length == 2) {
+		  ASTIf ifChild = (ASTIf) getChildren()[0];
+		  ASTElse elseChild = (ASTElse) getChildren()[1];
 		  
 		  HashMap<String, Symbol> ifSymbols = ifChild.getSymbolTable().getSymbols();
 		  Iterator<Entry<String, Symbol>> symbolsIt = ifSymbols.entrySet().iterator();

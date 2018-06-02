@@ -18,8 +18,8 @@ class ASTVarlist extends SimpleNode {
 	  Vector<Pair> returnVector = new Vector<Pair>();
 	  Vector<Symbol.Type> returnTypes = new Vector<Symbol.Type>();
 	  
-	  if(children != null && children.length > 0) {
-		  for(Node child : children) {
+	  if(getChildren() != null && getChildren().length > 0) {
+		  for(Node child : getChildren()) {
 			  returnVector.add(new Pair(((SimpleNode) child).jjtGetValue(), ((SimpleNode) child).getReturnType()));
 			  returnTypes.add(((SimpleNode) child).getReturnType());
 		  }

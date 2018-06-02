@@ -22,11 +22,11 @@ class ASTScalarAccess extends SimpleNode {
 	public String toString(String prefix) { 
 		String node = prefix + toString();
 	
-		if (this.value != null){
+		if (this.getValue() != null){
 			if (this.size_array == true)
-				node += " [" + "sizeof(" + this.value + ")]";
+				node += " [" + "sizeof(" + this.getValue() + ")]";
 			else 
-				node += " [" + this.value + "]";
+				node += " [" + this.getValue() + "]";
 		}
 
 		return node; 
@@ -36,9 +36,9 @@ class ASTScalarAccess extends SimpleNode {
 		
 
 		if(size_array) {    	
-			if(!symbolTable.getSymbolType(value).equals(Symbol.Type.ARRAY)) {
+			if(!symbolTable.getSymbolType(getValue()).equals(Symbol.Type.ARRAY)) {
 				//System.out.println("Semantic Error: " + this.value + " has not been previously declared as an array");
-				printSemanticError(this.value + " has not been previously declared as an array");
+				printSemanticError(this.getValue() + " has not been previously declared as an array");
 				return false;
 			}
 		}
@@ -69,7 +69,7 @@ class ASTScalarAccess extends SimpleNode {
 		//assuming it's always a static field
 
 
-		generatedCode += "getstatic " + this.value;
+		generatedCode += "getstatic " + this.getValue();
 		if(getReturnType().equals(Symbol.Type.ARRAY))
 			generatedCode += " [I";
 		else 

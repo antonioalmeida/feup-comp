@@ -19,17 +19,17 @@ class ASTTerm extends SimpleNode {
         // Term -> <INTEGER> | Call | ArrayAccess | ScalarAccess
 
         // children is null when Term -> <INTEGER>
-        if(children == null) 
+        if(getChildren() == null) 
             return Symbol.Type.SCALAR;
 
-        return ((SimpleNode) children[0]).getReturnType();
+        return ((SimpleNode) getChildren()[0]).getReturnType();
     }
     
     public Vector<Symbol.Type> getReturnTypes(){
     	
-    	if(children != null && children.length > 0)
-    		if(((SimpleNode) children[0]).toString().equals("Call"))
-    			return ((ASTCall) children[0]).getReturnTypes(); 
+    	if(getChildren() != null && getChildren().length > 0)
+    		if(((SimpleNode) getChildren()[0]).toString().equals("Call"))
+    			return ((ASTCall) getChildren()[0]).getReturnTypes(); 
     	
     	Vector<Symbol.Type> returnTypes =new Vector<Symbol.Type>();
     	returnTypes.add(getReturnType());
@@ -38,13 +38,13 @@ class ASTTerm extends SimpleNode {
     
     public boolean analyseSymbolTable() {
     	
-    	if(children != null && children.length > 0) {
-    		SimpleNode child = (SimpleNode) children[0];
+    	if(getChildren() != null && getChildren().length > 0) {
+    		SimpleNode child = (SimpleNode) getChildren()[0];
     		
     		if(child.toString().equals("ScalarAccess")) {
-    			if(!verifySymbolTypes(child.value, true, Symbol.Type.SCALAR, Symbol.Type.ARRAY)) {
+    			if(!verifySymbolTypes(child.getValue(), true, Symbol.Type.SCALAR, Symbol.Type.ARRAY)) {
     				//System.out.println("Semantic Error: " + child.value + " should have been initialized.");
-    				printSemanticError(child.value + " should have been initialized");
+    				printSemanticError(child.getValue() + " should have been initialized");
     				return false;
     			}
     		}
@@ -53,7 +53,7 @@ class ASTTerm extends SimpleNode {
     			Vector<Symbol.Type> returnTypes = getReturnTypes();
     			if(!returnTypes.contains(Symbol.Type.SCALAR) && !returnTypes.contains(Symbol.Type.ARRAY)) {
     				//System.out.println("Semantic Error: In order to be used here, function "+child.value+" should return a SCALAR or an ARRAY.");
-    				printSemanticError("In order to be used here, function "+child.value+" should return a SCALAR or an ARRAY");
+    				printSemanticError("In order to be used here, function "+child.getValue()+" should return a SCALAR or an ARRAY");
     				return false;
     			}
     			//TODO Check that call returns a scalar
@@ -67,11 +67,11 @@ class ASTTerm extends SimpleNode {
         String generatedCode = "";
 
         // when Term -> <INTEGER>
-        if(children == null)
-            generatedCode = "iload " + this.value + "\n";
+        if(getChildren() == null)
+            generatedCode = "iload " + this.getValue() + "\n";
         else
         // when Term -> ScalarAccess | Call | ArrayAccess
-            generatedCode = ((SimpleNode) children[0]).generateCode();
+            generatedCode = ((SimpleNode) getChildren()[0]).generateCode();
 
         return generatedCode;
     }

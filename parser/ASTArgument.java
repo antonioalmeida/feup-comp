@@ -13,17 +13,17 @@ class ASTArgument extends SimpleNode {
   }
 
   public Symbol.Type getReturnType() {
-	  if(children != null && children.length > 0) {
+	  if(getChildren() != null && getChildren().length > 0) {
 		  
-		  if(children[0].toString().equals("Integer"))
+		  if(getChildren()[0].toString().equals("Integer"))
 			  return Symbol.Type.SCALAR;
-		  else if(children[0].toString().equals("String"))
+		  else if(getChildren()[0].toString().equals("String"))
 			  return Symbol.Type.SCALAR;
-		  else if(children[0].toString().equals("Id")) {
-			  if(! verifySymbolTypes(value, true, Symbol.Type.ARRAY, Symbol.Type.SCALAR))
+		  else if(getChildren()[0].toString().equals("Id")) {
+			  if(! verifySymbolTypes(getValue(), true, Symbol.Type.ARRAY, Symbol.Type.SCALAR))
 				  //System.out.println("Semantic Error: Variable "+value+" has to be  initialized in order to be used as an argument in a function call.");
-				  printSemanticError("Variable "+value+" has to be  initialized in order to be used as an argument in a function call");
-			  return symbolTable.getSymbolType(value);
+				  printSemanticError("Variable "+getValue()+" has to be  initialized in order to be used as an argument in a function call");
+			  return symbolTable.getSymbolType(getValue());
 		  }
 		 
 	  }

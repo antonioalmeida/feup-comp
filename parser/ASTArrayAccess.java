@@ -17,9 +17,9 @@ class ASTArrayAccess extends SimpleNode {
 	}
 	
 	public boolean analyseSymbolTable() {
-		if(!verifySymbolTypes(value, true, Symbol.Type.ARRAY)) {
+		if(!verifySymbolTypes(getValue(), true, Symbol.Type.ARRAY)) {
 			//System.out.println("Semantic Error: " + value + " should have been initialized as an array");
-			printSemanticError(value + " should have been initialized as an array");
+			printSemanticError(getValue() + " should have been initialized as an array");
 			return false;
 		}
 
@@ -35,14 +35,14 @@ class ASTArrayAccess extends SimpleNode {
 		// or a local variable, right now we're 
 		//assuming it's always a static field
 
-		code += "getstatic " + this.value;
+		code += "getstatic " + this.getValue();
 		if(getReturnType().equals(Symbol.Type.ARRAY))
 			code += " [I";
 		else 
 			code += " I";
 		code += "\n";
 
-		code += ((SimpleNode) children[0]).generateCode();
+		code += ((SimpleNode) getChildren()[0]).generateCode();
 
 		code += "iaload\n";
 

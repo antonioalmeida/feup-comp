@@ -23,7 +23,7 @@ class ASTModule extends SimpleNode {
     			result = false;
     	
         
-        if(children == null)
+        if(getChildren() == null)
             return false;
 
         
@@ -32,7 +32,7 @@ class ASTModule extends SimpleNode {
 
         
 
-        for(Node child : children) {
+        for(Node child : getChildren()) {
         	if(child.toString().equals("Declaration")) {
         		if(!((SimpleNode) child).analyse())
         			result = false;
@@ -43,7 +43,7 @@ class ASTModule extends SimpleNode {
         	}
         }
         
-        for(Node child : children) {
+        for(Node child : getChildren()) {
         	
         	if(child.toString().equals("Function")) {
         		if(!((SimpleNode) child).analyse())
@@ -67,7 +67,7 @@ class ASTModule extends SimpleNode {
     }
     
     public String getModule() {
-    	return value;
+    	return getValue();
     }
 
 }

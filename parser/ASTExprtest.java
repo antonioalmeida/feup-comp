@@ -13,18 +13,18 @@ class ASTExprtest extends SimpleNode {
     }
 
     public boolean analyseSymbolTable() {
-        if(children == null)
+        if(getChildren() == null)
             return false;
 
         // lhs
-        SimpleNode lhsChild = (SimpleNode) children[0];
+        SimpleNode lhsChild = (SimpleNode) getChildren()[0];
         Symbol.Type lhsType = lhsChild.getReturnType();
 
         // rhs
-        SimpleNode rhsChild = (SimpleNode) children[1];
+        SimpleNode rhsChild = (SimpleNode) getChildren()[1];
         Symbol.Type rhsType = rhsChild.getReturnType();
 
-        SimpleNode rhslhsChild = (SimpleNode) rhsChild.children[0];
+        SimpleNode rhslhsChild = (SimpleNode) rhsChild.getChildren()[0];
 
         if(rhslhsChild.toString().equals("ArrayAssigned")) {
             //System.out.println("Semantic Error: The size of an array can't be used in a comparision");
@@ -35,7 +35,7 @@ class ASTExprtest extends SimpleNode {
         String lhsSymbol = (String) lhsChild.jjtGetValue();
         String rhsSymbol = (String) rhsChild.jjtGetValue();
 
-        if((value.equals("==") || value.equals("!=")) 
+        if((getValue().equals("==") || getValue().equals("!=")) 
             && lhsType.equals(Symbol.Type.ARRAY) 
             && rhsType.equals(Symbol.Type.ARRAY))
             return true;
