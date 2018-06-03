@@ -18,29 +18,22 @@ public class SymbolTable {
     protected HashMap<String, Symbol> symbols;
 
     private int indexCount;
-    private boolean useIndex;
     private boolean useParentIndex;
 
-    public SymbolTable(SymbolTable parent, boolean useIndex, boolean useParentIndex) {
+    public SymbolTable(SymbolTable parent, boolean useParentIndex) {
         this.parent = parent;
         symbols = new HashMap<String, Symbol>();
-        this.useIndex = useIndex;
         this.useParentIndex = useParentIndex;
         this.indexCount = 0;
     }
 
-    public SymbolTable(SymbolTable parent, boolean useIndex) {
+    public SymbolTable(SymbolTable parent) {
         this.parent = parent;
         symbols = new HashMap<String, Symbol>();
         this.indexCount = 0;
-        this.useIndex = useIndex;
         this.useParentIndex = false;
     }
 
-    public SymbolTable(SymbolTable parent) {
-        this(parent, false);
-    }
-    
     public boolean containsSymbolName(String symbolName) {
         return symbols.containsKey(symbolName);
     }
@@ -106,7 +99,7 @@ public class SymbolTable {
             return parent.initializeSymbol(symbolName, type, initialized, print);
     }
 
-    public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print, boolean verify, boolean useIndex) {
+    public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print, boolean verify) {
         if(verify && ! verifySymbolTypes(symbolName, false, false, type))
             return false;
         else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
@@ -118,7 +111,7 @@ public class SymbolTable {
     }
       
     public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print) {
-        return initializeSymbol(symbolName, type, initialized, print, true, useIndex);
+        return initializeSymbol(symbolName, type, initialized, print, true);
     }
 
     public int attributeIndexes(int lastIndex) {
