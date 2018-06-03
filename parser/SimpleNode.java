@@ -16,6 +16,7 @@ class SimpleNode implements Node {
     protected FunctionTable functionTable;
     protected boolean hasScope;
     protected boolean hasFunctionScope;
+    protected boolean hasCodeLineScope;
     protected Token firstToken;
     protected Token lastToken;
     
@@ -40,6 +41,7 @@ class SimpleNode implements Node {
             this.setValue("");
             this.hasScope = false;
             this.hasFunctionScope = false;
+            this.hasCodeLineScope = false;
             id = i;
     }
      
@@ -48,15 +50,15 @@ class SimpleNode implements Node {
             parser = p;
     }
     
-    public SimpleNode(int i, boolean hasScope, boolean hasFunctionScope) {
+    public SimpleNode(int i, boolean hasScope, boolean hasFunctionScope, boolean hasCodeLineScope) {
     this.setValue("");
     this.hasScope = hasScope;
     this.hasFunctionScope = hasFunctionScope;
         id = i;
     }
 
-    public SimpleNode(Yal p, int i, boolean hasScope, boolean hasFunctionScope) {
-        this(i, hasScope, hasFunctionScope);
+    public SimpleNode(Yal p, int i, boolean hasScope, boolean hasFunctionScope, boolean hasCodeLineScope) {
+        this(i, hasScope, hasFunctionScope, hasCodeLineScope);
         parser = p;
     }
 

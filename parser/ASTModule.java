@@ -7,11 +7,11 @@ class ASTModule extends SimpleNode {
     SymbolTable functions;
 
     public ASTModule(int id) {
-        super(id, true, true);
+        super(id, true, true, false);
     }
 
     public ASTModule(Yal p, int id) {
-        super(p, id, true, true);
+        super(p, id, true, true, false);
     }
 
     public boolean analyse() {

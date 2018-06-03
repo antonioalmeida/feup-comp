@@ -26,6 +26,8 @@ public class CodeGenerator {
 	private PrintWriter out;
 
 	private int number_of_loops = 1;
+	private boolean otimizationR;
+	private boolean otimizationO;
 
 	public CodeGenerator(SimpleNode root) throws IOException {
 		this.root = (SimpleNode) root.getChildren()[0];

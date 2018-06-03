@@ -12,13 +12,13 @@ class ASTFunction extends SimpleNode {
 	private String returnValue;
 	private Symbol.Type returnType;
 	public ASTFunction(int id) {
-		super(id, true, false);
+		super(id, true, false, true);
 		returnValue = "";
 		returnType = Symbol.Type.VOID;
 	}
 
 	public ASTFunction(Yal p, int id) {
-		super(p, id, true, false);
+		super(p, id, true, false, true);
 		returnValue = "";
 		returnType = Symbol.Type.VOID;
 	}

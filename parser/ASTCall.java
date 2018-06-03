@@ -21,7 +21,13 @@ class ASTCall extends SimpleNode {
 	}
 	
 	public Vector<Symbol.Type> getReturnTypes() {
-		return types;
+		if(! getValue().contains("."))
+			return types;
+		else {
+			Vector<Symbol.Type> retTypes = new Vector<Symbol.Type>();
+			retTypes.add(Symbol.Type.SCALAR);
+			return retTypes;
+		}
 	}
 	/*public void setFunctionName(String functionName){
 		this.functionName = functionName;

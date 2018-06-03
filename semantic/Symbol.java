@@ -45,7 +45,8 @@ public class Symbol {
 	}
 	
 	public boolean getPrint() {
-		return print;
+		return true;
+		//return print;
 	}
 
 	public int getIndex() {
