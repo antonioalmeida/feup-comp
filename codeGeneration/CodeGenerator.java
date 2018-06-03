@@ -655,14 +655,35 @@ public class CodeGenerator {
 		ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
 
-		if (((ASTAssign) node).isArrayAcess()) {
-			generateArrayAcess(lhs, prefix);
-			generateRHS(rhs,prefix);
-			out.println(TAB + "iastore");
-			out.println();
-		} else {
-			generateRHS(rhs,prefix);
-			generateLHSAssign(lhs, prefix);
+        if (((ASTAssign) node).isArrayAcess()) {
+            generateArrayAcess(lhs, prefix);
+            generateRHS(rhs,prefix);
+            out.println(TAB + "iastore");
+            out.println();
+        //i = i + 1 || i = 1 + i (or similar cases)
+        } else if(!root.getSymbolTable().containsSymbolName(lhs.getValue())&&// has to be local variable
+                  rhs.getValue().equals("+") &&//has to be an increment
+                 ( (lhs.getValue().equals(((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getValue())
+                    && ((SimpleNode)rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//Term in lhs is equal to first term in rhs and second term in rhs is an integer
+                    ||
+                   (lhs.getValue().equals(((SimpleNode)rhs.jjtGetChild(1).jjtGetChild(0)).getValue())
+                    && ((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//Term in lhs is equal to second term in rhs and first term in rhs is an integer
+                 ) ){
+       
+            int varIndex = node.getSymbolIndex(lhs.getValue());
+               
+            String constValue1 = ((SimpleNode)rhs.jjtGetChild(1).jjtGetChild(0)).getValue();
+           
+            String constValue2 = ((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getValue();
+           
+            if (((SimpleNode)rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//case integer is second term in rhs
+                out.println(TAB + "iinc " + varIndex + " " + constValue1);
+            else if (((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//case integer is first term in rhs
+                out.println(TAB + "iinc " + varIndex + " " + constValue2);
+       
+        } else {
+            generateRHS(rhs,prefix);
+            generateLHSAssign(lhs, prefix);
 
 		}
 	}
