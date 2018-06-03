@@ -1,5 +1,5 @@
 module m{
-	function f(){
+	function l = f(){
 		a = 4;
 		if( a < 4){
 			x = 6;

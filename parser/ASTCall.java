@@ -11,12 +11,12 @@ class ASTCall extends SimpleNode {
 	private Vector<Symbol.Type> types;
 
 	public ASTCall(int id) {
-		super(id);
+		super(id, false, false, true);
 		types = new Vector<Symbol.Type>();
 	}
 
 	public ASTCall(Yal p, int id) {
-		super(p, id);
+		super(p, id, false, false, true);
 		types = new Vector<Symbol.Type>();
 	}
 	
