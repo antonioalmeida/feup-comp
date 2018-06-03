@@ -15,7 +15,7 @@ class ASTElse extends SimpleNode {
 	}
 
 	public SymbolTable getAssignedSymbolTable() {
-		return new SymbolTable(((SimpleNode) parent).getSymbolTable(), true, true);
+		return new SymbolTable(((SimpleNode) parent).getSymbolTable(), true);
 	}
 }
 /* JavaCC - OriginalChecksum=aebfcf0534193235d176a119735431c9 (do not edit this line) */

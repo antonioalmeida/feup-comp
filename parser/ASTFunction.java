@@ -68,7 +68,7 @@ class ASTFunction extends SimpleNode {
         		printSemanticError("Return Value "+returnValue+" has previously been declared with a type different from "+returnType);
         		ret = false;
         	}
-        	else if(! initializeSymbol((String) returnValue, (Symbol.Type) returnType, false, true, false)){
+        	else if(! initializeSymbol((String) returnValue, (Symbol.Type) returnType, false, true)){
         		//System.out.println("Semantic Error: Could not initialize "+returnValue+" .");
         		printSemanticError("Could not initialize "+returnValue);
         		ret = false;
@@ -178,10 +178,6 @@ class ASTFunction extends SimpleNode {
 			else return Symbol.Type.ARRAY;
 		}
 		return  Symbol.Type.VOID;
-	}
-
-	public SymbolTable getAssignedSymbolTable() {
-		return new SymbolTable(((SimpleNode) parent).getSymbolTable(), true);
 	}
 	
 	public String getVarNameToReturn(){
