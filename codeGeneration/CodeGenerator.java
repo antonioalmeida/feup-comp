@@ -200,18 +200,30 @@ public class CodeGenerator {
 			generateFunctionMainHeader(functionNode);
 		else
 			generateFuncHeader(functionNode);
-
-		// TODO: limit
-		appendln(TAB + ".limit stack 10");
-		appendln(TAB + ".limit locals 10");
-		appendln();
-
 	}
 
 	private void generateFunction(ASTFunction functionNode) {
 		generateFunctionHeader(functionNode);
+		int headerIndex = builder.length();
+		
 		generateBody(functionNode);
 		generateFunctionFooter(functionNode);
+
+		generateFunctionLimits(functionNode, headerIndex);
+	}
+
+	public void generateFunctionLimits(ASTFunction functionNode, int headerIndex) {
+		StringBuilder localBuilder = new StringBuilder();
+		localBuilder.append('\n');
+			
+		// TODO: limit
+		localBuilder.append(TAB + ".limit stack 10");
+		localBuilder.append("\n");
+		localBuilder.append(TAB + ".limit locals 10");
+		localBuilder.append("\n");
+		localBuilder.append("\n");
+
+		builder.insert(headerIndex, localBuilder);
 	}
 
 	private void generateFunctionFooter(ASTFunction functionNode) {
