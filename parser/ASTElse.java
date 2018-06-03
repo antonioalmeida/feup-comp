@@ -13,11 +13,9 @@ class ASTElse extends SimpleNode {
 	public ASTElse(Yal p, int id) {
 		super(p, id, true, false, true);
 	}
-	
-	public SymbolTable getAssignedSymbolTable() {
-		int parentLastIndex = ((SimpleNode) parent).getLastIndex();
-		return new SymbolTable(((SimpleNode) parent).getSymbolTable(), true, parentLastIndex);
-	}
 
+	public SymbolTable getAssignedSymbolTable() {
+		return new SymbolTable(((SimpleNode) parent).getSymbolTable(), true, true);
+	}
 }
 /* JavaCC - OriginalChecksum=aebfcf0534193235d176a119735431c9 (do not edit this line) */

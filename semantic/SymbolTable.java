@@ -19,19 +19,22 @@ public class SymbolTable {
 
     private int indexCount;
     private boolean useIndex;
+    private boolean useParentIndex;
 
-    public SymbolTable(SymbolTable parent, boolean useIndex, int firstIndex) {
-       this.parent = parent;
+    public SymbolTable(SymbolTable parent, boolean useIndex, boolean useParentIndex) {
+        this.parent = parent;
         symbols = new HashMap<String, Symbol>();
-        indexCount = firstIndex;
         this.useIndex = useIndex;
+        this.useParentIndex = useParentIndex;
+        this.indexCount = 0;
     }
 
     public SymbolTable(SymbolTable parent, boolean useIndex) {
         this.parent = parent;
         symbols = new HashMap<String, Symbol>();
-        indexCount = 0;
+        this.indexCount = 0;
         this.useIndex = useIndex;
+        this.useParentIndex = false;
     }
 
     public SymbolTable(SymbolTable parent) {
@@ -102,8 +105,15 @@ public class SymbolTable {
                     this.addSymbol(symbolName, type, initialized, print, symbolIndex);
                 }
                 else {
-                    this.addSymbol(symbolName, type, initialized, print, this.indexCount);
-                    this.indexCount++;
+                    if(useParentIndex) {
+                        int usedIndex = this.parent.getIndexCount();
+                        this.addSymbol(symbolName, type, initialized, print, usedIndex);
+                        parent.incIndexCount();
+                    }
+                    else { 
+                        this.addSymbol(symbolName, type, initialized, print, this.indexCount);
+                        this.indexCount++;
+                    }
                 }
             }
             else
@@ -161,6 +171,10 @@ public class SymbolTable {
 
     public int getIndexCount() {
         return indexCount;
+    }
+
+    public void incIndexCount() {
+        indexCount++;
     }
     
 }

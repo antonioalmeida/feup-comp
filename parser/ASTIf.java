@@ -15,9 +15,7 @@ class ASTIf extends SimpleNode {
 	}
 
 	public SymbolTable getAssignedSymbolTable() {
-		int parentLastIndex = ((SimpleNode) parent).getLastIndex();
-		return new SymbolTable(((SimpleNode) parent).getSymbolTable(), true, parentLastIndex);
+		return new SymbolTable(((SimpleNode) parent).getSymbolTable(), true, true);
 	}
- 
 }
 /* JavaCC - OriginalChecksum=890cda73491138fb844da26b5d6b8c0b (do not edit this line) */
