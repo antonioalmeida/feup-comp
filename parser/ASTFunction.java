@@ -11,14 +11,17 @@ public
 class ASTFunction extends SimpleNode {
 	private String returnValue;
 	private Symbol.Type returnType;
+	private int indexCounter;
 	public ASTFunction(int id) {
 		super(id, true, false, true);
 		returnValue = "";
 		returnType = Symbol.Type.VOID;
+		indexCounter = -1;
 	}
 
 	public ASTFunction(Yal p, int id) {
 		super(p, id, true, false, true);
+		indexCounter = -1;
 		returnValue = "";
 		returnType = Symbol.Type.VOID;
 	}
@@ -81,7 +84,7 @@ class ASTFunction extends SimpleNode {
         		printSemanticError("Argument "+pair.getKey()+" has already been declared");
         		ret = false;
         	}
-        	else if(! initializeSymbol((String) pair.getKey(), (Symbol.Type) pair.getValue(), true, false)){
+        	else if(!initializeSymbol((String) pair.getKey(), (Symbol.Type) pair.getValue(), true, false, ++indexCounter)){
         		//System.out.println("Semantic Error: Could not initialize "+pair.getKey()+" .");
         		printSemanticError("Could not initialize "+pair.getKey());
         		ret = false;
@@ -123,7 +126,8 @@ class ASTFunction extends SimpleNode {
         
         if(!analyseSymbolTable())
             result = false;
-       
+        
+        attributeIndexes(indexCounter);
 
         return result;
 	}

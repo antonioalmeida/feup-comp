@@ -53,6 +53,10 @@ public class Symbol {
 		return index;
 	}
 
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
 	@Override
 	public boolean equals(Object symbol) {
 		Symbol symbolCast = (Symbol) symbol;

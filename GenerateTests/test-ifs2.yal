@@ -1,5 +1,5 @@
 module library1 {
-function m=max(a,b) {
+function m=max(n,p) {
 		x = 0;
 
 		if(a >= b) {
@@ -11,6 +11,8 @@ function m=max(a,b) {
 			g = 3;
 			m = b;
 		}
+
+		h = 3;
 }
 
 function m=min(a,b) {

@@ -35,7 +35,6 @@ class SimpleNode implements Node {
     public void jjtSetLastToken(Token token) {
         lastToken = token;
     }
-
     
     public SimpleNode(int i) {
             this.setValue("");
@@ -192,6 +191,10 @@ class SimpleNode implements Node {
         return symbolTable.initializeSymbol(symbolName, type, initialized, print, true, useIndex);
     }
 
+    public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print, int index) {
+        return symbolTable.initializeSymbol(symbolName, type, initialized, print, true, index);
+    }
+
     public int getSymbolIndex(String symbolName) {
         return symbolTable.getSymbolIndex(symbolName);
     }
@@ -228,9 +231,22 @@ class SimpleNode implements Node {
         
         if(!analyseSymbolTable())
             result = false;
-       
 
         return result;
+    }
+
+    public int attributeIndexes(int lastIndex) {
+        int currentIndex = lastIndex;
+        if(hasScope)
+            currentIndex = symbolTable.attributeIndexes(currentIndex);
+
+        if(getChildren() != null) {
+            for(Node child : getChildren()) {
+                currentIndex = ((SimpleNode) child).attributeIndexes(currentIndex);
+            }
+        }
+
+        return currentIndex;
     }
 
     //public void printSymbolTableScope(String prefix)

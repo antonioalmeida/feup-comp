@@ -95,29 +95,22 @@ public class SymbolTable {
         }
     }
 
+    public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print, boolean verify, int index) {
+        if(verify && ! verifySymbolTypes(symbolName, false, false, type))
+            return false;
+        else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
+            this.addSymbol(symbolName, type, initialized, print, index);
+            return true;
+        }
+        else
+            return parent.initializeSymbol(symbolName, type, initialized, print);
+    }
+
     public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print, boolean verify, boolean useIndex) {
         if(verify && ! verifySymbolTypes(symbolName, false, false, type))
             return false;
         else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
-            if(useIndex) {
-                if(containsSymbol(symbolName, true, type)) {
-                    int symbolIndex = getSymbolIndex(symbolName);
-                    this.addSymbol(symbolName, type, initialized, print, symbolIndex);
-                }
-                else {
-                    if(useParentIndex) {
-                        int usedIndex = this.parent.getIndexCount();
-                        this.addSymbol(symbolName, type, initialized, print, usedIndex);
-                        parent.incIndexCount();
-                    }
-                    else { 
-                        this.addSymbol(symbolName, type, initialized, print, this.indexCount);
-                        this.indexCount++;
-                    }
-                }
-            }
-            else
-                this.addSymbol(symbolName, type, initialized, print, -1);
+            this.addSymbol(symbolName, type, initialized, print, -1);
             return true;
         }
         else
@@ -126,6 +119,21 @@ public class SymbolTable {
       
     public boolean initializeSymbol(String symbolName, Symbol.Type type, boolean initialized, boolean print) {
         return initializeSymbol(symbolName, type, initialized, print, true, useIndex);
+    }
+
+    public int attributeIndexes(int lastIndex) {
+        int currentIndex = lastIndex;
+
+        Iterator<Entry<String, Symbol>> symbolsIt = symbols.entrySet().iterator();
+        while(symbolsIt.hasNext()) {
+            Map.Entry<String, Symbol> pair = (Entry<String, Symbol>) symbolsIt.next();
+
+            Symbol symbol = pair.getValue();
+            if(symbol.getIndex() == -1)
+                symbol.setIndex(++currentIndex);
+        }
+
+        return currentIndex;
     }
 
     public Symbol.Type getSymbolType(String symbolName) {
