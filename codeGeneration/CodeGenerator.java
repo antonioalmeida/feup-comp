@@ -377,14 +377,24 @@ public class CodeGenerator {
 		appendln(prefix + "ldc " + string);
 	}
 
-	private void loadInt(String valueToLoad, String prefix) {
-		int value = Integer.parseInt(valueToLoad);
+	private void loadInt(SimpleNode valueToLoad, String prefix) {
+		int value = Integer.parseInt(valueToLoad.getValue());
+		
+		SimpleNode parentNode = (SimpleNode) valueToLoad.jjtGetParent();
+		if(parentNode.getId()==YalTreeConstants.JJTTERM && parentNode.getValue().equals("-"))
+			value=-value;
+				
+		
 		if ((value >= 0) && (value <= 5)) {
 			appendln(prefix + "iconst_" + value);
 		} else if (value == -1)
 			appendln(prefix + "iconst_m1");
-		else
+		else if (value > -129 || value < 128)
 			appendln(prefix + "bipush " + value);
+		else if (value > -32769 || value < 32768)
+			appendln(prefix + "sipush " + value);
+		else 
+			appendln(prefix + "ldc " + value);
 	}
 
 	private void loadGlobalVar(String varName, String prefix) {
@@ -430,7 +440,7 @@ public class CodeGenerator {
 				loadString(argument.getValue(), prefix);
 				break;
 			case YalTreeConstants.JJTINTEGER:
-				loadInt(argument.getValue(), prefix);
+				loadInt(argument, prefix);
 				break;
 			case YalTreeConstants.JJTID:
 				String varName = argument.getValue();
@@ -587,7 +597,7 @@ public class CodeGenerator {
 
 			switch (termChild.getId()) {
 			case (YalTreeConstants.JJTINTEGER):
-				loadInt(termChild.getValue(), prefix);
+				loadInt(termChild, prefix);
 				break;
 			case (YalTreeConstants.JJTSCALARACCESS):
 				String varName = termChild.getValue();
@@ -633,7 +643,7 @@ public class CodeGenerator {
 
 		// Load i value
 		if (Utils.isInteger(indexValue)) {
-			loadInt(indexValue, prefix);
+			loadInt(indexNode, prefix);
 		} else {
 
 			if (root.getSymbolTable().containsSymbolName(indexValue)) {
@@ -669,7 +679,7 @@ public class CodeGenerator {
 			} else
 				this.loadLocalVar(scalarAccess, varName, prefix, stack);
 		} else {
-			loadInt(arraySize.getValue(), prefix);
+			loadInt(arraySize, prefix);
 		}
 
 		appendln(TAB + "newarray int");
