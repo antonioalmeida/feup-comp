@@ -17,6 +17,8 @@ public class StackController {
         costs.put(YalInstructions.GETSTATIC, 1);
         costs.put(YalInstructions.IF, -2);
         costs.put(YalInstructions.OPERATION, -1);
+        costs.put(YalInstructions.ISTORE, -1);
+        costs.put(YalInstructions.ASTORE, -1);
     }
 
     public StackController() {

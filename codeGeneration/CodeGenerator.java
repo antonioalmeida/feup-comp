@@ -795,17 +795,17 @@ public class CodeGenerator {
 
 		} else {
 			generateRHS(rhs, prefix, stack);
-			generateLHSAssign(lhs, prefix);
+			generateLHSAssign(lhs, prefix, stack);
 		}
 	}
 
-	private void generateLHSAssign(SimpleNode lhs, String prefix) {
+	private void generateLHSAssign(SimpleNode lhs, String prefix, StackController stack) {
 		String varName = lhs.getValue();
 
 		if (root.getSymbolTable().containsSymbolName(varName)) {
 			storeGlobalVar(varName, prefix);
 		} else
-			storeLocalVar(lhs, varName, prefix);
+			storeLocalVar(lhs, varName, prefix, stack);
 
 		appendln();
 
@@ -835,15 +835,19 @@ public class CodeGenerator {
 		appendln(prefix + "putstatic " + root.getValue() + "/" + varName + varType);
 	}
 
-	private void storeLocalVar(SimpleNode node, String varName, String prefix) {
+	private void storeLocalVar(SimpleNode node, String varName, String prefix, StackController stack) {
 		// TODO for arrays
 		int varIndex = node.getSymbolIndex(varName);
 
 		String varType;
-		if (node.getSymbolTable().getSymbolType(varName) == Symbol.Type.ARRAY)
+		if (node.getSymbolTable().getSymbolType(varName) == Symbol.Type.ARRAY) {
 			varType = "a";
-		else
+			stack.addInstruction(YalInstructions.ASTORE);
+		}
+		else {
 			varType = "i";
+			stack.addInstruction(YalInstructions.ISTORE);
+		}
 
 		String store = "store";
 
