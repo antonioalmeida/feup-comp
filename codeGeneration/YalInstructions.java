@@ -10,6 +10,7 @@ public enum YalInstructions {
     ISTORE,
     ASTORE,
     IALOAD,
+    IASTORE,
     PUTSTATIC,
     BIPUSH,
     SIPUSH,

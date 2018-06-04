@@ -295,11 +295,24 @@ public class CodeGenerator {
 		SimpleNode lhs = (SimpleNode) exprTest.jjtGetChild(0);
 		ASTRhs rhs = (ASTRhs) exprTest.jjtGetChild(1);
 
+		boolean compareToZero = false;
+		if( rhs.jjtGetNumChildren()  == 1){
+			SimpleNode termChild = (SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0); 
+			if (termChild.getId() == YalTreeConstants.JJTINTEGER)
+				if (termChild.getValue().equals("0"))
+					compareToZero = true;
+			
+		}
+		
 		generateLHSCompare(lhs, prefix, stack);
-		generateRHS(rhs, prefix, stack);
-
-		stack.addInstruction(YalInstructions.IF);
-		return generate_relation_op(exprTest.getValue());
+		if (!compareToZero){
+			generateRHS(rhs, prefix, stack);
+			stack.addInstruction(YalInstructions.IF);
+			return generate_relation_op(exprTest.getValue());
+		} else {
+			//TODO: see cost for if compare with 0
+			return generate_relation_op_zero(exprTest.getValue());
+		}
 	}
 
 	private void generateWhile(SimpleNode functionChild, String prefix, StackController stack) {
@@ -369,6 +382,27 @@ public class CodeGenerator {
 			return "if_icmpne";
 		case "!=":
 			return "if_icmpeq";
+		default:
+			break;
+		}
+		return "";
+
+	}
+	
+	private String generate_relation_op_zero(String rela_op) {
+		switch (rela_op) {
+		case ">":
+			return "ifle";
+		case "<":
+			return "ifge";
+		case "<=":
+			return "ifgt";
+		case ">=":
+			return "iflt";
+		case "==":
+			return "ifne";
+		case "!=":
+			return "ifeq";
 		default:
 			break;
 		}
@@ -739,6 +773,7 @@ public class CodeGenerator {
 		if (((ASTAssign) node).isArrayAcess()) {
 			generateArrayAcess(lhs, prefix, stack);
 			generateRHS(rhs, prefix, stack);
+			stack.addInstruction(YalInstructions.IASTORE);
 			appendln(TAB + "iastore");
 			appendln();
 			// i = i + 1 || i = 1 + i (or similar cases)
