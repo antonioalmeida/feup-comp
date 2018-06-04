@@ -25,6 +25,8 @@ public class CodeGenerator {
 	private SimpleNode root;
 	private PrintWriter out;
 
+	private StringBuilder builder;
+
 	private int number_of_loops = 1;
 	private boolean otimizationR;
 	private boolean otimizationO;
@@ -37,6 +39,7 @@ public class CodeGenerator {
 		FileWriter fw = new FileWriter(filename, false);
 		BufferedWriter bw = new BufferedWriter(fw);
 
+		this.builder = new StringBuilder();
 		this.out = new PrintWriter(bw);
 	}
 
@@ -45,12 +48,23 @@ public class CodeGenerator {
 		generateGlobals();
 		generateStatic();
 		generateFunctions();
+
+		out.println(builder);
 		out.close();
 	}
 
+	private void appendln(String content) {
+		builder.append(content);	
+		builder.append("\n");	
+	}	
+
+	private void appendln() {
+		builder.append("\n");	
+	}
+
 	private void generateHeader() {
-		out.println(".class public " + root.getValue());
-		out.println(".super java/lang/Object" + "\n");
+		appendln(".class public " + root.getValue());
+		appendln(".super java/lang/Object" + "\n");
 	}
 
 	private void generateDeclaration(ASTDeclaration declaration) {
@@ -68,7 +82,7 @@ public class CodeGenerator {
 			}
 		}
 
-		out.println(".field static " + varName + varType + varValue);
+		appendln(".field static " + varName + varType + varValue);
 	}
 
 	private void generateGlobals() {
@@ -81,11 +95,11 @@ public class CodeGenerator {
 	}
 
 	private void generateStatic() {
-		out.println();
-		out.println(".method static public <clinit>()V");
-		out.println(TAB + ".limit stack 10");
-		out.println(TAB + ".limit locals 0");
-		out.println();
+		appendln();
+		appendln(".method static public <clinit>()V");
+		appendln(TAB + ".limit stack 10");
+		appendln(TAB + ".limit locals 0");
+		appendln();
 
 		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
 			SimpleNode childRoot = (SimpleNode) root.jjtGetChild(i);
@@ -98,9 +112,8 @@ public class CodeGenerator {
 
 		}
 
-		out.println(TAB + "return");
-		out.println(".end method");
-
+		appendln(TAB + "return");
+		appendln(".end method");
 	}
 
     private void generateArrayInitilization(SimpleNode declaration, String prefix) {
@@ -119,13 +132,13 @@ public class CodeGenerator {
         loadGlobalVar(sizeArray, prefix);
       } else {
         sizeArray = arraySize.getValue();
-        out.println(TAB + "bipush " + sizeArray);
+        appendln(TAB + "bipush " + sizeArray);
       }
 
-      out.println(TAB + "newarray int");
-      out.println(TAB + "putstatic " + nameModule + "/" + nameVariable + " [I");
+      appendln(TAB + "newarray int");
+      appendln(TAB + "putstatic " + nameModule + "/" + nameVariable + " [I");
 
-		out.println();
+		appendln();
 	}
 
 	private void generateFunctions() {
@@ -173,32 +186,46 @@ public class CodeGenerator {
 			break;
 		}
 
-		out.println(".method public static " + funcName + "(" + funcArgs + ")" + funcReturnType);
+		appendln(".method public static " + funcName + "(" + funcArgs + ")" + funcReturnType);
 	}
 
 	private void generateFunctionMainHeader(SimpleNode functionNode) {
-		out.println(".method public static main([Ljava/lang/String;)V");
+		appendln(".method public static main([Ljava/lang/String;)V");
 	}
 
 	private void generateFunctionHeader(ASTFunction functionNode) {
-		out.println();
+		appendln();
 
 		if (functionNode.isMainFunction())
 			generateFunctionMainHeader(functionNode);
 		else
 			generateFuncHeader(functionNode);
-
-		// TODO: limit
-		out.println(TAB + ".limit stack 10");
-		out.println(TAB + ".limit locals 10");
-		out.println();
-
 	}
 
 	private void generateFunction(ASTFunction functionNode) {
 		generateFunctionHeader(functionNode);
+		int headerIndex = builder.length();
+		
 		generateBody(functionNode);
 		generateFunctionFooter(functionNode);
+
+		generateFunctionLimits(functionNode, headerIndex);
+	}
+
+	public void generateFunctionLimits(ASTFunction functionNode, int headerIndex) {
+		StringBuilder localBuilder = new StringBuilder();
+		localBuilder.append('\n');
+			
+		// TODO: limit
+		int limitStack = functionNode.getIndexCounter() + 1;
+
+		localBuilder.append(TAB + ".limit stack " + limitStack);
+		localBuilder.append("\n");
+		localBuilder.append(TAB + ".limit locals 10");
+		localBuilder.append("\n");
+		localBuilder.append("\n");
+
+		builder.insert(headerIndex, localBuilder);
 	}
 
 	private void generateFunctionFooter(ASTFunction functionNode) {
@@ -223,10 +250,10 @@ public class CodeGenerator {
 			break;
 		}
 
-		out.println(TAB + returnType + "return");
-		out.println();
-		out.println(".end method");
-		out.println();
+		appendln(TAB + returnType + "return");
+		appendln();
+		appendln(".end method");
+		appendln();
 
 	}
 
@@ -241,7 +268,7 @@ public class CodeGenerator {
 			switch (functionChild.getId()) {
 			case YalTreeConstants.JJTCALL:
 				generateCall(functionChild, prefix + TAB);
-				out.println();
+				appendln();
 				break;
 			case YalTreeConstants.JJTASSIGN:
 				generateAssign(functionChild, prefix + TAB);
@@ -272,19 +299,19 @@ public class CodeGenerator {
 
 	private void generateWhile(SimpleNode functionChild, String prefix) {
 		int loop_number = number_of_loops;
-		out.println("loop" + loop_number + ":");
+		appendln("loop" + loop_number + ":");
 
 		SimpleNode exprTest = (SimpleNode) functionChild.jjtGetChild(0);
 
 		String relation = generateExprtest(exprTest, prefix);
 
-		out.println(relation + " loop" + loop_number + "_end");
+		appendln(relation + " loop" + loop_number + "_end");
 
 		// generate body while
 		generateBody(functionChild, prefix);
 
-		out.println("goto loop" + loop_number);
-		out.println("loop" + loop_number + "_end:");
+		appendln("goto loop" + loop_number);
+		appendln("loop" + loop_number + "_end:");
 
 		number_of_loops++;
 	}
@@ -307,20 +334,20 @@ public class CodeGenerator {
 		SimpleNode exprTest = (SimpleNode) node.jjtGetChild(0);
 
 		String relation = generateExprtest(exprTest, prefix);
-		out.println(prefix + relation + " loop" + loopId + "_end");
+		appendln(prefix + relation + " loop" + loopId + "_end");
 
 		// generate If body
 		generateBody(node, prefix);
 
 		if(hasElse)
-			out.println(prefix + TAB + "goto loop" + loopId + "_next");
-		out.println(prefix + "loop" + loopId + "_end:");
+			appendln(prefix + TAB + "goto loop" + loopId + "_next");
+		appendln(prefix + "loop" + loopId + "_end:");
 	}
 
 	private void generateElse(SimpleNode node, int loopId, String prefix) {
 		generateBody(node, prefix);
 
-		out.println(prefix + "loop" + loopId + "_next:");
+		appendln(prefix + "loop" + loopId + "_next:");
 	}
 
 	private String generate_relation_op(String rela_op) {
@@ -346,17 +373,17 @@ public class CodeGenerator {
 
 
 	private void loadString(String string, String prefix) {
-		out.println(prefix + "ldc " + string);
+		appendln(prefix + "ldc " + string);
 	}
 
 	private void loadInt(String valueToLoad, String prefix) {
 		int value = Integer.parseInt(valueToLoad);
 		if ((value >= 0) && (value <= 5)) {
-			out.println(prefix + "iconst_" + value);
+			appendln(prefix + "iconst_" + value);
 		} else if (value == -1)
-			out.println(prefix + "iconst_m1");
+			appendln(prefix + "iconst_m1");
 		else
-			out.println(prefix + "bipush " + value);
+			appendln(prefix + "bipush " + value);
 	}
 
 	private void loadGlobalVar(String varName, String prefix) {
@@ -367,7 +394,7 @@ public class CodeGenerator {
 		else
 			varType = " [I";
 
-		out.println(prefix + "getstatic " + root.getValue() + "/" + varName + varType);
+		appendln(prefix + "getstatic " + root.getValue() + "/" + varName + varType);
 	}
 
 	private void loadLocalVar(SimpleNode node, String varName, String prefix) {
@@ -385,7 +412,7 @@ public class CodeGenerator {
 		else
 			load = "load ";
 
-		out.println(prefix + varType + load + varIndex);
+		appendln(prefix + varType + load + varIndex);
 	}
 
 	private void generateCallArgs(SimpleNode callNode, String prefix) {
@@ -463,9 +490,9 @@ public class CodeGenerator {
 		
 
 
-//		System.out.println(callNode.value);
-//		System.out.println(typesArgs.size());
-//		System.out.println(typesArgs.get(0));
+//		System.appendln(callNode.value);
+//		System.appendln(typesArgs.size());
+//		System.appendln(typesArgs.get(0));
 //		root.getFunctionTable().printFunctions("    ");
 		
 		
@@ -493,7 +520,7 @@ public class CodeGenerator {
 
 		funcName = funcName.replace('.', '/');
 
-		out.println(prefix + "invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
+		appendln(prefix + "invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
 	}
 
 	private void generateCall(SimpleNode callNode, String prefix) {
@@ -538,7 +565,7 @@ public class CodeGenerator {
 		default:
 			break;
 		}
-		out.println(prefix + operation);
+		appendln(prefix + operation);
 
 	}
 	
@@ -565,7 +592,7 @@ public class CodeGenerator {
 					this.loadLocalVar(rhs, varName, prefix);
 
 				if (((ASTScalarAccess) termChild).getSizeArray())
-					out.println(TAB + "arraylength");
+					appendln(TAB + "arraylength");
 				break;
 			case (YalTreeConstants.JJTCALL):
 				generateCall(termChild, prefix);
@@ -573,7 +600,7 @@ public class CodeGenerator {
 
 			case (YalTreeConstants.JJTARRAYACCESS):
 				generateArrayAcess(termChild, prefix);
-				out.println(TAB + "iaload");
+				appendln(TAB + "iaload");
 				break;
 			default:
 				break;
@@ -641,7 +668,7 @@ public class CodeGenerator {
 			loadInt(arraySize.getValue(), prefix);
 		}
 
-		out.println(TAB + "newarray int");
+		appendln(TAB + "newarray int");
 
 	}
 
@@ -658,8 +685,8 @@ public class CodeGenerator {
         if (((ASTAssign) node).isArrayAcess()) {
             generateArrayAcess(lhs, prefix);
             generateRHS(rhs,prefix);
-            out.println(TAB + "iastore");
-            out.println();
+            appendln(TAB + "iastore");
+            appendln();
         //i = i + 1 || i = 1 + i (or similar cases)
         } else if(!root.getSymbolTable().containsSymbolName(lhs.getValue())&&// has to be local variable
                   rhs.getValue().equals("+") &&//has to be an increment
@@ -677,14 +704,13 @@ public class CodeGenerator {
             String constValue2 = ((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getValue();
            
             if (((SimpleNode)rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//case integer is second term in rhs
-                out.println(TAB + "iinc " + varIndex + " " + constValue1);
+                appendln(TAB + "iinc " + varIndex + " " + constValue1);
             else if (((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//case integer is first term in rhs
-                out.println(TAB + "iinc " + varIndex + " " + constValue2);
+                appendln(TAB + "iinc " + varIndex + " " + constValue2);
        
         } else {
             generateRHS(rhs,prefix);
             generateLHSAssign(lhs, prefix);
-
 		}
 	}
 
@@ -696,7 +722,7 @@ public class CodeGenerator {
 		} else
 			storeLocalVar(lhs, varName, prefix);
 
-		out.println();
+		appendln();
 
 	}
 
@@ -709,7 +735,7 @@ public class CodeGenerator {
 		} else
 			loadLocalVar(lhs, varName, prefix);
 
-		out.println();
+		appendln();
 
 	}
 
@@ -721,7 +747,7 @@ public class CodeGenerator {
 		else
 			varType = " [I";
 
-		out.println(prefix + "putstatic " + root.getValue() + "/" + varName + varType);
+		appendln(prefix + "putstatic " + root.getValue() + "/" + varName + varType);
 	}
 
 	private void storeLocalVar(SimpleNode node, String varName, String prefix) {
@@ -741,6 +767,6 @@ public class CodeGenerator {
 		else
 			store = "store ";
 
-		out.println(prefix + varType + store + varIndex);
+		appendln(prefix + varType + store + varIndex);
 	}
 }
