@@ -94,11 +94,14 @@ public class CodeGenerator {
 	}
 
 	private void generateStatic() {
+	    //TODO: copy mechanism made in generate function limits
 		appendln();
 		appendln(".method static public <clinit>()V");
 		appendln(TAB + ".limit stack 10");
 		appendln(TAB + ".limit locals 0");
 		appendln();
+
+		StackController stack = new StackController();
 
 		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
 			SimpleNode childRoot = (SimpleNode) root.jjtGetChild(i);
@@ -106,7 +109,7 @@ public class CodeGenerator {
 			if (childRoot.getId() == YalTreeConstants.JJTDECLARATION)
 
 				if (((ASTDeclaration) childRoot).isVarArrayInitialized())
-					generateArrayInitilization(childRoot, TAB);
+					generateArrayInitilization(childRoot, TAB, stack);
 			// generateArray
 
 		}
@@ -115,7 +118,7 @@ public class CodeGenerator {
 		appendln(".end method");
 	}
 
-	private void generateArrayInitilization(SimpleNode declaration, String prefix) {
+	private void generateArrayInitilization(SimpleNode declaration, String prefix, StackController stack) {
 		SimpleNode scalarElement = ((SimpleNode) declaration.jjtGetChild(0));
 		SimpleNode arraySize = (SimpleNode) declaration.jjtGetChild(1).jjtGetChild(0);
 
@@ -128,7 +131,7 @@ public class CodeGenerator {
 		if (arraySize.jjtGetNumChildren() != 0) {
 			SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);
 			sizeArray = scalarAccess.getValue();
-			loadGlobalVar(sizeArray, prefix);
+			loadGlobalVar(sizeArray, prefix, stack);
 		} else {
 			sizeArray = arraySize.getValue();
 			appendln(TAB + "bipush " + sizeArray);
@@ -295,8 +298,8 @@ public class CodeGenerator {
 		generateLHSCompare(lhs, prefix, stack);
 		generateRHS(rhs, prefix, stack);
 
+		stack.addInstruction(YalInstructions.IF);
 		return generate_relation_op(exprTest.getValue());
-
 	}
 
 	private void generateWhile(SimpleNode functionChild, String prefix, StackController stack) {
@@ -397,7 +400,7 @@ public class CodeGenerator {
 			appendln(prefix + "ldc " + value);
 	}
 
-	private void loadGlobalVar(String varName, String prefix) {
+	private void loadGlobalVar(String varName, String prefix, StackController stack) {
 		String varType;
 
 		if (root.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
@@ -405,6 +408,8 @@ public class CodeGenerator {
 		else
 			varType = " [I";
 
+
+		stack.addInstruction(YalInstructions.GETSTATIC);
 		appendln(prefix + "getstatic " + root.getValue() + "/" + varName + varType);
 	}
 
@@ -445,7 +450,7 @@ public class CodeGenerator {
 			case YalTreeConstants.JJTID:
 				String varName = argument.getValue();
 				if (root.getSymbolTable().containsSymbolName(varName)) {
-					loadGlobalVar(varName, prefix);
+					loadGlobalVar(varName, prefix, stack);
 				} else
 					this.loadLocalVar(callNode, varName, prefix, stack);
 				break;
@@ -543,7 +548,7 @@ public class CodeGenerator {
 		generateCallInvoke(callNode, prefix);
 	}
 
-	private void generateOperation(SimpleNode rhs, String prefix) {
+	private void generateOperation(SimpleNode rhs, String prefix, StackController stack) {
 		String operation = rhs.getValue();
 
 		switch (operation) {
@@ -580,8 +585,9 @@ public class CodeGenerator {
 		default:
 			break;
 		}
-		appendln(prefix + operation);
 
+		stack.addInstruction(YalInstructions.OPERATION);
+		appendln(prefix + operation);
 	}
 
 	private void generateTerm(ASTRhs rhs, String prefix, StackController stack) {
@@ -602,7 +608,7 @@ public class CodeGenerator {
 			case (YalTreeConstants.JJTSCALARACCESS):
 				String varName = termChild.getValue();
 				if (root.getSymbolTable().containsSymbolName(varName)) {
-					loadGlobalVar(varName, prefix);
+					loadGlobalVar(varName, prefix, stack);
 				} else
 					this.loadLocalVar(rhs, varName, prefix, stack);
 
@@ -623,7 +629,7 @@ public class CodeGenerator {
 		}
 
 		if (rhs.hasOperation()) {
-			generateOperation(rhs, prefix);
+			generateOperation(rhs, prefix, stack);
 		}
 
 	}
@@ -637,7 +643,7 @@ public class CodeGenerator {
 
 		// Load array a
 		if (root.getSymbolTable().containsSymbolName(varName)) {
-			loadGlobalVar(varName, prefix);
+			loadGlobalVar(varName, prefix, stack);
 		} else
 			this.loadLocalVar(arrayAcess, varName, prefix, stack);
 
@@ -647,7 +653,7 @@ public class CodeGenerator {
 		} else {
 
 			if (root.getSymbolTable().containsSymbolName(indexValue)) {
-				loadGlobalVar(indexValue, prefix);
+				loadGlobalVar(indexValue, prefix, stack);
 			} else
 				this.loadLocalVar(indexNode, indexValue, prefix, stack);
 
@@ -675,7 +681,7 @@ public class CodeGenerator {
 
 			String varName = scalarAccess.getValue();
 			if (root.getSymbolTable().containsSymbolName(varName)) {
-				loadGlobalVar(varName, prefix);
+				loadGlobalVar(varName, prefix, stack);
 			} else
 				this.loadLocalVar(scalarAccess, varName, prefix, stack);
 		} else {
@@ -795,7 +801,7 @@ public class CodeGenerator {
 		String varName = lhs.getValue();
 
 		if (root.getSymbolTable().containsSymbolName(varName)) {
-			loadGlobalVar(varName, prefix);
+			loadGlobalVar(varName, prefix, stack);
 		} else
 			loadLocalVar(lhs, varName, prefix, stack);
 

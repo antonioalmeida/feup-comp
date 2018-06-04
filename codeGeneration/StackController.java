@@ -14,6 +14,9 @@ public class StackController {
         costs = new HashMap();
         costs.put(YalInstructions.ILOAD, 1);
         costs.put(YalInstructions.ALOAD, 1);
+        costs.put(YalInstructions.GETSTATIC, 1);
+        costs.put(YalInstructions.IF, -2);
+        costs.put(YalInstructions.OPERATION, -1);
     }
 
     public StackController() {
