@@ -329,6 +329,25 @@ class SimpleNode implements Node {
 	   }
 	   }
    }
+   
+   public void addSuccessors() {
+	   
+   }
+   
+   public void handleSuccessorsAntecessors() {
+	   if(getChildren() != null) {
+           for(Node child : getChildren()) {
+               ((SimpleNode) child).handleSuccessorsAntecessors();          
+           }
+       }
+	   
+	   if(children != null && children.length > 1) {
+		   for(int i= 0; i <children.length - 2; i++) {
+			   
+		   }
+			   
+	   }
+   }
     
     public boolean analyse() {
         symbolTable = getAssignedSymbolTable();

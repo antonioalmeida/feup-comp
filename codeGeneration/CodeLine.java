@@ -22,6 +22,8 @@ public class CodeLine {
 	public CodeLine(int index) {
 		this.index = index;
 		usesAndDefs = new ArrayList<Pair>();
+		successors = new ArrayList<Integer>();
+		antecessors = new ArrayList<Integer>();
 	}
 	
 	public int getIndex() {
@@ -43,6 +45,14 @@ public class CodeLine {
 	public void addToUsesAndDefs(String symbolName, boolean store) {
 		Pair pair = new Pair(symbolName, store);
 		usesAndDefs.add(pair);
+	}
+	
+	public void addSuccessors(ArrayList<Integer> successors) {
+		this.successors.addAll(successors);
+	}
+	
+	public void addAntecessors(ArrayList<Integer> antecessors) {
+		this.successors.addAll(antecessors);
 	}
 	
 	public void print() {
