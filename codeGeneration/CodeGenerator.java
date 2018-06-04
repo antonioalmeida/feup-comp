@@ -310,7 +310,7 @@ public class CodeGenerator {
 			stack.addInstruction(YalInstructions.IF);
 			return generate_relation_op(exprTest.getValue());
 		} else {
-			//TODO: see cost for if compare with 0
+			stack.addInstruction(YalInstructions.IF_ZERO);
 			return generate_relation_op_zero(exprTest.getValue());
 		}
 	}
@@ -386,7 +386,6 @@ public class CodeGenerator {
 			break;
 		}
 		return "";
-
 	}
 	
 	private String generate_relation_op_zero(String rela_op) {
@@ -407,7 +406,6 @@ public class CodeGenerator {
 			break;
 		}
 		return "";
-
 	}
 
 	private void loadString(String string, String prefix, StackController stack) {
@@ -451,7 +449,6 @@ public class CodeGenerator {
 		else
 			varType = " [I";
 
-
 		stack.addInstruction(YalInstructions.GETSTATIC);
 		appendln(prefix + "getstatic " + root.getValue() + "/" + varName + varType);
 	}
@@ -474,7 +471,6 @@ public class CodeGenerator {
 			load = "load_";
 		else
 			load = "load ";
-
 
 		appendln(prefix + varType + load + varIndex);
 	}

@@ -6,6 +6,7 @@ public enum YalInstructions {
     ALOAD,
     GETSTATIC,
     IF,
+    IF_ZERO,
     OPERATION,
     ISTORE,
     ASTORE,
