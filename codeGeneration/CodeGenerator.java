@@ -287,12 +287,24 @@ public class CodeGenerator {
 
 		SimpleNode lhs = (SimpleNode) exprTest.jjtGetChild(0);
 		ASTRhs rhs = (ASTRhs) exprTest.jjtGetChild(1);
-
+		
+		//
+		boolean compareToZero = false;
+		if( rhs.jjtGetNumChildren()  == 1){
+			SimpleNode termChild = (SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0); 
+			if (termChild.getId() == YalTreeConstants.JJTINTEGER)
+				if (termChild.getValue().equals("0"))
+					compareToZero = true;
+			
+		}
+		
 		generateLHSCompare(lhs, prefix);
-		generateRHS(rhs, prefix);
-
-		return generate_relation_op(exprTest.getValue());
-
+		if (!compareToZero){
+			generateRHS(rhs, prefix);
+			return generate_relation_op(exprTest.getValue());
+		} else
+			return generate_relation_op_zero(exprTest.getValue());
+		
 	}
 
 	private void generateWhile(SimpleNode functionChild, String prefix) {
@@ -362,6 +374,27 @@ public class CodeGenerator {
 			return "if_icmpne";
 		case "!=":
 			return "if_icmpeq";
+		default:
+			break;
+		}
+		return "";
+
+	}
+	
+	private String generate_relation_op_zero(String rela_op) {
+		switch (rela_op) {
+		case ">":
+			return "ifle";
+		case "<":
+			return "ifge";
+		case "<=":
+			return "ifgt";
+		case ">=":
+			return "iflt";
+		case "==":
+			return "ifne";
+		case "!=":
+			return "ifeq";
 		default:
 			break;
 		}
