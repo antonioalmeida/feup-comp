@@ -18,6 +18,7 @@ public class SymbolTable {
     protected HashMap<String, Symbol> symbols;
 
     private int indexCount;
+    private HashMap<String, Integer> nameToIndex;
 
     
 
@@ -25,6 +26,23 @@ public class SymbolTable {
         this.parent = parent;
         symbols = new HashMap<String, Symbol>();
         this.indexCount = 0;
+        if(parent == null)
+        	nameToIndex = null;
+        else
+        	nameToIndex = parent.nameToIndex;
+    }
+    
+    public SymbolTable(SymbolTable parent, boolean newNameToIndex) {
+    	this.parent = parent;
+        symbols = new HashMap<String, Symbol>();
+        this.indexCount = 0;
+    	if(newNameToIndex)
+    		nameToIndex = new HashMap<String, Integer>();
+    	else
+    		if(parent == null)
+            	nameToIndex = null;
+            else
+            	nameToIndex = parent.nameToIndex;
     }
 
     public boolean containsSymbolName(String symbolName) {
@@ -86,6 +104,7 @@ public class SymbolTable {
             return false;
         else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
             this.addSymbol(symbolName, type, initialized, print, index);
+            this.nameToIndex.put(symbolName, index);
             return true;
         }
         else
@@ -115,8 +134,18 @@ public class SymbolTable {
             Map.Entry<String, Symbol> pair = (Entry<String, Symbol>) symbolsIt.next();
 
             Symbol symbol = pair.getValue();
-            if(symbol.getIndex() == -1)
-                symbol.setIndex(++currentIndex);
+            String name = pair.getKey();
+           
+            if(symbol.getIndex() == -1) {
+            	Integer index = this.nameToIndex.get(name);
+            	if(index == null) {
+            		symbol.setIndex(++currentIndex);
+            		nameToIndex.put(name, currentIndex);
+            	}
+            	else {
+            		symbol.setIndex(index);
+            	}
+            }
         }
 
         return currentIndex;
@@ -170,5 +199,11 @@ public class SymbolTable {
     public void incIndexCount() {
         indexCount++;
     }
+
+	public HashMap<String, Integer> getNameToIndex() {
+		return nameToIndex;
+	}
+
+	
     
 }

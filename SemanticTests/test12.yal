@@ -1,5 +1,7 @@
 module m{
-	function f(){
+
+
+	function c = f(){
 		a = 4;
 		if( a < 4){
 			x = 6;
@@ -9,5 +11,6 @@ module m{
 		}
 	
 		b = x;
+	
 	}
 }

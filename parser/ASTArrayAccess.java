@@ -22,6 +22,7 @@ class ASTArrayAccess extends SimpleNode {
 			printSemanticError(getValue() + " should have been initialized as an array");
 			return false;
 		}
+		addCodeLine(this.getValue(), false);
 
 		return true;
 	}

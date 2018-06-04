@@ -1,5 +1,7 @@
 package semantic;
 
+import java.util.HashMap;
+
 public class Symbol {
 	public static enum Type {
 		SCALAR, ARRAY, VOID, UNDEFINED 
@@ -20,6 +22,8 @@ public class Symbol {
 	// -1 if it's a function or not a 
 	// local variable
 	protected int index;
+	
+	
 
 	public Symbol(Type type, boolean initialized, boolean print, int index) {
 		this.type = type;

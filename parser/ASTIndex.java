@@ -15,13 +15,14 @@ class ASTIndex extends SimpleNode {
  
     public boolean analyseSymbolTable() {
        
-        if(!Utils.isInteger(this.getValue()))
+        if(!Utils.isInteger(this.getValue())) {
             if(!verifySymbolTypes(this.getValue(), true, Symbol.Type.SCALAR)) {
                 //System.out.println("Semantic Error: Index of an array " + this.value + " should have been initialized to a scalar");
                 printSemanticError("Index of an array " + this.getValue() + " should have been initialized to a scalar");
             	return false;
             }
-            
+        	addCodeLine(this.getValue(), false);
+        }
         return true;
     }
 

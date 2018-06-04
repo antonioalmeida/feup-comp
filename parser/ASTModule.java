@@ -17,6 +17,7 @@ class ASTModule extends SimpleNode {
     public boolean analyse() {
     	 symbolTable = getAssignedSymbolTable();
     	 functionTable = getAssignedFunctionTable();
+    	 assignCodeLine();
     	 boolean result = true;
     	   
     	if(!analyseSymbolTable())

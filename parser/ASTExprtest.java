@@ -5,11 +5,11 @@ import semantic.Symbol;
 public
 class ASTExprtest extends SimpleNode {
     public ASTExprtest(int id) {
-        super(id);
+        super(id, false, false, true);
     }
 
     public ASTExprtest(Yal p, int id) {
-        super(p, id);
+        super(p, id, false, false, true);
     }
 
     public boolean analyseSymbolTable() {

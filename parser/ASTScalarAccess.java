@@ -43,6 +43,11 @@ class ASTScalarAccess extends SimpleNode {
 			}
 		}
 		
+		if(parent.toString().equals("Assign"))
+			addCodeLine(getValue(), true);
+		else
+			addCodeLine(getValue(), false);
+		
 		return true;
 	}
 	

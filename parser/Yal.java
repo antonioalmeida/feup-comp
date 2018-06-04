@@ -35,6 +35,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
                 root.printFunctionTable("");
                         System.out.println("\u005cnSymbol Table:");
                         root.printSymbolTable("");
+                        root.dumpUsesDefs("");
 
                         CodeGenerator codeGenerator = new CodeGenerator(root);
                         codeGenerator.generateCode();

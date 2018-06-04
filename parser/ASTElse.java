@@ -7,11 +7,11 @@ import semantic.SymbolTable;
 public
 class ASTElse extends SimpleNode {
 	public ASTElse(int id) {
-		super(id, true, false, true);
+		super(id, true, false, false);
 	}
 
 	public ASTElse(Yal p, int id) {
-		super(p, id, true, false, true);
+		super(p, id, true, false, false);
 	}
 
 	/*public SymbolTable getAssignedSymbolTable() {

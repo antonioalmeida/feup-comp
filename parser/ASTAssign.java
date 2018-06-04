@@ -6,11 +6,11 @@ import semantic.Symbol;
 public
 class ASTAssign extends SimpleNode {
     public ASTAssign(int id) {
-        super(id);
+        super(id, false, false, true);
     }
 
     public ASTAssign(Yal p, int id) {
-        super(p, id);
+        super(p, id, false, false, true);
     }
 
     public boolean analyseSymbolTable() {

@@ -32,6 +32,7 @@ class ASTFunction extends SimpleNode {
 		boolean ret = true;
 		symbolTable = getAssignedSymbolTable();
         functionTable = getAssignedFunctionTable();
+        assignCodeLine();
         String functionName = "";
         String returnValue = "";
         Symbol.Type returnType = Symbol.Type.VOID;
@@ -90,7 +91,7 @@ class ASTFunction extends SimpleNode {
         		ret = false;
         	}
         	else {
-        		codeLine.addToUsesAndDefs((String) pair.getKey(), true);
+        		addCodeLine((String) pair.getKey(), true);
         	}
         }
         if(! functionTable.initializeFunction(functionName, argumentTypes, parameters, returnType, returnValue)) {
@@ -98,6 +99,8 @@ class ASTFunction extends SimpleNode {
         	printSemanticError("Function "+functionName+ " with argument types "+argumentTypes+" and return Type "+returnType +" has already been defined");
         	ret = false;;
         }
+        
+        
 		
 		
 		return ret;
@@ -131,6 +134,8 @@ class ASTFunction extends SimpleNode {
             result = false;
         
         indexCounter = attributeIndexes(indexCounter);
+        
+        codeLineHandler();
 
         return result;
 	}
