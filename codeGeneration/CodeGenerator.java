@@ -217,7 +217,9 @@ public class CodeGenerator {
 		localBuilder.append('\n');
 			
 		// TODO: limit
-		localBuilder.append(TAB + ".limit stack 10");
+		int limitStack = functionNode.getIndexCounter() + 1;
+
+		localBuilder.append(TAB + ".limit stack " + limitStack);
 		localBuilder.append("\n");
 		localBuilder.append(TAB + ".limit locals 10");
 		localBuilder.append("\n");

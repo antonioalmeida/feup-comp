@@ -127,7 +127,7 @@ class ASTFunction extends SimpleNode {
         if(!analyseSymbolTable())
             result = false;
         
-        attributeIndexes(indexCounter);
+        indexCounter = attributeIndexes(indexCounter);
 
         return result;
 	}
@@ -202,6 +202,10 @@ class ASTFunction extends SimpleNode {
 	
 	public String getFunction() {
 		return getRealValue();
+	}
+
+	public int getIndexCounter() {
+		return indexCounter;
 	}
 
 }
