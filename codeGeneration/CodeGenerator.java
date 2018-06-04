@@ -94,13 +94,9 @@ public class CodeGenerator {
 	}
 
 	private void generateStatic() {
-	    //TODO: copy mechanism made in generate function limits
-		appendln();
 		appendln(".method static public <clinit>()V");
-		appendln(TAB + ".limit stack 10");
-		appendln(TAB + ".limit locals 0");
-		appendln();
 
+		int headerIndex = builder.length();
 		StackController stack = new StackController();
 
 		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
@@ -116,6 +112,18 @@ public class CodeGenerator {
 
 		appendln(TAB + "return");
 		appendln(".end method");
+
+		int limitStack = stack.getMax();
+
+		StringBuilder localBuilder = new StringBuilder();
+		//TODO: confirm that this is always 0
+		localBuilder.append(TAB + ".limit locals 0");
+		localBuilder.append("\n");
+		localBuilder.append(TAB + ".limit stack " + limitStack);
+		localBuilder.append("\n");
+		localBuilder.append("\n");
+
+		builder.insert(headerIndex, localBuilder);
 	}
 
 	private void generateArrayInitilization(SimpleNode declaration, String prefix, StackController stack) {
@@ -220,9 +228,11 @@ public class CodeGenerator {
 		StringBuilder localBuilder = new StringBuilder();
 		localBuilder.append('\n');
 
-		// TODO: limit
 		int limitLocals = functionNode.getIndexCounter() + 1;
 		int limitStack = stack.getMax();
+
+		if (functionNode.isMainFunction())
+			limitLocals++;
 
 		localBuilder.append(TAB + ".limit locals " + limitLocals);
 		localBuilder.append("\n");
