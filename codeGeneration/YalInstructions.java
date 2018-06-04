@@ -7,8 +7,12 @@ public enum YalInstructions {
     GETSTATIC,
     IF,
     OPERATION,
-
     ISTORE,
     ASTORE,
     IALOAD,
+    PUTSTATIC,
+
+    BIPUSH,
+    SIPUSH,
+    LDC
 }

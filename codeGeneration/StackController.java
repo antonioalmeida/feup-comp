@@ -19,6 +19,11 @@ public class StackController {
         costs.put(YalInstructions.OPERATION, -1);
         costs.put(YalInstructions.ISTORE, -1);
         costs.put(YalInstructions.ASTORE, -1);
+        costs.put(YalInstructions.IALOAD, -1); //TODO: check iaload's cost
+        costs.put(YalInstructions.PUTSTATIC, -1);
+        costs.put(YalInstructions.BIPUSH, 1);
+        costs.put(YalInstructions.SIPUSH, 1);
+        costs.put(YalInstructions.LDC, 1);
     }
 
     public StackController() {

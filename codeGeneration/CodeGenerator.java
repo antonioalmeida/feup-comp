@@ -134,10 +134,13 @@ public class CodeGenerator {
 			loadGlobalVar(sizeArray, prefix, stack);
 		} else {
 			sizeArray = arraySize.getValue();
+			stack.addInstruction(YalInstructions.BIPUSH);
 			appendln(TAB + "bipush " + sizeArray);
 		}
 
+
 		appendln(TAB + "newarray int");
+		stack.addInstruction(YalInstructions.PUTSTATIC);
 		appendln(TAB + "putstatic " + nameModule + "/" + nameVariable + " [I");
 
 		appendln();
@@ -376,11 +379,12 @@ public class CodeGenerator {
 
 	}
 
-	private void loadString(String string, String prefix) {
+	private void loadString(String string, String prefix, StackController stack) {
+		stack.addInstruction(YalInstructions.LDC);
 		appendln(prefix + "ldc " + string);
 	}
 
-	private void loadInt(SimpleNode valueToLoad, String prefix) {
+	private void loadInt(SimpleNode valueToLoad, String prefix, StackController stack) {
 		int value = Integer.parseInt(valueToLoad.getValue());
 		
 		SimpleNode parentNode = (SimpleNode) valueToLoad.jjtGetParent();
@@ -392,12 +396,18 @@ public class CodeGenerator {
 			appendln(prefix + "iconst_" + value);
 		} else if (value == -1)
 			appendln(prefix + "iconst_m1");
-		else if (value > -129 && value < 128)
+		else if (value > -129 && value < 128) {
+			stack.addInstruction(YalInstructions.BIPUSH);
 			appendln(prefix + "bipush " + value);
-		else if (value > -32769 && value < 32768)
+		}
+		else if (value > -32769 && value < 32768) {
+			stack.addInstruction(YalInstructions.SIPUSH);
 			appendln(prefix + "sipush " + value);
-		else 
+		}
+		else {
+			stack.addInstruction(YalInstructions.LDC);
 			appendln(prefix + "ldc " + value);
+		}
 	}
 
 	private void loadGlobalVar(String varName, String prefix, StackController stack) {
@@ -442,10 +452,10 @@ public class CodeGenerator {
 
 			switch (argument.getArgumentType()) {
 			case YalTreeConstants.JJTSTRING:
-				loadString(argument.getValue(), prefix);
+				loadString(argument.getValue(), prefix, stack);
 				break;
 			case YalTreeConstants.JJTINTEGER:
-				loadInt(argument, prefix);
+				loadInt(argument, prefix, stack);
 				break;
 			case YalTreeConstants.JJTID:
 				String varName = argument.getValue();
@@ -618,7 +628,7 @@ public class CodeGenerator {
 
 			switch (termChild.getId()) {
 			case (YalTreeConstants.JJTINTEGER):
-				loadInt(termChild, prefix);
+				loadInt(termChild, prefix, stack);
 				break;
 			case (YalTreeConstants.JJTSCALARACCESS):
 				String varName = termChild.getValue();
@@ -636,6 +646,8 @@ public class CodeGenerator {
 
 			case (YalTreeConstants.JJTARRAYACCESS):
 				generateArrayAcess(termChild, prefix, stack);
+
+				stack.addInstruction(YalInstructions.IALOAD);
 				appendln(TAB + "iaload");
 				break;
 			default:
@@ -664,7 +676,7 @@ public class CodeGenerator {
 
 		// Load i value
 		if (Utils.isInteger(indexValue)) {
-			loadInt(indexNode, prefix);
+			loadInt(indexNode, prefix, stack);
 		} else {
 
 			if (root.getSymbolTable().containsSymbolName(indexValue)) {
@@ -700,7 +712,7 @@ public class CodeGenerator {
 			} else
 				this.loadLocalVar(scalarAccess, varName, prefix, stack);
 		} else {
-			loadInt(arraySize, prefix);
+			loadInt(arraySize, prefix, stack);
 		}
 
 		appendln(TAB + "newarray int");
@@ -803,12 +815,11 @@ public class CodeGenerator {
 		String varName = lhs.getValue();
 
 		if (root.getSymbolTable().containsSymbolName(varName)) {
-			storeGlobalVar(varName, prefix);
+			storeGlobalVar(varName, prefix, stack);
 		} else
 			storeLocalVar(lhs, varName, prefix, stack);
 
 		appendln();
-
 	}
 
 	private void generateLHSCompare(SimpleNode lhs, String prefix, StackController stack) {
@@ -824,7 +835,7 @@ public class CodeGenerator {
 
 	}
 
-	private void storeGlobalVar(String varName, String prefix) {
+	private void storeGlobalVar(String varName, String prefix, StackController stack) {
 		String varType;
 
 		if (root.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
@@ -832,6 +843,7 @@ public class CodeGenerator {
 		else
 			varType = " [I";
 
+		stack.addInstruction(YalInstructions.PUTSTATIC);
 		appendln(prefix + "putstatic " + root.getValue() + "/" + varName + varType);
 	}
 
