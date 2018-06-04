@@ -386,8 +386,12 @@ public class CodeGenerator {
 			appendln(prefix + "iconst_" + value);
 		} else if (value == -1)
 			appendln(prefix + "iconst_m1");
-		else
+		else if (value > -129 || value < 128)
 			appendln(prefix + "bipush " + value);
+		else if (value > -32769 || value < 32768)
+			appendln(prefix + "sipush " + value);
+		else 
+			appendln(prefix + "ldc " + value);
 	}
 
 	private void loadGlobalVar(String varName, String prefix) {
