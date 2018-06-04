@@ -130,8 +130,7 @@ public class CodeGenerator {
 			sizeArray = scalarAccess.getValue();
 			loadGlobalVar(sizeArray, prefix);
 		} else {
-			sizeArray = arraySize.getValue();
-			appendln(TAB + "bipush " + sizeArray);
+			loadInt(arraySize, TAB);
 		}
 
 		appendln(TAB + "newarray int");
