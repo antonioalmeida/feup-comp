@@ -133,11 +133,8 @@ public class CodeGenerator {
 			sizeArray = scalarAccess.getValue();
 			loadGlobalVar(sizeArray, prefix, stack);
 		} else {
-			sizeArray = arraySize.getValue();
-			stack.addInstruction(YalInstructions.BIPUSH);
-			appendln(TAB + "bipush " + sizeArray);
+			loadInt(arraySize, TAB, stack);
 		}
-
 
 		appendln(TAB + "newarray int");
 		stack.addInstruction(YalInstructions.PUTSTATIC);
@@ -486,9 +483,7 @@ public class CodeGenerator {
 		funcName = callNode.getValue();
 		
 		if(funcName.equals("main"))
-			isMain=true;
-			
-		
+			isMain=true;		
 		
 		funcName = addModuleToFunction(funcName);
 		Vector<Symbol.Type> typesArgs = new Vector<Symbol.Type>();
@@ -559,9 +554,8 @@ public class CodeGenerator {
 		funcName = funcName.replace('.', '/');
 		
 		if(isMain){
-			funcArgs+="[Ljava/lang/String;";
-			appendln("aconst_null");
-					
+			appendln(prefix + "aconst_null");
+			funcArgs+="[Ljava/lang/String;";					
 		}
 			
 
@@ -639,9 +633,14 @@ public class CodeGenerator {
 
 				if (((ASTScalarAccess) termChild).getSizeArray())
 					appendln(TAB + "arraylength");
+				
+				if(term.getValue().equals("-"))
+					appendln(TAB + "ineg");
 				break;
 			case (YalTreeConstants.JJTCALL):
 				generateCall(termChild, prefix, stack);
+				if(term.getValue().equals("-"))
+					appendln(TAB + "ineg");
 				break;
 
 			case (YalTreeConstants.JJTARRAYACCESS):
@@ -649,11 +648,15 @@ public class CodeGenerator {
 
 				stack.addInstruction(YalInstructions.IALOAD);
 				appendln(TAB + "iaload");
+				if(term.getValue().equals("-"))
+					appendln(TAB + "ineg");
 				break;
 			default:
 				break;
 			}
 		}
+		
+
 
 		if (rhs.hasOperation()) {
 			generateOperation(rhs, prefix, stack);

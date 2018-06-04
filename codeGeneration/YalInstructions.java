@@ -11,7 +11,6 @@ public enum YalInstructions {
     ASTORE,
     IALOAD,
     PUTSTATIC,
-
     BIPUSH,
     SIPUSH,
     LDC
