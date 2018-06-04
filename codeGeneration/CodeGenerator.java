@@ -224,9 +224,9 @@ public class CodeGenerator {
 		int limitLocals = functionNode.getIndexCounter() + 1;
 		int limitStack = stack.getMax();
 
-		localBuilder.append(TAB + ".limit stack " + limitStack);
-		localBuilder.append("\n");
 		localBuilder.append(TAB + ".limit locals " + limitLocals);
+		localBuilder.append("\n");
+		localBuilder.append(TAB + ".limit stack " + limitStack);
 		localBuilder.append("\n");
 		localBuilder.append("\n");
 
@@ -387,12 +387,14 @@ public class CodeGenerator {
 		SimpleNode parentNode = (SimpleNode) valueToLoad.jjtGetParent();
 		if(parentNode.getId()==YalTreeConstants.JJTTERM && parentNode.getValue().equals("-"))
 			value=-value;
-				
-		
+
 		if ((value >= 0) && (value <= 5)) {
 			appendln(prefix + "iconst_" + value);
-		} else if (value == -1)
+			stack.addInstruction(YalInstructions.ICONST);
+		} else if (value == -1) {
 			appendln(prefix + "iconst_m1");
+			stack.addInstruction(YalInstructions.ICONST);
+		}
 		else if (value > -129 && value < 128) {
 			stack.addInstruction(YalInstructions.BIPUSH);
 			appendln(prefix + "bipush " + value);
@@ -476,7 +478,7 @@ public class CodeGenerator {
 
 	}
 
-	private void generateCallInvoke(SimpleNode callNode, String prefix) {
+	private void generateCallInvoke(SimpleNode callNode, String prefix, StackController stack) {
 		String funcName, funcRetType, funcArgs = "";
 		boolean isMain = false;
 
@@ -557,14 +559,16 @@ public class CodeGenerator {
 			appendln(prefix + "aconst_null");
 			funcArgs+="[Ljava/lang/String;";					
 		}
-			
 
+
+		int nArgs = callNode.jjtGetNumChildren();
+		stack.addInstruction(-nArgs);
 		appendln(prefix + "invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
 	}
 
 	private void generateCall(SimpleNode callNode, String prefix, StackController stack) {
 		generateCallArgs(callNode, prefix, stack);
-		generateCallInvoke(callNode, prefix);
+		generateCallInvoke(callNode, prefix, stack);
 	}
 
 	private void generateOperation(SimpleNode rhs, String prefix, StackController stack) {

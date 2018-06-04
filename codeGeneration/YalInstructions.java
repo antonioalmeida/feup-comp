@@ -13,5 +13,5 @@ public enum YalInstructions {
     PUTSTATIC,
     BIPUSH,
     SIPUSH,
-    LDC
+    LDC,
 }

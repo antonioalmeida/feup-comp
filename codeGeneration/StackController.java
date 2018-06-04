@@ -14,6 +14,7 @@ public class StackController {
         costs = new HashMap();
         costs.put(YalInstructions.ILOAD, 1);
         costs.put(YalInstructions.ALOAD, 1);
+        costs.put(YalInstructions.ICONST, 1);
         costs.put(YalInstructions.GETSTATIC, 1);
         costs.put(YalInstructions.IF, -2);
         costs.put(YalInstructions.OPERATION, -1);
@@ -33,6 +34,13 @@ public class StackController {
 
     public void addInstruction(YalInstructions instruction) {
         currentSize += costs.get(instruction);
+
+        if(currentSize > maxSize)
+            maxSize = currentSize;
+    }
+
+    public void addInstruction(int cost) {
+        currentSize += cost;
 
         if(currentSize > maxSize)
             maxSize = currentSize;
