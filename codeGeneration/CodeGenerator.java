@@ -392,9 +392,9 @@ public class CodeGenerator {
 			appendln(prefix + "iconst_" + value);
 		} else if (value == -1)
 			appendln(prefix + "iconst_m1");
-		else if (value > -129 || value < 128)
+		else if (value > -129 && value < 128)
 			appendln(prefix + "bipush " + value);
-		else if (value > -32769 || value < 32768)
+		else if (value > -32769 && value < 32768)
 			appendln(prefix + "sipush " + value);
 		else 
 			appendln(prefix + "ldc " + value);
@@ -471,8 +471,15 @@ public class CodeGenerator {
 
 	private void generateCallInvoke(SimpleNode callNode, String prefix) {
 		String funcName, funcRetType, funcArgs = "";
+		boolean isMain = false;
 
 		funcName = callNode.getValue();
+		
+		if(funcName.equals("main"))
+			isMain=true;
+			
+		
+		
 		funcName = addModuleToFunction(funcName);
 		Vector<Symbol.Type> typesArgs = new Vector<Symbol.Type>();
 
@@ -537,8 +544,16 @@ public class CodeGenerator {
 				funcRetType = "V";
 
 		}
+		
 
 		funcName = funcName.replace('.', '/');
+		
+		if(isMain){
+			funcArgs+="[Ljava/lang/String;";
+			appendln("aconst_null");
+					
+		}
+			
 
 		appendln(prefix + "invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
 	}
