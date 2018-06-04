@@ -1,4 +1,5 @@
 package codeGeneration;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,8 +17,6 @@ import parser.YalTreeConstants;
 import semantic.Symbol;
 import semantic.Symbol.Type;
 import utils.Utils;
-
-
 
 public class CodeGenerator {
 
@@ -54,12 +53,12 @@ public class CodeGenerator {
 	}
 
 	private void appendln(String content) {
-		builder.append(content);	
-		builder.append("\n");	
-	}	
+		builder.append(content);
+		builder.append("\n");
+	}
 
 	private void appendln() {
-		builder.append("\n");	
+		builder.append("\n");
 	}
 
 	private void generateHeader() {
@@ -106,9 +105,9 @@ public class CodeGenerator {
 
 			if (childRoot.getId() == YalTreeConstants.JJTDECLARATION)
 
-				if(((ASTDeclaration)childRoot).isVarArrayInitialized())
+				if (((ASTDeclaration) childRoot).isVarArrayInitialized())
 					generateArrayInitilization(childRoot, TAB);
-			//	generateArray
+			// generateArray
 
 		}
 
@@ -116,27 +115,26 @@ public class CodeGenerator {
 		appendln(".end method");
 	}
 
-    private void generateArrayInitilization(SimpleNode declaration, String prefix) {
-      SimpleNode scalarElement = ((SimpleNode) declaration.jjtGetChild(0));
-      SimpleNode arraySize = (SimpleNode) declaration.jjtGetChild(1).jjtGetChild(0);
+	private void generateArrayInitilization(SimpleNode declaration, String prefix) {
+		SimpleNode scalarElement = ((SimpleNode) declaration.jjtGetChild(0));
+		SimpleNode arraySize = (SimpleNode) declaration.jjtGetChild(1).jjtGetChild(0);
 
-      String nameModule = this.root.getValue();
-      String nameVariable = scalarElement.getValue();
+		String nameModule = this.root.getValue();
+		String nameVariable = scalarElement.getValue();
 
-      String sizeArray;
-      // = arraySize.value;
+		String sizeArray;
+		// = arraySize.value;
 
-      if (arraySize.jjtGetNumChildren() != 0) {
-        SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);
-        sizeArray = scalarAccess.getValue();
-        loadGlobalVar(sizeArray, prefix);
-      } else {
-        sizeArray = arraySize.getValue();
-        appendln(TAB + "bipush " + sizeArray);
-      }
+		if (arraySize.jjtGetNumChildren() != 0) {
+			SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);
+			sizeArray = scalarAccess.getValue();
+			loadGlobalVar(sizeArray, prefix);
+		} else {
+			loadInt(arraySize, TAB);
+		}
 
-      appendln(TAB + "newarray int");
-      appendln(TAB + "putstatic " + nameModule + "/" + nameVariable + " [I");
+		appendln(TAB + "newarray int");
+		appendln(TAB + "putstatic " + nameModule + "/" + nameVariable + " [I");
 
 		appendln();
 	}
@@ -205,7 +203,7 @@ public class CodeGenerator {
 	private void generateFunction(ASTFunction functionNode) {
 		generateFunctionHeader(functionNode);
 		int headerIndex = builder.length();
-		
+
 		generateBody(functionNode);
 		generateFunctionFooter(functionNode);
 
@@ -215,13 +213,13 @@ public class CodeGenerator {
 	public void generateFunctionLimits(ASTFunction functionNode, int headerIndex) {
 		StringBuilder localBuilder = new StringBuilder();
 		localBuilder.append('\n');
-			
-		// TODO: limit
-		int limitStack = functionNode.getIndexCounter() + 1;
 
-		localBuilder.append(TAB + ".limit stack " + limitStack);
+		// TODO: limit
+		int limitLocals = functionNode.getIndexCounter() + 1;
+
+		localBuilder.append(TAB + ".limit stack 10");
 		localBuilder.append("\n");
-		localBuilder.append(TAB + ".limit locals 10");
+		localBuilder.append(TAB + ".limit locals" + limitLocals);
 		localBuilder.append("\n");
 		localBuilder.append("\n");
 
@@ -240,7 +238,7 @@ public class CodeGenerator {
 		case ARRAY:
 			returnType = "a";
 			varToReturn = functionNode.getVarNameToReturn();
-			loadLocalVar(functionNode,  varToReturn, TAB);
+			loadLocalVar(functionNode, varToReturn, TAB);
 			break;
 		case VOID:
 			returnType = "";
@@ -339,7 +337,7 @@ public class CodeGenerator {
 		// generate If body
 		generateBody(node, prefix);
 
-		if(hasElse)
+		if (hasElse)
 			appendln(prefix + TAB + "goto loop" + loopId + "_next");
 		appendln(prefix + "loop" + loopId + "_end:");
 	}
@@ -371,19 +369,28 @@ public class CodeGenerator {
 
 	}
 
-
 	private void loadString(String string, String prefix) {
 		appendln(prefix + "ldc " + string);
 	}
 
-	private void loadInt(String valueToLoad, String prefix) {
-		int value = Integer.parseInt(valueToLoad);
+	private void loadInt(SimpleNode valueToLoad, String prefix) {
+		int value = Integer.parseInt(valueToLoad.getValue());
+		
+		SimpleNode parentNode = (SimpleNode) valueToLoad.jjtGetParent();
+		if(parentNode.getId()==YalTreeConstants.JJTTERM && parentNode.getValue().equals("-"))
+			value=-value;
+				
+		
 		if ((value >= 0) && (value <= 5)) {
 			appendln(prefix + "iconst_" + value);
 		} else if (value == -1)
 			appendln(prefix + "iconst_m1");
-		else
+		else if (value > -129 && value < 128)
 			appendln(prefix + "bipush " + value);
+		else if (value > -32769 && value < 32768)
+			appendln(prefix + "sipush " + value);
+		else 
+			appendln(prefix + "ldc " + value);
 	}
 
 	private void loadGlobalVar(String varName, String prefix) {
@@ -424,7 +431,7 @@ public class CodeGenerator {
 				loadString(argument.getValue(), prefix);
 				break;
 			case YalTreeConstants.JJTINTEGER:
-				loadInt(argument.getValue(), prefix);
+				loadInt(argument, prefix);
 				break;
 			case YalTreeConstants.JJTID:
 				String varName = argument.getValue();
@@ -450,8 +457,13 @@ public class CodeGenerator {
 
 	private void generateCallInvoke(SimpleNode callNode, String prefix) {
 		String funcName, funcRetType, funcArgs = "";
+		boolean isMain = false;
 
 		funcName = callNode.getValue();
+		
+		if(funcName.equals("main"))
+			isMain=true;		
+		
 		funcName = addModuleToFunction(funcName);
 		Vector<Symbol.Type> typesArgs = new Vector<Symbol.Type>();
 
@@ -483,30 +495,30 @@ public class CodeGenerator {
 			}
 		}
 
-//		if (((SimpleNode) callNode.parent).id == YalTreeConstants.JJTTERM)
-//			funcRetType = "I";
-//		else
-//			funcRetType = "V";
-		
+		// if (((SimpleNode) callNode.parent).id == YalTreeConstants.JJTTERM)
+		// funcRetType = "I";
+		// else
+		// funcRetType = "V";
 
+		// System.appendln(callNode.value);
+		// System.appendln(typesArgs.size());
+		// System.appendln(typesArgs.get(0));
+		// root.getFunctionTable().printFunctions(" ");
 
-//		System.appendln(callNode.value);
-//		System.appendln(typesArgs.size());
-//		System.appendln(typesArgs.get(0));
-//		root.getFunctionTable().printFunctions("    ");
-		
-		
-		
-		
-		
-//		
+		//
 		Vector<Type> typeReturnVector = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs);
 
 		// How to know the return type of external library
-		if (typeReturnVector.size() == 0)
-			funcRetType = "V";
-		else {
-			Symbol.Type returnType = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs).get(0);
+		if (typeReturnVector.size() == 0) {
+
+			if (((SimpleNode) callNode.jjtGetParent()).getId() == YalTreeConstants.JJTTERM)
+				funcRetType = "I";
+			else
+				funcRetType = "V";
+
+		} else {
+			Symbol.Type returnType = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs)
+					.get(0);
 
 			if (returnType == Symbol.Type.SCALAR)
 				funcRetType = "I";
@@ -519,6 +531,12 @@ public class CodeGenerator {
 		
 
 		funcName = funcName.replace('.', '/');
+		
+		if(isMain){
+			appendln(prefix + "aconst_null");
+			funcArgs+="[Ljava/lang/String;";					
+		}
+			
 
 		appendln(prefix + "invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
 	}
@@ -568,7 +586,7 @@ public class CodeGenerator {
 		appendln(prefix + operation);
 
 	}
-	
+
 	private void generateTerm(ASTRhs rhs, String prefix) {
 		for (int i = 0; i < rhs.jjtGetNumChildren(); i++) {
 
@@ -582,7 +600,7 @@ public class CodeGenerator {
 
 			switch (termChild.getId()) {
 			case (YalTreeConstants.JJTINTEGER):
-				loadInt(termChild.getValue(), prefix);
+				loadInt(termChild, prefix);
 				break;
 			case (YalTreeConstants.JJTSCALARACCESS):
 				String varName = termChild.getValue();
@@ -593,26 +611,36 @@ public class CodeGenerator {
 
 				if (((ASTScalarAccess) termChild).getSizeArray())
 					appendln(TAB + "arraylength");
+				
+				if(term.getValue().equals("-"))
+					appendln(TAB + "ineg");
+
+				
 				break;
 			case (YalTreeConstants.JJTCALL):
 				generateCall(termChild, prefix);
+			if(term.getValue().equals("-"))
+				appendln(TAB + "ineg");
 				break;
 
 			case (YalTreeConstants.JJTARRAYACCESS):
 				generateArrayAcess(termChild, prefix);
 				appendln(TAB + "iaload");
+				if(term.getValue().equals("-"))
+					appendln(TAB + "ineg");
 				break;
 			default:
 				break;
 			}
 		}
+		
+
 
 		if (rhs.hasOperation()) {
-			generateOperation(rhs,prefix);
+			generateOperation(rhs, prefix);
 		}
 
 	}
-
 
 	private void generateArrayAcess(SimpleNode arrayAcess, String prefix) {
 		String varName = arrayAcess.getValue();
@@ -629,7 +657,7 @@ public class CodeGenerator {
 
 		// Load i value
 		if (Utils.isInteger(indexValue)) {
-			loadInt(indexValue, prefix);
+			loadInt(indexNode, prefix);
 		} else {
 
 			if (root.getSymbolTable().containsSymbolName(indexValue)) {
@@ -654,18 +682,18 @@ public class CodeGenerator {
 
 	private void generateArrayAssigned(SimpleNode arrayAssigned, String prefix) {
 		SimpleNode arraySize = (SimpleNode) arrayAssigned.jjtGetChild(0);
-		
-		if(arraySize.jjtGetNumChildren()!=0){
-		
-		SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);
 
-		String varName = scalarAccess.getValue();
-		if (root.getSymbolTable().containsSymbolName(varName)) {
-			loadGlobalVar(varName, prefix);
-		} else
-			this.loadLocalVar(scalarAccess, varName, prefix);}
-		else {
-			loadInt(arraySize.getValue(), prefix);
+		if (arraySize.jjtGetNumChildren() != 0) {
+
+			SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);
+
+			String varName = scalarAccess.getValue();
+			if (root.getSymbolTable().containsSymbolName(varName)) {
+				loadGlobalVar(varName, prefix);
+			} else
+				this.loadLocalVar(scalarAccess, varName, prefix);
+		} else {
+			loadInt(arraySize, prefix);
 		}
 
 		appendln(TAB + "newarray int");
@@ -682,35 +710,85 @@ public class CodeGenerator {
 		ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
 
-        if (((ASTAssign) node).isArrayAcess()) {
-            generateArrayAcess(lhs, prefix);
-            generateRHS(rhs,prefix);
-            appendln(TAB + "iastore");
-            appendln();
-        //i = i + 1 || i = 1 + i (or similar cases)
-        } else if(!root.getSymbolTable().containsSymbolName(lhs.getValue())&&// has to be local variable
-                  rhs.getValue().equals("+") &&//has to be an increment
-                 ( (lhs.getValue().equals(((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getValue())
-                    && ((SimpleNode)rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//Term in lhs is equal to first term in rhs and second term in rhs is an integer
-                    ||
-                   (lhs.getValue().equals(((SimpleNode)rhs.jjtGetChild(1).jjtGetChild(0)).getValue())
-                    && ((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//Term in lhs is equal to second term in rhs and first term in rhs is an integer
-                 ) ){
-       
-            int varIndex = node.getSymbolIndex(lhs.getValue());
-               
-            String constValue1 = ((SimpleNode)rhs.jjtGetChild(1).jjtGetChild(0)).getValue();
-           
-            String constValue2 = ((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getValue();
-           
-            if (((SimpleNode)rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//case integer is second term in rhs
-                appendln(TAB + "iinc " + varIndex + " " + constValue1);
-            else if (((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)//case integer is first term in rhs
-                appendln(TAB + "iinc " + varIndex + " " + constValue2);
-       
-        } else {
-            generateRHS(rhs,prefix);
-            generateLHSAssign(lhs, prefix);
+		if (((ASTAssign) node).isArrayAcess()) {
+			generateArrayAcess(lhs, prefix);
+			generateRHS(rhs, prefix);
+			appendln(TAB + "iastore");
+			appendln();
+			// i = i + 1 || i = 1 + i (or similar cases)
+		} else if (!root.getSymbolTable().containsSymbolName(lhs.getValue()) && // has
+																				// to
+																				// be
+																				// local
+																				// variable
+				rhs.getValue().equals("+") && // has to be an increment
+				((lhs.getValue().equals(((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue())
+						&& ((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)// Term
+																													// in
+																													// lhs
+																													// is
+																													// equal
+																													// to
+																													// first
+																													// term
+																													// in
+																													// rhs
+																													// and
+																													// second
+																													// term
+																													// in
+																													// rhs
+																													// is
+																													// an
+																													// integer
+						|| (lhs.getValue().equals(((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getValue())
+								&& ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0))
+										.getId() == YalTreeConstants.JJTINTEGER)// Term
+																				// in
+																				// lhs
+																				// is
+																				// equal
+																				// to
+																				// second
+																				// term
+																				// in
+																				// rhs
+																				// and
+																				// first
+																				// term
+																				// in
+																				// rhs
+																				// is
+																				// an
+																				// integer
+				)) {
+
+			int varIndex = node.getSymbolIndex(lhs.getValue());
+
+			String constValue1 = ((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getValue();
+
+			String constValue2 = ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue();
+
+			if (((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)// case
+																										// integer
+																										// is
+																										// second
+																										// term
+																										// in
+																										// rhs
+				appendln(TAB + "iinc " + varIndex + " " + constValue1);
+			else if (((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)// case
+																												// integer
+																												// is
+																												// first
+																												// term
+																												// in
+																												// rhs
+				appendln(TAB + "iinc " + varIndex + " " + constValue2);
+
+		} else {
+			generateRHS(rhs, prefix);
+			generateLHSAssign(lhs, prefix);
 		}
 	}
 
