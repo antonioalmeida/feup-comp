@@ -6,12 +6,17 @@ import java.util.BitSet;
 import utils.Pair;
 
 public class CodeLine {
+	private static int countIndex = -1;
 	private Integer index;
-	//ArrayList<Pair> loadsStores;
+	ArrayList<Pair> usesAndDefs;
 	private ArrayList<Integer> successors;
 	private ArrayList<Integer> antecessors;
 	private BitSet uses;
 	private BitSet defs;
+	
+	public CodeLine() {
+		this.index = ++countIndex;
+	}
 	
 	public CodeLine(int index) {
 		this.index = index;
@@ -31,6 +36,11 @@ public class CodeLine {
 	
 	public void addDef(int symbolIndex) {
 		defs.set(symbolIndex);
+	}
+	
+	public void addToUsesAndDefs(String symbolName, boolean store) {
+		Pair pair = new Pair(symbolName, store);
+		usesAndDefs.add(pair);
 	}
 	
 	

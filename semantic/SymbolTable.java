@@ -18,20 +18,13 @@ public class SymbolTable {
     protected HashMap<String, Symbol> symbols;
 
     private int indexCount;
-    private boolean useParentIndex;
 
-    public SymbolTable(SymbolTable parent, boolean useParentIndex) {
-        this.parent = parent;
-        symbols = new HashMap<String, Symbol>();
-        this.useParentIndex = useParentIndex;
-        this.indexCount = 0;
-    }
+    
 
     public SymbolTable(SymbolTable parent) {
         this.parent = parent;
         symbols = new HashMap<String, Symbol>();
         this.indexCount = 0;
-        this.useParentIndex = false;
     }
 
     public boolean containsSymbolName(String symbolName) {

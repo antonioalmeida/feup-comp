@@ -14,8 +14,8 @@ class ASTIf extends SimpleNode {
 		super(p, id, true, false, true);
 	}
 
-	public SymbolTable getAssignedSymbolTable() {
-		return new SymbolTable(((SimpleNode) parent).getSymbolTable(), true);
-	}
+	/*public SymbolTable getAssignedSymbolTable() {
+		return new SymbolTable(((SimpleNode) parent).getSymbolTable());
+	}*/
 }
 /* JavaCC - OriginalChecksum=890cda73491138fb844da26b5d6b8c0b (do not edit this line) */

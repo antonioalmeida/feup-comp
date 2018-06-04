@@ -89,6 +89,9 @@ class ASTFunction extends SimpleNode {
         		printSemanticError("Could not initialize "+pair.getKey());
         		ret = false;
         	}
+        	else {
+        		codeLine.addToUsesAndDefs((String) pair.getKey(), true);
+        	}
         }
         if(! functionTable.initializeFunction(functionName, argumentTypes, parameters, returnType, returnValue)) {
         	//System.out.println("Semantic Error: Function "+functionName+ " with argument types "+argumentTypes+" and return Type "+returnType +" has already been defined");

@@ -81,14 +81,14 @@ class SimpleNode implements Node {
     		return ((SimpleNode) parent).getFunctionTable();
     }
     
-    /*public CodeLine getAssignedCodeLine() {
+    public CodeLine getAssignedCodeLine() {
     	if(parent == null)
     		return null;
     	else if(hasCodeLineScope)
     		return new CodeLine();
     	else
     		return ((SimpleNode) parent).getCodeLine();
-    }*/
+    }
     
     public void jjtOpen() {}
 
@@ -218,6 +218,10 @@ class SimpleNode implements Node {
     	return functionTable;
     }
     
+    public CodeLine getCodeLine() {
+    	return codeLine;
+    }
+    
     public boolean analyseSymbolTable() {
         return true;
     }
@@ -227,6 +231,7 @@ class SimpleNode implements Node {
     public boolean analyse() {
         symbolTable = getAssignedSymbolTable();
         functionTable = getAssignedFunctionTable();
+        codeLine = getAssignedCodeLine();
         boolean result = true;
     
         if(getChildren() != null) {
