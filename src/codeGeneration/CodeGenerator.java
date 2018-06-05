@@ -332,6 +332,7 @@ public class CodeGenerator {
 
 	private void generateWhile(SimpleNode functionChild, String prefix, StackController stack) {
 		int loop_number = number_of_loops;
+		number_of_loops++;
 		appendln("loop" + loop_number + ":");
 
 		SimpleNode exprTest = (SimpleNode) functionChild.jjtGetChild(0);
@@ -346,7 +347,7 @@ public class CodeGenerator {
 		appendln("goto loop" + loop_number);
 		appendln("loop" + loop_number + "_end:");
 
-		number_of_loops++;
+		
 	}
 
 	private void generateIfStatement(SimpleNode node, String prefix, StackController stack) {
