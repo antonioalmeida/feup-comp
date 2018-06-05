@@ -1,4 +1,8 @@
+#!/usr/bin/env bash
+rm -rf bin
+mkdir -p bin
+cd src
 jjtree parser/yal.jjt
 javacc parser/yal.jj
-javac */*.java
-
+cd ..
+javac -d bin -sourcepath . src/*/*.java 
