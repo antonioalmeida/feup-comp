@@ -12,11 +12,13 @@ class ASTFunction extends SimpleNode {
 	private String returnValue;
 	private Symbol.Type returnType;
 	private int indexCounter;
+	private int nArgs;
 	public ASTFunction(int id) {
 		super(id, true, false, true);
 		returnValue = "";
 		returnType = Symbol.Type.VOID;
 		indexCounter = -1;
+		nArgs = 0;
 	}
 
 	public ASTFunction(Yal p, int id) {
@@ -24,6 +26,11 @@ class ASTFunction extends SimpleNode {
 		indexCounter = -1;
 		returnValue = "";
 		returnType = Symbol.Type.VOID;
+		nArgs = 0;
+	}
+	
+	public int getNArgs() {
+		return nArgs;
 	}
 	
 	//TODO: See what this means
@@ -92,6 +99,7 @@ class ASTFunction extends SimpleNode {
         	}
         	else {
         		addCodeLine((String) pair.getKey(), true);
+        		nArgs ++;
         	}
         }
         if(! functionTable.initializeFunction(functionName, argumentTypes, parameters, returnType, returnValue)) {

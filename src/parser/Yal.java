@@ -20,6 +20,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
   private static Yal myYal;
   private static boolean error = false;
   private static int optRN = -1;
+  private static boolean debug = true;
 
   public static void main(String args []) throws ParseException, IOException
   {
@@ -40,10 +41,13 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
                         System.out.println("\u005cnSymbol Table:");
                         root.printSymbolTable("");
                         if(optRN >= 0) {
-                                root.dumpUsesDefs("");
+                            if(debug)
+                                        root.dumpUsesDefs("");
                                 root.handleSuccessorsAntecessors();
+                                if(debug)
+                                        root.dumpSuccessorsAntecessors();
                                 root.handleOptimizationR(optRN);
-                                root.dumpSuccessorsAntecessors();
+
 
                         }
                         CodeGenerator codeGenerator = new CodeGenerator(root);
@@ -52,7 +56,9 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
     }
   }
 
-
+  public static boolean getDebug() {
+                return debug;
+  }
 
   public static File validFilePath(String filePath) {
                 File file = new File(filePath);

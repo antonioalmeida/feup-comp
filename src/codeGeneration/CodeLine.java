@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 
+import parser.Yal;
 import utils.Pair;
 
 public class CodeLine {
@@ -79,17 +80,20 @@ public class CodeLine {
 			antecessors.add(antecessor);
 			bitAntecessors.set(antecessor);
 		}
-		else {
+		/*else {
 			System.out.println("b2: "+index+ " "+antecessor);
-		}
+		}*/
 	}
 	
-	public void defineBitSets(HashMap<String, Integer> nameToIndex) {
-		uses = new BitSet();
-		defs = new BitSet();
+	public void defineUsesDefs(HashMap<String, Integer> nameToIndex, int maxIndex) {
+		uses = new BitSet(maxIndex + 1);
+		defs = new BitSet(maxIndex + 1);
 		for(int i=0; i < usesAndDefs.size(); i++) {
-			Integer newIndex = nameToIndex.get(usesAndDefs.get(i).getValue());
+			Integer newIndex = nameToIndex.get(usesAndDefs.get(i).getKey());
+			if(Yal.getDebug())
+				System.out.println("UsesAndDefs: "+usesAndDefs.get(i).getKey()+" => "+newIndex);
 			if(newIndex != null) {
+					
 				if((boolean) usesAndDefs.get(i).getValue()) {
 					defs.set(newIndex);
 				}
@@ -97,8 +101,8 @@ public class CodeLine {
 					uses.set(newIndex);
 			}
 		}
-		in = new BitSet();
-		out = new BitSet();
+		in = new BitSet(maxIndex + 1);
+		out = new BitSet(maxIndex + 1);
 	}
 	
 	/*public void addSuccessors(ArrayList<Integer> successors) {

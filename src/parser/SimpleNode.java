@@ -373,6 +373,7 @@ class SimpleNode implements Node {
 		   if(toString().equals("Function")) {
 			   functionInstructions.setNameToIndex(symbolTable.getNameToIndex());
 			   functionInstructions.setMaxIndex(symbolTable.getMaxIndex());
+			   functionInstructions.setNArgs(((ASTFunction) this).getNArgs());
 		   }
 	   if(children != null && children.length > 1) {
 		   if(toString().equals("IfStatement")) {
@@ -392,7 +393,17 @@ class SimpleNode implements Node {
    }
    
    public void handleOptimizationR(int optRN) {
-	   
+	   if(toString().equals("Function")) {
+		   functionInstructions.registerAssignement(optRN);
+	   }
+	   else if(toString().equals("Program") || toString().equals("Module")) {
+		   if(getChildren() != null) {
+	           for(Node child : getChildren()) {
+	               ((SimpleNode) child).handleOptimizationR(optRN);          
+	           }
+	       }
+	   }
+		 
    }
    
     public boolean analyse() {
