@@ -819,46 +819,45 @@ public class CodeGenerator {
 				&& ((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTINTEGER ||
 				((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTSCALARACCESS){ //just right integer  TODO more general
 			int loop_number = number_of_loops;
-			
+
 			hasUsedAnExtraReg = true;
-			
+
 			int localI = rhs.getSymbolTable().getMaxIndex() + 1;
-			
-			
+
 			SimpleNode rhsparent = (SimpleNode) rhs.jjtGetParent();
-			while(rhsparent.getId()!=YalTreeConstants.JJTFUNCTION)
+			while (rhsparent.getId() != YalTreeConstants.JJTFUNCTION)
 				rhsparent = (SimpleNode) rhsparent.jjtGetParent();
-			
-			
-			
-			
+
 			appendln();
 			appendln(TAB + "iconst_0");
-			appendln(TAB + "istore " + localI); //istore para < 5
-			
+			stack.addInstruction(YalInstructions.ICONST);
+			appendln(TAB + "istore " + localI); // istore para < 5
+			stack.addInstruction(YalInstructions.ISTORE);
+
 			appendln("loop" + loop_number + ":");
-			appendln(TAB + "iload " + localI); //iload para < 5
+			appendln(TAB + "iload " + localI); // iload para < 5
+			stack.addInstruction(YalInstructions.ILOAD);
 
 			generateLHSCompare(lhs, prefix, stack);
-			
-			appendln(TAB + "arraylength"); 
-			
+
+			appendln(TAB + "arraylength");
+
 			appendln("if_icmpge loop" + loop_number + "_end");
+			stack.addInstruction(YalInstructions.IF);
 			generateLHSCompare(lhs, prefix, stack);
-			appendln(TAB + "iload " + localI); //iload para < 5
+			appendln(TAB + "iload " + localI); // iload para < 5
+			stack.addInstruction(YalInstructions.ILOAD);
 			generateRHS(rhs, prefix, stack);
 			appendln(TAB + "iastore");
-			
+			stack.addInstruction(YalInstructions.IASTORE);
+
 			appendln(TAB + "iinc " + localI + " 1");
-			
+
 			appendln("goto loop" + loop_number);
-			appendln("loop"+ loop_number + "_end:");
-			
-			
+			appendln("loop" + loop_number + "_end:");
+
 		}
-			
-		
-		
+
 		else {
 			generateRHS(rhs, prefix, stack);
 			generateLHSAssign(lhs, prefix, stack);
