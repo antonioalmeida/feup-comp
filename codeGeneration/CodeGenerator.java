@@ -29,6 +29,8 @@ public class CodeGenerator {
 	private int number_of_loops = 1;
 	private boolean otimizationR;
 	private boolean otimizationO;
+	
+	private boolean hasUsedAnExtraReg = false;
 
 	public CodeGenerator(SimpleNode root) throws IOException {
 		this.root = (SimpleNode) root.getChildren()[0];
@@ -232,6 +234,9 @@ public class CodeGenerator {
 		int limitStack = stack.getMax();
 
 		if (functionNode.isMainFunction())
+			limitLocals++;
+		
+		if (hasUsedAnExtraReg)
 			limitLocals++;
 
 		localBuilder.append(TAB + ".limit locals " + limitLocals);
@@ -758,6 +763,10 @@ public class CodeGenerator {
 				loadGlobalVar(varName, prefix, stack);
 			} else
 				this.loadLocalVar(scalarAccess, varName, prefix, stack);
+
+			if (((ASTScalarAccess) scalarAccess).getSizeArray())
+				appendln(TAB + "arraylength");
+
 		} else {
 			loadInt(arraySize, prefix, stack);
 		}
@@ -783,52 +792,17 @@ public class CodeGenerator {
 			appendln(TAB + "iastore");
 			appendln();
 			// i = i + 1 || i = 1 + i (or similar cases)
-		} else if (!root.getSymbolTable().containsSymbolName(lhs.getValue()) && // has
-																				// to
-																				// be
-																				// local
-																				// variable
+		} else if (!root.getSymbolTable().containsSymbolName(lhs.getValue()) && 
+				// has to be local variable
 				rhs.getValue().equals("+") && // has to be an increment
 				((lhs.getValue().equals(((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue())
-						&& ((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)// Term
-																													// in
-																													// lhs
-																													// is
-																													// equal
-																													// to
-																													// first
-																													// term
-																													// in
-																													// rhs
-																													// and
-																													// second
-																													// term
-																													// in
-																													// rhs
-																													// is
-																													// an
-																													// integer
+						&& ((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)
+						// Term in lhs is equal to first term in rhs and second term in rhs is an integer
 						|| (lhs.getValue().equals(((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getValue())
 								&& ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0))
-										.getId() == YalTreeConstants.JJTINTEGER)// Term
-																				// in
-																				// lhs
-																				// is
-																				// equal
-																				// to
-																				// second
-																				// term
-																				// in
-																				// rhs
-																				// and
-																				// first
-																				// term
-																				// in
-																				// rhs
-																				// is
-																				// an
-																				// integer
-				)) {
+										.getId() == YalTreeConstants.JJTINTEGER)
+				// Term in lhs is equal to second term in rhs and first term in rhs is an integer
+						)) {
 
 			int varIndex = node.getSymbolIndex(lhs.getValue());
 
@@ -836,24 +810,59 @@ public class CodeGenerator {
 
 			String constValue2 = ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue();
 
-			if (((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)// case
-																										// integer
-																										// is
-																										// second
-																										// term
-																										// in
-																										// rhs
+			if (((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)
+				// case integer is second term in rhs
 				appendln(TAB + "iinc " + varIndex + " " + constValue1);
-			else if (((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)// case
-																												// integer
-																												// is
-																												// first
-																												// term
-																												// in
-																												// rhs
+			else if (((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)
+				// case integer is first term in rhs
 				appendln(TAB + "iinc " + varIndex + " " + constValue2);
 
-		} else {
+		}
+		else if((lhs.getSymbolTable().getSymbolType(lhs.getValue())==Symbol.Type.ARRAY ||
+				root.getSymbolTable().getSymbolType(lhs.getValue())==Symbol.Type.ARRAY)
+				&& ((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTINTEGER ||
+				((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTSCALARACCESS){ //just right integer  TODO more general
+			int loop_number = number_of_loops;
+
+			hasUsedAnExtraReg = true;
+
+			int localI = rhs.getSymbolTable().getMaxIndex() + 1;
+
+			SimpleNode rhsparent = (SimpleNode) rhs.jjtGetParent();
+			while (rhsparent.getId() != YalTreeConstants.JJTFUNCTION)
+				rhsparent = (SimpleNode) rhsparent.jjtGetParent();
+
+			appendln();
+			appendln(TAB + "iconst_0");
+			stack.addInstruction(YalInstructions.ICONST);
+			appendln(TAB + "istore " + localI); // istore para < 5
+			stack.addInstruction(YalInstructions.ISTORE);
+
+			appendln("loop" + loop_number + ":");
+			appendln(TAB + "iload " + localI); // iload para < 5
+			stack.addInstruction(YalInstructions.ILOAD);
+
+			generateLHSCompare(lhs, prefix, stack);
+
+			appendln(TAB + "arraylength");
+
+			appendln("if_icmpge loop" + loop_number + "_end");
+			stack.addInstruction(YalInstructions.IF);
+			generateLHSCompare(lhs, prefix, stack);
+			appendln(TAB + "iload " + localI); // iload para < 5
+			stack.addInstruction(YalInstructions.ILOAD);
+			generateRHS(rhs, prefix, stack);
+			appendln(TAB + "iastore");
+			stack.addInstruction(YalInstructions.IASTORE);
+
+			appendln(TAB + "iinc " + localI + " 1");
+
+			appendln("goto loop" + loop_number);
+			appendln("loop" + loop_number + "_end:");
+
+		}
+
+		else {
 			generateRHS(rhs, prefix, stack);
 			generateLHSAssign(lhs, prefix, stack);
 		}
