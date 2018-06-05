@@ -1,4 +1,4 @@
-module test { //ok
+module test9 { //ok
 	x1; //ok
 	x2[] = [10]; //ok
 

@@ -1,4 +1,4 @@
-module m{
+module test8 {
 	
 	function a = f1(x){
 		a = 2;

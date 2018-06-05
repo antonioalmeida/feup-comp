@@ -1,5 +1,4 @@
-module m{
-
+module test12 {
 
 	function c = f(){
 		a = 4;

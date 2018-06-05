@@ -1,4 +1,4 @@
-module test_ifs_index {
+module testIfsIndex {
 function f() {
 		a = 0;
 		b = 1;

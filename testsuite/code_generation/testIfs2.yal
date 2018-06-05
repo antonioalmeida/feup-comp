@@ -1,4 +1,4 @@
-module library1 {
+module testIfs2 {
 function m=max(n,p) {
 		x = 0;
 

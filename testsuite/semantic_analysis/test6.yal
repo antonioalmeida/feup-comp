@@ -1,4 +1,4 @@
-module aval6_err
+module test6
 {
 
 function a=sqrt(x1, x2, x3[]) { 

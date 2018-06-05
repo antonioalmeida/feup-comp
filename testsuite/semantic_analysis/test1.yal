@@ -1,4 +1,4 @@
-module aval6_err
+module test1
 {
 c;
 d = [5];
