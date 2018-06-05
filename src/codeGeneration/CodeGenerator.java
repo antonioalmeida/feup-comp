@@ -573,11 +573,15 @@ public class CodeGenerator {
 		//
 		Vector<Type> typeReturnVector = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs);
 
+
+		boolean hasReturn = false;
 		// How to know the return type of external library
 		if (typeReturnVector.size() == 0) {
 
-			if (((SimpleNode) callNode.jjtGetParent()).getId() == YalTreeConstants.JJTTERM)
+			if (((SimpleNode) callNode.jjtGetParent()).getId() == YalTreeConstants.JJTTERM) {
 				funcRetType = "I";
+				hasReturn = true;
+			}
 			else
 				funcRetType = "V";
 
@@ -585,15 +589,17 @@ public class CodeGenerator {
 			Symbol.Type returnType = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs)
 					.get(0);
 
-			if (returnType == Symbol.Type.SCALAR)
+			if (returnType == Symbol.Type.SCALAR) {
 				funcRetType = "I";
-			else if (returnType == Symbol.Type.ARRAY)
+				hasReturn = true;
+			}
+			else if (returnType == Symbol.Type.ARRAY) {
 				funcRetType = "[I";
+				hasReturn = true;
+			}
 			else
 				funcRetType = "V";
-
 		}
-		
 
 		funcName = funcName.replace('.', '/');
 		
@@ -603,8 +609,11 @@ public class CodeGenerator {
 		}
 
 
-		int nArgs = callNode.jjtGetNumChildren();
-		stack.addInstruction(-nArgs);
+		int cost = - callNode.jjtGetNumChildren();
+		if(hasReturn)
+			cost++;
+
+		stack.addInstruction(cost);
 		appendln(prefix + "invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
 	}
 

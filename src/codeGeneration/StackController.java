@@ -37,12 +37,18 @@ public class StackController {
     public void addInstruction(YalInstructions instruction) {
         currentSize += costs.get(instruction);
 
+        if(currentSize < 0)
+            currentSize = 0;
+
         if(currentSize > maxSize)
             maxSize = currentSize;
     }
 
     public void addInstruction(int cost) {
         currentSize += cost;
+
+        if(currentSize < 0)
+            currentSize = 0;
 
         if(currentSize > maxSize)
             maxSize = currentSize;
