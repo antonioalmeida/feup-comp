@@ -216,7 +216,8 @@ public class FunctionInstructions {
 						intersectionFound = true;
 				}
 				if(intersectionFound == false) {
-					
+					registersToVariables.get(i).add(topStack);
+					registerAssigned = true;
 				}
 			}
 		}
