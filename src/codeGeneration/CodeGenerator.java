@@ -763,6 +763,10 @@ public class CodeGenerator {
 				loadGlobalVar(varName, prefix, stack);
 			} else
 				this.loadLocalVar(scalarAccess, varName, prefix, stack);
+
+			if (((ASTScalarAccess) scalarAccess).getSizeArray())
+				appendln(TAB + "arraylength");
+
 		} else {
 			loadInt(arraySize, prefix, stack);
 		}
