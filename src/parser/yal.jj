@@ -45,7 +45,6 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/
     if( validArgs(args) == false)
     	return;
     else {
-      	
     	SimpleNode root = myYal.Program(); // devolve refer\u00eancia para o n\u00f3 raiz da \u00e1rvore
      
       	System.out.println("\nAST Tree:");
@@ -1671,3 +1670,6 @@ try {
 }
 /*@egen*/
 }
+
+
+  

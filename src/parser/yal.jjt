@@ -41,7 +41,6 @@ public class Yal
     if( validArgs(args) == false)
     	return;
     else {
-      	
     	SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
      
       	System.out.println("\nAST Tree:");

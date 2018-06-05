@@ -152,7 +152,7 @@ public class FunctionInstructions {
 		}
 	}
 	
-	public void graphColoring(int nVariables) {
+	public int graphColoring() {
 		nIntersections  = new ArrayList<Integer>();
 		
 		for(int i=0; i <= maxIndex; i++) {
@@ -185,6 +185,8 @@ public class FunctionInstructions {
 				}
 			}
 			removedFromGraph.add(minIndex);
+			if(Yal.getDebug())
+				System.out.println("removed "+minIndex);
 			indexesRemoved.set(minIndex, true);
 			for(int i = 0; i <= maxIndex; i++) {
 				if(i != minIndex && graphMatrix.get(i).get(minIndex)) {
@@ -193,7 +195,7 @@ public class FunctionInstructions {
 			}
 		}
 		
-		int variablesUsed = nArgs;
+		
 		Vector<Vector<Integer>> registersToVariables = new Vector<Vector<Integer>> ();
 		for(int i = 0; i < nArgs; i++) {
 			Vector<Integer> newVector = new Vector<Integer>();
@@ -212,15 +214,26 @@ public class FunctionInstructions {
 			for(int i = 0; i < registersToVariables.size() && registerAssigned == false; i++) {
 				boolean intersectionFound = false;
 				for(int j = 0; j < registersToVariables.get(i).size() && intersectionFound == false; j++) {
-					if(graphMatrix.get(i).get(topStack))
+					if(graphMatrix.get(registersToVariables.get(i).get(j)).get(topStack))
 						intersectionFound = true;
 				}
 				if(intersectionFound == false) {
 					registersToVariables.get(i).add(topStack);
 					registerAssigned = true;
+					newIndexes.set(topStack, i);
 				}
 			}
+			
+			if(registerAssigned == false) {
+				Vector<Integer> newVector = new Vector<Integer>();
+				newVector.add(topStack);
+				registersToVariables.add(newVector);
+				newIndexes.set(topStack, registersToVariables.size() - 1);
+				
+			}
 		}
+		
+		return registersToVariables.size();
 		
 		
 	}
@@ -239,7 +252,17 @@ public class FunctionInstructions {
 		if(Yal.getDebug())
 			Utils.printMatrixBoolean(graphMatrix);
 		
-		return newIndexes;
+		int variablesUsed = graphColoring();
+		
+		if(Yal.getDebug()) {
+			printNewIndexes();
+			System.out.println("");
+		}
+		if(variablesUsed <= nVariables)
+			return newIndexes;
+		else
+			return null;
+		
 	}
 	
 	public void printUsesDefs() {
@@ -250,6 +273,15 @@ public class FunctionInstructions {
 			System.out.print("Defs("+i+"): ");
 			Utils.printBitSet(instructions.get(i).getDefs());
 			System.out.println("");
+		}
+	}
+	
+	public void printNewIndexes() {
+		System.out.print("[ ");
+		for(int i=0; i < newIndexes.size(); i++) {
+			System.out.print(i+" => "+newIndexes.get(i));
+			if(i < newIndexes.size() - 1)
+				System.out.print(",");
 		}
 	}
 
