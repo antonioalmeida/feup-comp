@@ -29,8 +29,6 @@ public class CodeGenerator {
 	private int number_of_loops = 1;
 	private boolean otimizationR;
 	private boolean otimizationO;
-	
-	private boolean hasUsedAnExtraReg = false;
 
 	public CodeGenerator(SimpleNode root) throws IOException {
 		this.root = (SimpleNode) root.getChildren()[0];
@@ -236,7 +234,7 @@ public class CodeGenerator {
 		if (functionNode.isMainFunction())
 			limitLocals++;
 		
-		if (hasUsedAnExtraReg)
+		if (functionNode.hasUsedAnExtraReg())
 			limitLocals++;
 
 		localBuilder.append(TAB + ".limit locals " + limitLocals);
@@ -825,7 +823,11 @@ public class CodeGenerator {
 				((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTSCALARACCESS)){ //just right integer  TODO more general
 			int loop_number = number_of_loops;
 
-			hasUsedAnExtraReg = true;
+			SimpleNode lhsParent = (SimpleNode) lhs.jjtGetParent();
+			while (lhsParent.getId() != YalTreeConstants.JJTFUNCTION)
+				lhsParent = (SimpleNode) lhsParent.jjtGetParent();
+			
+			((ASTFunction)lhsParent).setHasUsedAnExtraReg(true);
 
 			int localI = rhs.getSymbolTable().getMaxIndex() + 1;
 
