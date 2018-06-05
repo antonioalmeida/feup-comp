@@ -1,0 +1,16 @@
+module testIf
+{
+	max = 0;
+	a = 1;
+
+	function main() {
+
+		if(a < max) {
+			x = 5;
+		}
+		else {
+			x = 10;
+		}
+	}
+
+}
