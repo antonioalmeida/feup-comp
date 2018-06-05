@@ -1,14 +1,9 @@
-
-
-options
-{
-  LOOKAHEAD= 1;
-  MULTI = true;
-  TRACK_TOKENS = true;
-  JJTREE_OUTPUT_DIRECTORY = "parser";
-  OUTPUT_DIRECTORY = "parser";
-
-  
+options {
+    LOOKAHEAD= 1;
+    MULTI = true;
+    TRACK_TOKENS = true;
+    JJTREE_OUTPUT_DIRECTORY = "parser";
+    OUTPUT_DIRECTORY = "parser";
 }
 
 PARSER_BEGIN(Yal)
@@ -24,205 +19,200 @@ import java.util.Arrays;
 import codeGeneration.CodeGenerator;
 import utils.Utils;
 
-
-
-
-public class Yal
-{
-		
-  private static Yal myYal;
-  private static boolean error = false;
-  private static int optRN = -1;
-  private static boolean debug = true;
-  
-  public static void main(String args []) throws ParseException, IOException
-  {
+public class Yal {
+        
+    private static Yal myYal;
+    private static boolean error = false;
+    private static int optRN = -1;
+    private static boolean optO = false;
+    private static boolean debug = true;
     
-    if( validArgs(args) == false)
-    	return;
-    else {
-    	SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
-     
-      	System.out.println("\nAST Tree:");
-    	root.dump(""); // imprime no ecrã a árvore
-    	if(error == false) { 
-    		System.out.println("");
-    	 	root.analyse();
-    		System.out.println("\nFunction Table:");
-    		root.printFunctionTable("");
-			System.out.println("\nSymbol Table:");
-			root.printSymbolTable("");
-			if(optRN >= 0) {
-			    if(debug)
-					root.dumpUsesDefs("");
-				root.handleSuccessorsAntecessors();
-				if(debug)
-					root.dumpSuccessorsAntecessors();
-				root.handleOptimizationR(optRN);
-				
-				
-			}
-			CodeGenerator codeGenerator = new CodeGenerator(root);
-			codeGenerator.generateCode();
-		}
-    }
-  }
+    public static void main(String args []) throws ParseException, IOException {
 
-  public static boolean getDebug() {
-		return debug;
-  }
+        if(!validArgs(args))
+            return;
+        else {
+            SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
+            System.out.println("\nAST Tree:");
+            root.dump(""); // imprime no ecrã a árvore
 
-  public static File validFilePath(String filePath) {
-		File file = new File(filePath);
-		
-		if(file.exists())
-			return file;		
-		else
-			return null;
-			
-  }
+            if(!error) {
+                System.out.println("");
+                root.analyse();
 
-  	
-  public static boolean validArgs(String args []) {
-		if(args.length > 2) { 
-			System.out.println("Error: Invalid number of arguments.");
-			System.out.println("Usage: java Yal [filePath] [-r=< n >]");
-			return false;
-		}
-		
-		else if(args.length == 0)
-			myYal = new Yal(System.in);
-		else {
-		  		File file;
-                        if( (file = validFilePath(args[0])) == null) {
-                                System.out.println("Error: Invalid file Path.");
-                                System.out.println("Usage: java Yal [filePath] [-r=< n >]");
-                                return false;
-                        }
-                        else {
-                                FileInputStream stream;
-								try {
-									stream = new FileInputStream(file);
-									myYal = new Yal(stream);
-								} catch (FileNotFoundException e) {
-									System.out.println("Error in stream constructor: ");
-									System.out.println("Usage: java Yal [filePath] [-r=< n >]");
-									e.printStackTrace();
-									return false;
-								}
-                                
-                        }
-		if(args.length == 2) {
-		  	 
-             if(args[1].substring(0, 3).equals("-r=")) {
-				if(Utils.isInteger(args[1].substring(3))) {
-					optRN = Integer.parseInt(args[1].substring(3));
-					if(optRN < 0) {
-					  	System.out.println("Error: The number in option R must be an integer greater or equal to 0.");
-						System.out.println("Usage: java Yal [filePath] [-r=< n >]");
-						return false;
-					}
-				}
-				else {
-					System.out.println("Error: The number in option R must be an integer.");
-					System.out.println("Usage: java Yal [filePath] [-r=< n >]");
-					return false;
-				}
-             }
-             else {
-				System.out.println("Error: Non valid argument");
-				System.out.println("Usage: java Yal [filePath] [-r=< n >]");
-				return false;
-             }           
+                System.out.println("\nFunction Table:");
+                root.printFunctionTable("");
+
+                System.out.println("\nSymbol Table:");
+                root.printSymbolTable("");
+
+                if(optRN >= 0) {
+                    if(debug)
+                        root.dumpUsesDefs("");
+                    root.handleSuccessorsAntecessors();
+
+                    if(debug)
+                        root.dumpSuccessorsAntecessors();
+                    root.handleOptimizationR(optRN);
+                }
+                
+                CodeGenerator codeGenerator = new CodeGenerator(root);
+                codeGenerator.generateCode();
+            }
         }
-
-      }
-		
-
-		return true;
-  }
-
- 
-   public static void generateCode(SimpleNode root) throws IOException
-  {
-    FileOutputStream outputStream = new FileOutputStream("test.j");
-    String codeString = root.generateCode();
-    byte [] strToBytes = codeString.getBytes();
-    outputStream.write(strToBytes);
-    outputStream.close();
-  }
-  	
-  public static void errorSkipTo(ParseException e, String errorMessage,  SkipToken... skipTargets) {
-    error = true;
-    System.out.println("Syntatic Error on " + errorMessage + ". " + e.toString());
-
-    skipTokens(skipTargets);
-
-  }
-
-  
-
-  public static void errorSkipTo(ParseException e, String errorMessage, Integer leftToken, Integer rightToken, SkipToken... skipTargets) {
-   error = true;
-   System.out.println("Syntatic Error on " + errorMessage + ". " + e.toString());
-	
-	Integer token = skipTokens(skipTargets);
-
-	if(token == leftToken) {
-		Token t;
-
-		do {
-			t = getNextToken();
-		}while(t.kind != rightToken);
-
-	}
-  	
-  }
-
-  public static Integer skipTokens(SkipToken... skipTargets) {
-
-  	boolean foundTarget = false;
-	Token t;
-	
-  	do {
-      t = getToken(1);
-
-	  for(int i = 0; i < skipTargets.length && foundTarget == false; i++)
-	  	 if(skipTargets[i].getToken() == t.kind) {
-	  	 	foundTarget = true;
-	  	 	if(skipTargets[i].isConsumed() == true)
-	  	 	  getNextToken();
-	  	 	
-	  	 }
-	  
-     
-
-      if(!foundTarget)
-      	getNextToken();
-      	
-    } while (!foundTarget);
-
-    return t.kind;
-
-  }
-
-  public static void coverageBlock() throws ParseException {
-	Token t1;
-    t1 = getToken(1);
-    if(t1.kind == LCHAVETA) {
-	  getNextToken();
-      StmtlstError();
     }
-  }
 
-  public static void consumeToken(Integer... tokens) throws ParseException {
-  	Token t;
-  	t = getToken(1);
-	
-  	if(Arrays.asList(tokens).contains(t.kind)) {
-  		getNextToken();
-  	}	  
-  }
+    public static boolean getDebug() {
+        return debug;
+    }
+
+    public static File validFilePath(String filePath) {
+        File file = new File(filePath);
+        
+        if(file.exists())
+            return file;        
+        else
+            return null;
+    }
+
+    public static boolean validArgs(String args []) {
+
+        if(args.length > 3) {
+            System.out.println("Error: Invalid number of arguments.");
+            System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
+            return false;
+        }
+        else if(args.length == 0)
+            myYal = new Yal(System.in);
+        else {
+            File file;
+            if( (file = validFilePath(args[0])) == null) {
+                System.out.println("Error: Invalid file Path.");
+                System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
+                return false;
+            }
+            else {
+                FileInputStream stream;
+                try {
+                    stream = new FileInputStream(file);
+                    myYal = new Yal(stream);
+                } catch (FileNotFoundException e) {
+                    System.out.println("Error in stream constructor: ");
+                    System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
+            for(int i = 1; i < args.length; i++) {
+                if(args[i].equals("-o"))
+                    optO = true;
+                else if(args[i].substring(0, 3).equals("-r=")) {
+                    if(Utils.isInteger(args[i].substring(3))) {
+                        optRN = Integer.parseInt(args[i].substring(3));
+                        if(optRN < 0) {
+                            System.out.println("Error: The number in option R must be an integer greater or equal to 0.");
+                            System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
+                            return false;
+                        }
+                    }
+                    else {
+                        System.out.println("Error: The number in option R must be an integer.");
+                        System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
+                        return false;
+                    }
+                }
+                else {
+                    System.out.println("Error: Non valid argument");
+                    System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
+                    return false;
+                }
+            }
+        }
+    
+        return true;
+    }
+ 
+     public static void generateCode(SimpleNode root) throws IOException
+    {
+        FileOutputStream outputStream = new FileOutputStream("test.j");
+        String codeString = root.generateCode();
+        byte [] strToBytes = codeString.getBytes();
+        outputStream.write(strToBytes);
+        outputStream.close();
+    }
+        
+    public static void errorSkipTo(ParseException e, String errorMessage,  SkipToken... skipTargets) {
+        error = true;
+        System.out.println("Syntatic Error on " + errorMessage + ". " + e.toString());
+
+        skipTokens(skipTargets);
+
+    }
+
+    
+
+    public static void errorSkipTo(ParseException e, String errorMessage, Integer leftToken, Integer rightToken, SkipToken... skipTargets) {
+     error = true;
+     System.out.println("Syntatic Error on " + errorMessage + ". " + e.toString());
+    
+    Integer token = skipTokens(skipTargets);
+
+    if(token == leftToken) {
+        Token t;
+
+        do {
+            t = getNextToken();
+        }while(t.kind != rightToken);
+
+    }
+        
+    }
+
+    public static Integer skipTokens(SkipToken... skipTargets) {
+
+        boolean foundTarget = false;
+    Token t;
+    
+        do {
+            t = getToken(1);
+
+        for(int i = 0; i < skipTargets.length && foundTarget == false; i++)
+             if(skipTargets[i].getToken() == t.kind) {
+                foundTarget = true;
+                if(skipTargets[i].isConsumed() == true)
+                    getNextToken();
+                
+             }
+        
+         
+
+            if(!foundTarget)
+                getNextToken();
+                
+        } while (!foundTarget);
+
+        return t.kind;
+
+    }
+
+    public static void coverageBlock() throws ParseException {
+    Token t1;
+        t1 = getToken(1);
+        if(t1.kind == LCHAVETA) {
+        getNextToken();
+            StmtlstError();
+        }
+    }
+
+    public static void consumeToken(Integer... tokens) throws ParseException {
+        Token t;
+        t = getToken(1);
+    
+        if(Arrays.asList(tokens).contains(t.kind)) {
+            getNextToken();
+        }     
+    }
 }
 
 PARSER_END(Yal)
@@ -230,48 +220,48 @@ PARSER_END(Yal)
 < DEFAULT >
 SKIP :
 {
-  " "
+    " "
 | "\t"
 | "\n"
 | "\r"
 | < "//" (~[ "\n", "\r" ])*
-    (
-      "\n"
-    | "\r"
-    | "\r\n"
-    ) >
+        (
+            "\n"
+        | "\r"
+        | "\r\n"
+        ) >
 | < "/*" (~[ "*" ])* "*"
-    (
-      "*"
-    | ~[ "*", "/" ] (~[ "*" ])* "*"
-    )*
-    "/" >
+        (
+            "*"
+        | ~[ "*", "/" ] (~[ "*" ])* "*"
+        )*
+        "/" >
 }
 
 /* reserved words */
 < DEFAULT >
 TOKEN :
 {
-  < RELA_OP :
-    ">"
-  | "<"
-  | "<="
-  | ">="
-  | "=="
-  | "!=" >
+    < RELA_OP :
+        ">"
+    | "<"
+    | "<="
+    | ">="
+    | "=="
+    | "!=" >
 | < ADDSUB_OP :
-    "+"
-  | "-" >
+        "+"
+    | "-" >
 | < ARITH_OP :
-    "*"
-  | "/"
-  | "<<"
-  | ">>"
-  | ">>>" >
+        "*"
+    | "/"
+    | "<<"
+    | ">>"
+    | ">>>" >
 | < BITWISE_OP :
-    "&"
-  | "|"
-  | "^" >
+        "&"
+    | "|"
+    | "^" >
 | < NOT_OP : "!" >
 | < WHILE : "while" >
 | < IF : "if" >
@@ -292,13 +282,13 @@ TOKEN :
 < DEFAULT >
 TOKEN :
 {
-  < INTEGER : (< DIGIT >)+ >
+    < INTEGER : (< DIGIT >)+ >
 | < ID :
-    < LETTER >
-    (
-      < LETTER >
-    | < DIGIT >
-    )* >
+        < LETTER >
+        (
+            < LETTER >
+        | < DIGIT >
+        )* >
 | < #LETTER : [ "$", "A"-"Z", "_", "a"-"z" ] >
 | < #DIGIT : [ "0"-"9" ] >
 | < STRING : "\"" ([ "a"-"z", "A"-"Z", "0"-"9", ":", " ", "=" ])+ "\"" >
@@ -307,283 +297,284 @@ TOKEN :
 SimpleNode Program() :
 {}
 {
-  Module()
-  {
-    return jjtThis;
-  }
+    Module()
+    {
+        return jjtThis;
+    }
 }
 
 void Module() : 
 {Token t;}
 {
-  try { 
-  < MODULE > t=< ID >{jjtThis.jjtAddValue(t.image);} < LCHAVETA > }catch(ParseException e) {
-	error = true;
-    System.out.println("Syntatic error on module declaration. " + e.toString());
-    return;    
-  }
-  try { 
-  (
-    Declaration()
-  )* }catch(ParseException e) {
-		errorSkipTo(e, "declarations module area", new SkipToken(PVIRG, true), new SkipToken(FUNCTION, false));
-     }
-  try { 
-  (
-    Function()
-  )*
-  < RCHAVETA > } catch(ParseException e) {
-    errorSkipTo(e, "functions module area", new SkipToken(RCHAVETA, true));
-  }
+    try { 
+    < MODULE > t=< ID >{jjtThis.jjtAddValue(t.image);} < LCHAVETA > }catch(ParseException e) {
+    error = true;
+        System.out.println("Syntatic error on module declaration. " + e.toString());
+        return;    
+    }
+    try { 
+    (
+        Declaration()
+    )* }catch(ParseException e) {
+        errorSkipTo(e, "declarations module area", new SkipToken(PVIRG, true), new SkipToken(FUNCTION, false));
+         }
+    try { 
+    (
+        Function()
+    )*
+    < RCHAVETA > } catch(ParseException e) {
+        errorSkipTo(e, "functions module area", new SkipToken(RCHAVETA, true));
+    }
 }
 
 void Declaration() :
 {}
 {
-  try { 
-  (
-    Element()
-  )
-  (
-    < ASSIGN >
+    try { 
     (
-      ArrayAssigned()
-    | ScalarAssigned() 
+        Element()
     )
-  )?
-  < PVIRG > } catch(ParseException e) {
-		errorSkipTo(e, "declaration", new SkipToken(PVIRG, true), new SkipToken(FUNCTION, false));
-    }
+    (
+        < ASSIGN >
+        (
+            ArrayAssigned()
+        | ScalarAssigned() 
+        )
+    )?
+    < PVIRG > } catch(ParseException e) {
+        errorSkipTo(e, "declaration", new SkipToken(PVIRG, true), new SkipToken(FUNCTION, false));
+        }
 }
 
 void ArrayAssigned() : { }
 {
-  "[" ArraySize() "]"
+    "[" ArraySize() "]"
 }
 
 void ScalarAssigned() : {Token t1, t2; }
 {
-	(	  t1 = < ADDSUB_OP > { jjtThis.jjtAddValue(t1.image);})?
-	t2 = < INTEGER > { jjtThis.jjtAddValue(t2.image);}
+    (
+        t1 = < ADDSUB_OP > { jjtThis.jjtAddValue(t1.image);})?
+    t2 = < INTEGER > { jjtThis.jjtAddValue(t2.image);}
 }
 
 
 
 void Function() : { Token t=null;}
 { 
-  try {
-    < FUNCTION > t=< ID >{jjtThis.jjtAddValue(t.image);} }catch(ParseException e) {
-			errorSkipTo(e, "function name", new SkipToken(LPAR, false));
-       }
-    try { 
-    (
-      (
+    try {
+        < FUNCTION > t=< ID >{jjtThis.jjtAddValue(t.image);} }catch(ParseException e) {
+            errorSkipTo(e, "function name", new SkipToken(LPAR, false));
+             }
+        try { 
         (
-          ArrayElementNoID(t.image)
-        | ScalarElementNoID(t.image)
+            (
+                (
+                    ArrayElementNoID(t.image)
+                | ScalarElementNoID(t.image)
+                )
+                FunctionAssign() {jjtThis.jjtSetValue(""); }
+                < LPAR >
+                (
+                    Varlist()
+                )?
+                < RPAR >
+            )
+        |
+            (
+         < LPAR >
+                (
+                    Varlist()
+                )?
+                < RPAR >
+            )
         )
-       	FunctionAssign() {jjtThis.jjtSetValue(""); }
-        < LPAR >
-        (
-          Varlist()
-        )?
-        < RPAR >
-      )
-    |
-      (
-  	 < LPAR >
-        (
-          Varlist()
-        )?
-        < RPAR >
-      )
-    )
-  } 
-  catch(ParseException e) {
-    errorSkipTo(e, "function declaration", new SkipToken(RPAR, true));
-  }
-  try { 
-  < LCHAVETA > Stmtlst() < RCHAVETA > } catch(ParseException e) {
-		errorSkipTo(e, "function body",  new SkipToken(RCHAVETA, true));
+    } 
+    catch(ParseException e) {
+        errorSkipTo(e, "function declaration", new SkipToken(RPAR, true));
     }
+    try { 
+    < LCHAVETA > Stmtlst() < RCHAVETA > } catch(ParseException e) {
+        errorSkipTo(e, "function body",  new SkipToken(RCHAVETA, true));
+        }
 }
 
 void FunctionAssign() : {Token t;}
 {
-	
-	 < ASSIGN > t=< ID > 
-	 {jjtThis.jjtAddValue(t.image);}
+    
+     < ASSIGN > t=< ID > 
+     {jjtThis.jjtAddValue(t.image);}
 }
 
 void Varlist() : { Token t1, t2; }
 { t1 = < ID >
-  (
-    ArrayElementNoID(t1.image)
-  | ScalarElementNoID(t1.image)
-  )
-  (
-    < VIRG >  t2 = < ID >
     (
-     ArrayElementNoID(t2.image)
-    | ScalarElementNoID(t2.image)
+        ArrayElementNoID(t1.image)
+    | ScalarElementNoID(t1.image)
     )
-  )*
+    (
+        < VIRG >  t2 = < ID >
+        (
+         ArrayElementNoID(t2.image)
+        | ScalarElementNoID(t2.image)
+        )
+    )*
 }
 
 void Element() #void: {Token t;}{
-	t=<ID> (
-		ArrayElementNoID(t.image)
-	  | ScalarElementNoID(t.image)
-	)
-	//{jjtThis.jjtAddValue(t.image);}
+    t=<ID> (
+        ArrayElementNoID(t.image)
+        | ScalarElementNoID(t.image)
+    )
+    //{jjtThis.jjtAddValue(t.image);}
 }
 
 void ArrayElementNoID(String id) #ArrayElement:
 {}
 {
-	{jjtThis.jjtAddValue(id);}
-  "[" "]"
+    {jjtThis.jjtAddValue(id);}
+    "[" "]"
 }
 
 
 void ScalarElementNoID(String id) #ScalarElement:
 {}
 {
-	{jjtThis.jjtAddValue(id);}
+    {jjtThis.jjtAddValue(id);}
 }
 
 void ArrayElement() :
 {}
 {
-  < ID > "[" "]"
+    < ID > "[" "]"
 }
 
 void ScalarElement() :
 {}
 {
-  < ID >
+    < ID >
 }
 
 void Stmtlst() #void:
 {}
 {
-  (
-    Stmt()
-  )*
+    (
+        Stmt()
+    )*
 }
 
 void StmtlstError() #void :
 {}
 {
-  (
-    Stmt()
-  )*"}"
+    (
+        Stmt()
+    )*"}"
 }
 
 void Stmt() #void: { Token t; }
 {
-  try { 
-    While()
-  | IfStatement() 
-  |(
-    t = < ID >
-  ( 
-     AssignNoPoint(t.image, false)
-  | CallVirg(t.image) |  "."NoPointAssignCallVirg(t.image))) 
-  } 
-  catch(ParseException e) {
-  	System.out.println("Syntatic error during Statement declaration. " + e.toString());
-      Token t2;
+    try { 
+        While()
+    | IfStatement() 
+    |(
+        t = < ID >
+    ( 
+         AssignNoPoint(t.image, false)
+    | CallVirg(t.image) |  "."NoPointAssignCallVirg(t.image))) 
+    } 
+    catch(ParseException e) {
+        System.out.println("Syntatic error during Statement declaration. " + e.toString());
+            Token t2;
 
-      do {
-        t2 = getNextToken();
+            do {
+                t2 = getNextToken();
 
-        /*
-        if(t2.kind == LCHAVETA) {
-          StmtlstError();
-          return;
-        }*/
-      } while(t2.kind != PVIRG);
-    }
+                /*
+                if(t2.kind == LCHAVETA) {
+                    StmtlstError();
+                    return;
+                }*/
+            } while(t2.kind != PVIRG);
+        }
 }
 
 void NoPointAssignCallVirg(String id) #void:
 {Token t;}
 {
-  (
-    t=< ID > CallVirg(id+"."+t.image)) | (< SIZE > AssignNoPoint(id, true))
+    (
+        t=< ID > CallVirg(id+"."+t.image)) | (< SIZE > AssignNoPoint(id, true))
 }
 
 void Assign() :
 {}
 {
-  Lhs() < ASSIGN > Rhs() < PVIRG >
+    Lhs() < ASSIGN > Rhs() < PVIRG >
 }
 
 void AssignNoID(String id) #Assign:
 { }
 {
-  
-  try {
-    LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
-  }
-  catch(ParseException e) {
-    errorSkipTo(e, "assignment", new SkipToken( PVIRG, true));
-  }
+    
+    try {
+        LhsNoID(id) < ASSIGN > Rhs() < PVIRG >
+    }
+    catch(ParseException e) {
+        errorSkipTo(e, "assignment", new SkipToken( PVIRG, true));
+    }
 }
 
 void AssignNoPoint(String id, boolean size_array) #Assign:
 { }
 {
-  
-  try {
-    LhsNoPoint(id, size_array) < ASSIGN > Rhs() < PVIRG >
-  }
-  catch(ParseException e) {
-    errorSkipTo(e, "assignment",  new SkipToken(PVIRG, true));
-  }
+    
+    try {
+        LhsNoPoint(id, size_array) < ASSIGN > Rhs() < PVIRG >
+    }
+    catch(ParseException e) {
+        errorSkipTo(e, "assignment",  new SkipToken(PVIRG, true));
+    }
 }
-  
+    
 
 void Lhs() #void:
 {Token t;}
 {
-  t = < ID >(
-  ArrayAccessNoID(t.image)
+    t = < ID >(
+    ArrayAccessNoID(t.image)
 | ScalarAccessNoID(t.image))
 }
 
 void LhsNoID(String id) #void:
 { }
 {
-  /*{jjtThis.jjtAddValue(id);}*/
-  ArrayAccessNoID(id)
+    /*{jjtThis.jjtAddValue(id);}*/
+    ArrayAccessNoID(id)
 | ScalarAccessNoID(id)
 }
-  
+    
 void LhsNoPoint(String id, boolean size_array) #void:
 { }
 {
-  ArrayAccessNoID(id)
+    ArrayAccessNoID(id)
 | ScalarAccessNothing(id, size_array)
 }
-  
+    
 
 void Rhs():
 {Token t=null;}
 { { }
-  (
-    Term()
     (
-      (
-        t=< ARITH_OP >
-      | t=< BITWISE_OP >
-      | t=< ADDSUB_OP >
-      )
-      {jjtThis.jjtAddValue(t.image);}
-      Term()
-    )?
-  )
+        Term()
+        (
+            (
+                t=< ARITH_OP >
+            | t=< BITWISE_OP >
+            | t=< ADDSUB_OP >
+            )
+            {jjtThis.jjtAddValue(t.image);}
+            Term()
+        )?
+    )
 | ArrayAssigned()
 
 
@@ -592,27 +583,27 @@ void Rhs():
 void ArraySize() :
 {Token t;}
 {
-  ScalarAccess()
+    ScalarAccess()
 | t=< INTEGER >{jjtThis.jjtAddValue(t.image);}
 }
 
 void Term() :
 {
-  Token t,t2=null;
+    Token t,t2=null;
 }
 {
-  (t2=< ADDSUB_OP >{jjtThis.jjtAddValue(t2.image);})?
-  (
-    t=< INTEGER >{jjtThis.jjtAddValue(t.image); }#Integer
-  |
-    ( 
-      t = < ID > 
-      (Call(t.image) | "." PointCallScalarAccess(t.image) | ArrayAccessNoID(t.image) 
-		| ScalarAccessNothing(t.image, false))  
-        
+    (t2=< ADDSUB_OP >{jjtThis.jjtAddValue(t2.image);})?
+    (
+        t=< INTEGER >{jjtThis.jjtAddValue(t.image); }#Integer
+    |
+        ( 
+            t = < ID > 
+            (Call(t.image) | "." PointCallScalarAccess(t.image) | ArrayAccessNoID(t.image) 
+        | ScalarAccessNothing(t.image, false))  
+                
+        )
     )
-  )
-  
+    
 }
 
 
@@ -620,181 +611,181 @@ void Term() :
 void Exprtest() :
 {Token t;}
 {
-  < LPAR > Lhs() t=< RELA_OP > Rhs() < RPAR >
-  {jjtThis.jjtAddValue(t.image);}
+    < LPAR > Lhs() t=< RELA_OP > Rhs() < RPAR >
+    {jjtThis.jjtAddValue(t.image);}
 }
 
 void While():
 {}
 { 
-    try {
-      < WHILE > Exprtest() < LCHAVETA > 
-    }
-    catch(ParseException e) {
-      errorSkipTo(e, "WHILE statement declaration",  new SkipToken(LCHAVETA, true));
-    }
-    Stmtlst() < RCHAVETA >
+        try {
+            < WHILE > Exprtest() < LCHAVETA > 
+        }
+        catch(ParseException e) {
+            errorSkipTo(e, "WHILE statement declaration",  new SkipToken(LCHAVETA, true));
+        }
+        Stmtlst() < RCHAVETA >
 }
 
 void IfStatement() :
 {  }
 {
-  If() (Else())?
+    If() (Else())?
 }
 
 void If() :
 {}
 {
-  try {
-    < IF > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
-  }
-  catch (ParseException e) {
-    errorSkipTo(e, "IF statement",  new SkipToken(RCHAVETA, true));
-  }
+    try {
+        < IF > Exprtest() < LCHAVETA > Stmtlst() < RCHAVETA >
+    }
+    catch (ParseException e) {
+        errorSkipTo(e, "IF statement",  new SkipToken(RCHAVETA, true));
+    }
 
 
-  
+    
 }
 
 void Else() :
 {}
 {
-  try {
-    (
-      < ELSE > < LCHAVETA >
-      Stmtlst() < RCHAVETA >
-    )
-  }
-  catch (ParseException e) {
-    /*System.out.println("Syntatic error on ELSE statement. " + e.toString());
-    Token t1;
-    boolean hasBrackets = false;
-    // If left brackets is found, skip to right bracket
-    // otherwise, skip to ';'
+    try {
+        (
+            < ELSE > < LCHAVETA >
+            Stmtlst() < RCHAVETA >
+        )
+    }
+    catch (ParseException e) {
+        /*System.out.println("Syntatic error on ELSE statement. " + e.toString());
+        Token t1;
+        boolean hasBrackets = false;
+        // If left brackets is found, skip to right bracket
+        // otherwise, skip to ';'
 
-    // TODO: Refactor this later
-    do {
-      t1 = getNextToken();
-      if(t1.kind == LCHAVETA) {
-        hasBrackets = true;
-        break;
-      }
-    } while (t1.kind != PVIRG);
+        // TODO: Refactor this later
+        do {
+            t1 = getNextToken();
+            if(t1.kind == LCHAVETA) {
+                hasBrackets = true;
+                break;
+            }
+        } while (t1.kind != PVIRG);
 
-    if(hasBrackets) {
-      do {
-        t1 = getNextToken();
-      } while (t1.kind != RCHAVETA);
-    }*/
-	errorSkipTo(e, "ELSE statement", LCHAVETA, RCHAVETA, new SkipToken(PVIRG, true));
-  }
+        if(hasBrackets) {
+            do {
+                t1 = getNextToken();
+            } while (t1.kind != RCHAVETA);
+        }*/
+    errorSkipTo(e, "ELSE statement", LCHAVETA, RCHAVETA, new SkipToken(PVIRG, true));
+    }
 }
 
 
 void Call (String id) #Call:
 {Token t=null; }
 {
-  try {
-    < LPAR > }catch(ParseException e) {
-		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
-		return;
-      }
     try {
-		(
-		  ArgumentList()
-		)?
-		<  RPAR >
-      }catch(ParseException e) {
-        errorSkipTo(e, "function call", new SkipToken(RPAR, true));
-      }
-  {jjtThis.jjtAddValue(id);}
-	
+        < LPAR > }catch(ParseException e) {
+        errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
+        return;
+            }
+        try {
+        (
+            ArgumentList()
+        )?
+        <  RPAR >
+            }catch(ParseException e) {
+                errorSkipTo(e, "function call", new SkipToken(RPAR, true));
+            }
+    {jjtThis.jjtAddValue(id);}
+    
 }
-  
-   
+    
+     
 void CallVirg (String id) #Call:
 {Token t=null; }
 {
-  try {
-    < LPAR > }catch(ParseException e) {
-		errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
-		return;
-      }
     try {
-		(
-		  ArgumentList()
-		)?
-		<  RPAR > < PVIRG >
-      }catch(ParseException e) {
-        errorSkipTo(e, "function call", new SkipToken(RPAR, true));
-        coverageBlock();
-        consumeToken(PVIRG);
-      }
-  {jjtThis.jjtAddValue(id);}
-	
+        < LPAR > }catch(ParseException e) {
+        errorSkipTo(e, ": function call must have parentheses", new SkipToken(RPAR, false), new SkipToken(PVIRG, true));
+        return;
+            }
+        try {
+        (
+            ArgumentList()
+        )?
+        <  RPAR > < PVIRG >
+            }catch(ParseException e) {
+                errorSkipTo(e, "function call", new SkipToken(RPAR, true));
+                coverageBlock();
+                consumeToken(PVIRG);
+            }
+    {jjtThis.jjtAddValue(id);}
+    
 }
 
 void ArgumentList() #void:
 {}
 {
-  Argument()
-  (
-    < VIRG > Argument()
-  )*
+    Argument()
+    (
+        < VIRG > Argument()
+    )*
 }
 
 void Argument() :
 {Token t;}
 {
-  (
-    t=< ID > #Id
-  | t=< STRING >  #String 
-  | t=< INTEGER > #Integer
-  )
-  {jjtThis.jjtAddValue(t.image);}
+    (
+        t=< ID > #Id
+    | t=< STRING >  #String 
+    | t=< INTEGER > #Integer
+    )
+    {jjtThis.jjtAddValue(t.image);}
 }
 
 void ArrayAccess() :
 {}
 {
-  < ID > "[" Index() "]"
+    < ID > "[" Index() "]"
 }
 
 void ArrayAccessNoID(String id) #ArrayAccess:
 { }
 {
-  {jjtThis.jjtAddValue(id); }
-  "[" Index() "]"
+    {jjtThis.jjtAddValue(id); }
+    "[" Index() "]"
 }
 
 void ScalarAccess() #void:
 {Token t;}
 {
-  t=< ID > ScalarAccessNoID(t.image)
+    t=< ID > ScalarAccessNoID(t.image)
 }
 
 void ScalarAccessNoID(String id) #ScalarAccess:
 { Token t=null;}
 {
-  {jjtThis.jjtAddValue(id); }
-  ("." < SIZE >{jjtThis.set_size_access(true);})?
+    {jjtThis.jjtAddValue(id); }
+    ("." < SIZE >{jjtThis.set_size_access(true);})?
 
 }
 
 void ScalarAccessNothing(String id, boolean size_array) #ScalarAccess:
 { Token t=null; }
 {
-  {jjtThis.jjtAddValue(id); jjtThis.set_size_access(size_array);}
-    
+    {jjtThis.jjtAddValue(id); jjtThis.set_size_access(size_array);}
+        
 } 
 
 void PointCallScalarAccess(String id) #void:
 {Token t=null; 
-  
+    
 }
 {
-  (
-    t=< ID >  Call(id + "." + t.image) ) | (< SIZE > ScalarAccessNothing(id, true))
+    (
+        t=< ID >  Call(id + "." + t.image) ) | (< SIZE > ScalarAccessNothing(id, true))
 }
 
 
@@ -808,4 +799,4 @@ void Index() :
 }
 
 
-  
+    
