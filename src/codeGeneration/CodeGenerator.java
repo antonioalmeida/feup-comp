@@ -344,8 +344,6 @@ public class CodeGenerator {
 
 		appendln("goto loop" + loop_number);
 		appendln("loop" + loop_number + "_end:");
-
-		
 	}
 
 	private void generateIfStatement(SimpleNode node, String prefix, StackController stack) {
