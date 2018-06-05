@@ -820,8 +820,8 @@ public class CodeGenerator {
 		}
 		else if((lhs.getSymbolTable().getSymbolType(lhs.getValue())==Symbol.Type.ARRAY ||
 				root.getSymbolTable().getSymbolType(lhs.getValue())==Symbol.Type.ARRAY)
-				&& ((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTINTEGER ||
-				((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTSCALARACCESS){ //just right integer  TODO more general
+				&& (((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTINTEGER ||
+				((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTSCALARACCESS)){ //just right integer  TODO more general
 			int loop_number = number_of_loops;
 
 			hasUsedAnExtraReg = true;
@@ -859,6 +859,7 @@ public class CodeGenerator {
 
 			appendln("goto loop" + loop_number);
 			appendln("loop" + loop_number + "_end:");
+			number_of_loops++;
 
 		}
 
