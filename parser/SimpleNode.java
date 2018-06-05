@@ -4,6 +4,7 @@ package parser;
 import java.util.ArrayList;
 
 import codeGeneration.CodeLine;
+import codeGeneration.FunctionInstructions;
 import semantic.FunctionTable;
 import semantic.Symbol;
 import semantic.SymbolTable;
@@ -24,7 +25,7 @@ class SimpleNode implements Node {
     protected boolean hasCodeLineScope;
     protected Token firstToken;
     protected Token lastToken;
-    protected ArrayList<CodeLine> lines;
+    protected FunctionInstructions functionInstructions;
     protected int firstLine;
     protected ArrayList<Integer> lastLines;
     private IntegerReference codeLineCounter;
@@ -92,24 +93,30 @@ class SimpleNode implements Node {
     		return ((SimpleNode) parent).getFunctionTable();
     }
     
+    public boolean hasCodeLine() {
+    	if(parent == null || ((! toString().equals("Function")) && ((SimpleNode) parent).codeLineCounter == null))
+    		return false;
+    	else
+    		return true;
+    }
+    
     public void assignCodeLine() {
-    	if(parent == null) {
-    		this.lines = new ArrayList<CodeLine>();
-    		codeLineCounter = new IntegerReference();
-    		System.out.println("b1");
+    	if(!hasCodeLine()) {
+    		this.functionInstructions = null;
+    		codeLineCounter = null;
     	}
     	else { 
     		if(toString().equals("Function")) {
     			codeLineCounter = new IntegerReference();
-    			this.lines = new ArrayList<CodeLine>();
+    			this.functionInstructions = new FunctionInstructions();
     		}
-    		else
+    		else {
     			codeLineCounter = ((SimpleNode) parent).codeLineCounter;
-    		this.lines = ((SimpleNode) parent).lines;
+    			this.functionInstructions = ((SimpleNode) parent).functionInstructions;
+    		}
     		if(hasCodeLineScope) {
-    			System.out.println(toString());
     			this.codeLine =  new CodeLine(codeLineCounter.getValue());
-    			this.lines.add(this.codeLine);
+    			this.functionInstructions.addInstruction(this.codeLine);
     			codeLineCounter.inc();
     		}
     		else
@@ -230,6 +237,30 @@ class SimpleNode implements Node {
                     ((SimpleNode ) child).dumpUsesDefs(prefix + "   ");
         }
     }
+    
+    public void dumpSuccessorsAntecessors() {
+    	if(toString().equals("Function")) {
+    		System.out.println(value);
+    		functionInstructions.printSuccessorsAntecessors();
+    		System.out.println("");
+    	}
+    	else {
+    		 if(getChildren() != null) {
+    	            /*
+    	            for (int i = 0; i < children.length; ++i) {
+    	                SimpleNode n = (SimpleNode)children[i];
+    	                if (n != null) {
+    	                    n.dump(prefix + "   ");
+    	                }
+    	            }
+    	            */
+
+    	            for(Node child : getChildren())
+    	                if(child != null)
+    	                    ((SimpleNode ) child).dumpSuccessorsAntecessors();
+    	}
+    }
+    }
 
     public String generateCode() {
         String generatedCode = "";
@@ -298,7 +329,7 @@ class SimpleNode implements Node {
 		   lastLines.add(line);
    } 
    public void codeLineHandler() {
-	   if(toString() != "Program" && toString() != "Module") {
+	   if(hasCodeLine()) {
 	   if(children == null || children.length == 0) {
 		   firstLine = codeLine.getIndex();
 		   lastLines = new ArrayList<Integer>();
@@ -330,22 +361,31 @@ class SimpleNode implements Node {
 	   }
    }
    
-   public void addSuccessors() {
-	   
-   }
+  
    
-   public void handleSuccessorsAntecessors() {
+   public void handleOtimizationR(int optRN) {
 	   if(getChildren() != null) {
            for(Node child : getChildren()) {
-               ((SimpleNode) child).handleSuccessorsAntecessors();          
+               ((SimpleNode) child).handleOtimizationR(optRN);          
            }
        }
-	   
+	   if(hasCodeLine()) {
+		   if(toString().equals("Function"))
+			   functionInstructions.setNameToIndex(symbolTable.getNameToIndex());
 	   if(children != null && children.length > 1) {
-		   for(int i= 0; i <children.length - 2; i++) {
-			   
+		   if(toString().equals("IfStatement")) {
+			   ArrayList<Integer> antecessors = new ArrayList<Integer>();
+			   antecessors.add(firstLine);
+			   functionInstructions.addSuccessorsAntecessors(antecessors, ((SimpleNode) children[1]).firstLine);
 		   }
-			   
+		   else {
+			   for(int i= 0; i <children.length - 1; i++) {
+				   functionInstructions.addSuccessorsAntecessors(((SimpleNode) children[i]).lastLines, ((SimpleNode) children[i + 1]).firstLine);
+			   }
+		   	   if(toString().equals("While"))
+		   			functionInstructions.addSuccessorsAntecessors(((SimpleNode) children[children.length-1]).lastLines, ((SimpleNode) children[0]).firstLine);
+		   }
+	   }
 	   }
    }
     

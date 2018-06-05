@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import codeGeneration.CodeGenerator;
+import utils.Utils;
 
 
 
@@ -17,6 +18,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
   protected static JJTYalState jjtree = new JJTYalState();
   private static Yal myYal;
   private static boolean error = false;
+  private static int optRN = -1;
 
   public static void main(String args []) throws ParseException, IOException
   {
@@ -24,6 +26,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
     if( validArgs(args) == false)
         return;
     else {
+
         SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
 
         System.out.println("\u005cnAST Tree:");
@@ -35,8 +38,11 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
                 root.printFunctionTable("");
                         System.out.println("\u005cnSymbol Table:");
                         root.printSymbolTable("");
-                        root.dumpUsesDefs("");
-
+                        if(optRN >= 0) {
+                                root.dumpUsesDefs("");
+                                root.handleOtimizationR(optRN);
+                                root.dumpSuccessorsAntecessors();
+                        }
                         CodeGenerator codeGenerator = new CodeGenerator(root);
                         codeGenerator.generateCode();
                 }
@@ -57,21 +63,19 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
 
 
   public static boolean validArgs(String args []) {
-
-                if(args.length > 1) {
-                        System.out.println("Error: Invalid number of arguments");
-                        System.out.println("Usage: java Yal [filePath]");
+                if(args.length > 2) {
+                        System.out.println("Error: Invalid number of arguments.");
+                        System.out.println("Usage: java Yal [filePath] [-r=< n >]");
                         return false;
                 }
 
                 else if(args.length == 0)
                         myYal = new Yal(System.in);
-
-                else if(args.length == 1) {
-                        File file;
+                else {
+                                File file;
                         if( (file = validFilePath(args[0])) == null) {
-                                System.out.println("Error: Invalid file Path");
-                                System.out.println("Usage: java Yal [filePath]");
+                                System.out.println("Error: Invalid file Path.");
+                                System.out.println("Usage: java Yal [filePath] [-r=< n >]");
                                 return false;
                         }
                         else {
@@ -81,13 +85,37 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
                                                                         myYal = new Yal(stream);
                                                                 } catch (FileNotFoundException e) {
                                                                         System.out.println("Error in stream constructor: ");
-                                                                        System.out.println("Usage: java Yal [filePath]");
+                                                                        System.out.println("Usage: java Yal [filePath] [-r=< n >]");
                                                                         e.printStackTrace();
                                                                         return false;
                                                                 }
 
                         }
+                if(args.length == 2) {
+
+             if(args[1].substring(0, 3).equals("-r=")) {
+                                if(Utils.isInteger(args[1].substring(3))) {
+                                        optRN = Integer.parseInt(args[1].substring(3));
+                                        if(optRN < 0) {
+                                                System.out.println("Error: The number in option R must be an integer greater or equal to 0.");
+                                                System.out.println("Usage: java Yal [filePath] [-r=< n >]");
+                                                return false;
+                                        }
+                                }
+                                else {
+                                        System.out.println("Error: The number in option R must be an integer.");
+                                        System.out.println("Usage: java Yal [filePath] [-r=< n >]");
+                                        return false;
+                                }
+             }
+             else {
+                                System.out.println("Error: Non valid argument");
+                                System.out.println("Usage: java Yal [filePath] [-r=< n >]");
+                                return false;
+             }
         }
+
+      }
 
 
                 return true;

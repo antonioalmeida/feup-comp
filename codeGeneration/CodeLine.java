@@ -11,6 +11,8 @@ public class CodeLine {
 	ArrayList<Pair> usesAndDefs;
 	private ArrayList<Integer> successors;
 	private ArrayList<Integer> antecessors;
+	private BitSet bitSuccessors;
+	private BitSet bitAntecessors;
 	private BitSet uses;
 	private BitSet defs;
 	
@@ -24,6 +26,8 @@ public class CodeLine {
 		usesAndDefs = new ArrayList<Pair>();
 		successors = new ArrayList<Integer>();
 		antecessors = new ArrayList<Integer>();
+		bitSuccessors = new BitSet();
+		bitAntecessors = new BitSet();
 	}
 	
 	public int getIndex() {
@@ -47,13 +51,33 @@ public class CodeLine {
 		usesAndDefs.add(pair);
 	}
 	
-	public void addSuccessors(ArrayList<Integer> successors) {
+	public void addSuccessor(Integer successor) {
+		if(!bitSuccessors.get(successor) && successor != index) {
+			successors.add(successor);
+			bitSuccessors.set(successor);
+		}
+		else {
+			System.out.println("b2: "+index+ " "+successor);
+		}
+	}
+	
+	public void addAntecessor(Integer antecessor) {
+		if(!bitAntecessors.get(antecessor) && antecessor != index) {
+			antecessors.add(antecessor);
+			bitAntecessors.set(antecessor);
+		}
+		else {
+			System.out.println("b2: "+index+ " "+antecessor);
+		}
+	}
+	
+	/*public void addSuccessors(ArrayList<Integer> successors) {
 		this.successors.addAll(successors);
 	}
 	
 	public void addAntecessors(ArrayList<Integer> antecessors) {
-		this.successors.addAll(antecessors);
-	}
+		this.antecessors.addAll(antecessors);
+	}*/
 	
 	public void print() {
 		System.out.print("("+index+") [ ");
@@ -61,6 +85,25 @@ public class CodeLine {
 			System.out.print(usesAndDefs.get(i).getKey()+"=> "+usesAndDefs.get(i).getValue()+", ");
 		}
 		System.out.print("]");
+	}
+	
+	public void printSuccessorsAntecessors() {
+		System.out.println(index);
+		System.out.print("              antecessors: [");
+		for(int i= 0; i < antecessors.size(); i++) {
+			System.out.print(antecessors.get(i));
+			if(i < antecessors.size() - 1 )
+				System.out.print(", ");
+		}
+		System.out.println("]");
+		
+		System.out.print("              successors: [");
+		for(int i= 0; i < successors.size(); i++) {
+			System.out.print(successors.get(i));
+			if(i < successors.size() - 1 )
+				System.out.print(", ");
+		}
+		System.out.println("]");
 	}
 	
 	
