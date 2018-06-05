@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import parser.Yal;
+import utils.Pair;
 import utils.Utils;
 
 public class FunctionInstructions {
@@ -238,7 +239,7 @@ public class FunctionInstructions {
 		
 	}
 	
-	public ArrayList<Integer>  registerAssignement(int nVariables){
+	public Pair  registerAssignement(){
 		if(Yal.getDebug())
 			System.out.println("maxIndex: "+maxIndex);
 		for(int i = 0; i < instructions.size(); i++)
@@ -258,10 +259,10 @@ public class FunctionInstructions {
 			printNewIndexes();
 			System.out.println("");
 		}
-		if(variablesUsed <= nVariables)
-			return newIndexes;
-		else
-			return null;
+		
+		Pair pair = new Pair(variablesUsed, newIndexes);
+		
+		return pair;
 		
 	}
 	

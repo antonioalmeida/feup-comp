@@ -9,6 +9,7 @@ import semantic.FunctionTable;
 import semantic.Symbol;
 import semantic.SymbolTable;
 import utils.IntegerReference;
+import utils.Pair;
 public
 class SimpleNode implements Node {
 
@@ -394,7 +395,20 @@ class SimpleNode implements Node {
    
    public void handleOptimizationR(int optRN) {
 	   if(toString().equals("Function")) {
-		   functionInstructions.registerAssignement(optRN);
+		   
+		   Pair pair;
+		   pair = functionInstructions.registerAssignement();
+		   ArrayList<Integer> newIndexes = (ArrayList<Integer>) pair.getValue();
+		   int variablesUsed = (int) pair.getKey();
+		   if(variablesUsed > optRN) {
+			   System.out.println("Error: The minimum number of registers required for function "+getRealValue()+ " is "+variablesUsed);
+		   }
+		   else {
+			   System.out.println("The new assignement of registers for the variables of function "+getRealValue() + " is as follows:");
+			   for(int i = 0; i < newIndexes.size(); i++) {
+				   
+			   }
+		   }
 	   }
 	   else if(toString().equals("Program") || toString().equals("Module")) {
 		   if(getChildren() != null) {

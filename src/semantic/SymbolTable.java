@@ -1,4 +1,5 @@
 package semantic;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ public class SymbolTable {
     private int indexCount;
     private HashMap<String, Integer> nameToIndex;
     private IntegerReference maxIndex;
+    private ArrayList<String> indexToName;
 
     
 
@@ -31,10 +33,12 @@ public class SymbolTable {
         if(parent == null) {
         	nameToIndex = null;
         	maxIndex = null;
+        	indexToName = null;
         }
         else {
         	nameToIndex = parent.nameToIndex;
         	maxIndex = parent.maxIndex;
+        	indexToName = parent.indexToName;
         }
     }
     
@@ -45,15 +49,18 @@ public class SymbolTable {
     	if(newNameToIndex) {
     		nameToIndex = new HashMap<String, Integer>();
     		maxIndex = new IntegerReference(-1);
+    		indexToName = new ArrayList<String>();
     	}
     	else
     		if(parent == null) {
             	nameToIndex = null;
             	maxIndex = null;
+            	indexToName = null;
             }
             else {
             	nameToIndex = parent.nameToIndex;
             	maxIndex = parent.maxIndex;
+            	indexToName = parent.indexToName;
             }
     }
 
@@ -117,6 +124,7 @@ public class SymbolTable {
         else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
             this.addSymbol(symbolName, type, initialized, print, index);
             this.nameToIndex.put(symbolName, index);
+            this.indexToName.add(symbolName);
             if(this.maxIndex.getValue() < index)
             	this.maxIndex.setValue(index);
             return true;
