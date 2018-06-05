@@ -2,6 +2,7 @@ package codeGeneration;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashMap;
 
 import utils.Pair;
 
@@ -15,6 +16,8 @@ public class CodeLine {
 	private BitSet bitAntecessors;
 	private BitSet uses;
 	private BitSet defs;
+	BitSet in;
+	BitSet out;
 	
 	/*public CodeLine() {
 		this.index = ++countIndex;
@@ -46,6 +49,18 @@ public class CodeLine {
 		defs.set(symbolIndex);
 	}
 	
+	public BitSet getUses() {
+		return uses;
+	}
+	
+	public BitSet getDefs() {
+		return defs;
+	}
+	
+	public ArrayList<Integer> getSuccessors() {
+		return successors;
+	}
+	
 	public void addToUsesAndDefs(String symbolName, boolean store) {
 		Pair pair = new Pair(symbolName, store);
 		usesAndDefs.add(pair);
@@ -69,6 +84,23 @@ public class CodeLine {
 		else {
 			System.out.println("b2: "+index+ " "+antecessor);
 		}
+	}
+	
+	public void defineBitSets(HashMap<String, Integer> nameToIndex) {
+		uses = new BitSet();
+		defs = new BitSet();
+		for(int i=0; i < usesAndDefs.size(); i++) {
+			Integer newIndex = nameToIndex.get(usesAndDefs.get(i).getValue());
+			if(newIndex != null) {
+				if((boolean) usesAndDefs.get(i).getValue()) {
+					defs.set(newIndex);
+				}
+				else
+					uses.set(newIndex);
+			}
+		}
+		in = new BitSet();
+		out = new BitSet();
 	}
 	
 	/*public void addSuccessors(ArrayList<Integer> successors) {
