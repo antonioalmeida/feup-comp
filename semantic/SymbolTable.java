@@ -9,6 +9,7 @@ import semantic.Symbol.Type;
 
 import java.util.Vector;
 
+import utils.IntegerReference;
 import utils.Pair;
 
 public class SymbolTable {
@@ -19,6 +20,7 @@ public class SymbolTable {
 
     private int indexCount;
     private HashMap<String, Integer> nameToIndex;
+    private IntegerReference maxIndex;
 
     
 
@@ -26,23 +28,33 @@ public class SymbolTable {
         this.parent = parent;
         symbols = new HashMap<String, Symbol>();
         this.indexCount = 0;
-        if(parent == null)
+        if(parent == null) {
         	nameToIndex = null;
-        else
+        	maxIndex = null;
+        }
+        else {
         	nameToIndex = parent.nameToIndex;
+        	maxIndex = parent.maxIndex;
+        }
     }
     
     public SymbolTable(SymbolTable parent, boolean newNameToIndex) {
     	this.parent = parent;
         symbols = new HashMap<String, Symbol>();
         this.indexCount = 0;
-    	if(newNameToIndex)
+    	if(newNameToIndex) {
     		nameToIndex = new HashMap<String, Integer>();
+    		maxIndex = new IntegerReference(-1);
+    	}
     	else
-    		if(parent == null)
+    		if(parent == null) {
             	nameToIndex = null;
-            else
+            	maxIndex = null;
+            }
+            else {
             	nameToIndex = parent.nameToIndex;
+            	maxIndex = parent.maxIndex;
+            }
     }
 
     public boolean containsSymbolName(String symbolName) {
@@ -105,6 +117,8 @@ public class SymbolTable {
         else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
             this.addSymbol(symbolName, type, initialized, print, index);
             this.nameToIndex.put(symbolName, index);
+            if(this.maxIndex.getValue() < index)
+            	this.maxIndex.setValue(index);
             return true;
         }
         else
@@ -141,6 +155,8 @@ public class SymbolTable {
             	if(index == null) {
             		symbol.setIndex(++currentIndex);
             		nameToIndex.put(name, currentIndex);
+            		 if(this.maxIndex.getValue() < currentIndex)
+                     	this.maxIndex.setValue(currentIndex);
             	}
             	else {
             		symbol.setIndex(index);
@@ -203,7 +219,13 @@ public class SymbolTable {
 	public HashMap<String, Integer> getNameToIndex() {
 		return nameToIndex;
 	}
-
+	
+	public int getMaxIndex() {
+		if(maxIndex != null)
+			return maxIndex.getValue();
+		else
+			return -1;
+	}
 	
     
 }

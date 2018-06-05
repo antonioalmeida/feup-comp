@@ -71,9 +71,7 @@ public class CodeLine {
 			successors.add(successor);
 			bitSuccessors.set(successor);
 		}
-		else {
-			System.out.println("b2: "+index+ " "+successor);
-		}
+		
 	}
 	
 	public void addAntecessor(Integer antecessor) {

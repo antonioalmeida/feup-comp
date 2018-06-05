@@ -363,15 +363,17 @@ class SimpleNode implements Node {
    
   
    
-   public void handleOtimizationR(int optRN) {
+   public void handleSuccessorsAntecessors() {
 	   if(getChildren() != null) {
            for(Node child : getChildren()) {
-               ((SimpleNode) child).handleOtimizationR(optRN);          
+               ((SimpleNode) child).handleSuccessorsAntecessors();          
            }
        }
 	   if(hasCodeLine()) {
-		   if(toString().equals("Function"))
+		   if(toString().equals("Function")) {
 			   functionInstructions.setNameToIndex(symbolTable.getNameToIndex());
+			   functionInstructions.setMaxIndex(symbolTable.getMaxIndex());
+		   }
 	   if(children != null && children.length > 1) {
 		   if(toString().equals("IfStatement")) {
 			   ArrayList<Integer> antecessors = new ArrayList<Integer>();
@@ -388,7 +390,11 @@ class SimpleNode implements Node {
 	   }
 	   }
    }
-    
+   
+   public void handleOptimizationR(int optRN) {
+	   
+   }
+   
     public boolean analyse() {
         symbolTable = getAssignedSymbolTable();
         functionTable = getAssignedFunctionTable();

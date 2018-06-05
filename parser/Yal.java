@@ -40,8 +40,10 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
                         root.printSymbolTable("");
                         if(optRN >= 0) {
                                 root.dumpUsesDefs("");
-                                root.handleOtimizationR(optRN);
+                                root.handleSuccessorsAntecessors();
+                                root.handleOptimizationR(optRN);
                                 root.dumpSuccessorsAntecessors();
+
                         }
                         CodeGenerator codeGenerator = new CodeGenerator(root);
                         codeGenerator.generateCode();
