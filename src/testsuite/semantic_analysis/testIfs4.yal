@@ -1,4 +1,4 @@
-module test11 {
+module testIfs4 {
 	function l = f(){
 		a = 4;
 		if( a < 4){

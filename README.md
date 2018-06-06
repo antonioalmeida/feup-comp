@@ -40,6 +40,13 @@ $ sh run.sh code_generation testArithmetic
 
 #### SEMANTIC ANALYSIS: 
 (Refer the semantic rules implemented by your tool.)
+In our compiler we implemented all the semantic rules mentioned in the project description and in the slides of this course. For example:
+- We check that if a variable is going to be assigned to another, they must have the same type (note: an array can be assigned to a scalar, in that case it means fill all the array with the value of the scalar)
+- We check that if a variable is going to be used in an expression it must have been initialized to type SCALAR
+- We check that the return value of a function should be initialized
+- We check that when a function is called there should be a function with the same signature (i.e. same name and same type of arguments)
+- We check that for the value returned by a function to be used in an expression, that return value should be a SCALAR 
+
 
  
 

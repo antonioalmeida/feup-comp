@@ -1,4 +1,4 @@
-module test2
+module testAssigns
 {
 x1; 
 x2 = -3;

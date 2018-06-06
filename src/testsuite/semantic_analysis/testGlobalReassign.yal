@@ -1,4 +1,4 @@
-module test4{
+module testGlobalReassign {
   d;
 
  function e = olamundo1(a[], b, c[]){
