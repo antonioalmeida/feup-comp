@@ -74,18 +74,8 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
             System.out.println("Error parsing tree");
         }
 
-
-        //System.out.println("\nAST Tree:");
-        //root.dump(""); // imprime no ecrã a árvore
-
         if(!error) {
-                //System.out.println("");
-
                 boolean semanticSuccess = root.analyse();
-                //System.out.println("\nFunction Table:");
-                //root.printFunctionTable("");
-                        //System.out.println("\nSymbol Table:");
-                        //root.printSymbolTable("");
 
                         if(semanticSuccess) {
                                 if(localOptRN >= 0) {
