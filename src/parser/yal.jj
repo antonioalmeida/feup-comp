@@ -66,16 +66,27 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/
      }
   }
 
-  public static String run(FileInputStream stream) {
-        return run(stream, 0);
+  public static String run(FileInputStream stream, boolean localOptO) {
+        return run(stream, -1, localOptO);
   }
 
   public static String run(FileInputStream stream, int localOptRN) {
+          return run(stream, localOptRN, false);
+  }
+
+  public static String run(FileInputStream stream) {
+        return run(stream, -1, false);
+  }
+
+  public static String run(FileInputStream stream, int localOptRN, boolean localOptO) {
+
+        optO = localOptO;
 
         if(myYal == null)
             myYal = new Yal(stream);
         else {
             nErrors = 0;
+            optO = false;
             Yal.ReInit(stream);
         }
 
@@ -1787,6 +1798,3 @@ try {
 }
 /*@egen*/
 }
-
-
-    
