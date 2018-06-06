@@ -13,7 +13,6 @@ Tiago Alexandre de Sousa Dias da Silva, up201404689, Grade: 20, Contribution: 25
 GLOBAL Grade of the project: 20
 
 ### SUMMARY: 
-(Describe what your tool does and its main features.)
 
 As a project for the Compilers course at Porto Engineering University, we implemented a compiler capable of generating Java bytecode, a low level language capable of operation the Java Virtual Machine from Yal, a high level programing language. The main features of our compiler are its ability to perform syntatic analysis, semantic analysis and generating low level code.
 
@@ -55,14 +54,12 @@ $ sh example.sh quicksort
 ```
 
 #### DEALING WITH SYNTACTIC ERRORS: 
-(Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
 
 Our tool shows all the syntatic errors found, so that it does not exit after the first error. For example, if it founds an error in the assignement of a variable, the parser skips to the next semicolon and starts looking for syntatic errors from there. Our tool was able to report correctly all the errors in all files of the folder "MyFirstYalExamples_1" that can be found in the link "yal Examples" in the Moodle page of this course.
 
  
 
 #### SEMANTIC ANALYSIS: 
-(Refer the semantic rules implemented by your tool.)
 
 In our compiler we implemented all the semantic rules mentioned in the project description and in the slides of this course. For example:
 - We check that if a variable is going to be assigned to another, they must have the same type (note: an array can be assigned to a scalar, in that case it means fill all the array with the value of the scalar)
@@ -78,14 +75,12 @@ In our compiler we implemented all the semantic rules mentioned in the project d
  
 
 #### INTERMEDIATE REPRESENTATIONS (IRs): 
-(for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
 
 Although we did not use IRs to generate the code, we used an IR to implement optimization -r. That IR consists of an array of instructions, that contains all the instructions of a given function. Each instruction contains its uses and defs and also the id's of instructions that are its antecessor and successor.
 
  
 
 #### CODE GENERATION:
-(when applicable, describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
 
 The code generation uses the AST as the basis with support from the symbol tables, mostly for variable type checks. While going through it, it the generates the appropriate code. There are special cases, such as, limits generation which happens in the end, and integer assign to all array positions which has to generate code for a loop in order to fill all positions. We tried to make code generation as modular as possible which allowed us to not repeat code unless absolutely necessary. Besides covering the normal cases, it uses low cost instructions such as "iinc","iload","istore","astore","aload" and the various comparisons with 0. All the .yal examples from the "MyFirstYalExamples" run correctly, unless an error is supposed to occur, after the jasmin conversion to .class files. Same occurs for the "Extra yal examples" folder.
 
@@ -93,6 +88,8 @@ The code generation uses the AST as the basis with support from the symbol table
 
 #### OVERVIEW: 
 (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
+
+Our project does not use any third-party tools. We implemented the optimization -r using the graph coloring algorithm studied in class.
 
 
  
@@ -111,7 +108,6 @@ $ sh test.sh CodeGenerationTests
 ```
  
 #### TASK DISTRIBUTION: 
-(Identify the set of tasks done by each member of the project.)
 
 António Almeida - Syntatic Analysis, part of Semantic Analysis, part of Code Generation - base, ifs, variable indexing, stack state controller, Automated Testing and Execution
 
@@ -131,5 +127,5 @@ In addition to the requested features, our tool features a few additional optimi
   - Lower cost ifs in case of comparisons with 0 ('ifeq', 'ifge', 'ifgt', 'ifle','iflt', 'ifne')
 
 #### CONS: 
-(Identify the most negative aspects of your tool)
+
    - Does not allow the return variable of a function to be a global variable
