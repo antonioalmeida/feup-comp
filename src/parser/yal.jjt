@@ -61,13 +61,18 @@ public class Yal
      }
   }
 
-  public static String run(Yal yal) {
+  public static String run(FileInputStream stream) {
+
+        if(myYal == null)
+            myYal = new Yal(stream);
+        else
+            Yal.ReInit(stream);
 
         String generatedCode = "";
         SimpleNode root = null;
 
         try {
-            root = yal.Program(); // devolve referência para o nó raiz da árvore
+            root = myYal.Program(); // devolve referência para o nó raiz da árvore
         }
         catch (ParseException e) {
             System.out.println("Error parsing tree");

@@ -65,13 +65,18 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/
      }
   }
 
-  public static String run(Yal yal) {
+  public static String run(FileInputStream stream) {
+
+        if(myYal == null)
+            myYal = new Yal(stream);
+        else
+            Yal.ReInit(stream);
 
         String generatedCode = "";
         SimpleNode root = null;
 
         try {
-            root = yal.Program(); // devolve refer\u00eancia para o n\u00f3 raiz da \u00e1rvore
+            root = myYal.Program(); // devolve refer\u00eancia para o n\u00f3 raiz da \u00e1rvore
         }
         catch (ParseException e) {
             System.out.println("Error parsing tree");
