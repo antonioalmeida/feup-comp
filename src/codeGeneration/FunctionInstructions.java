@@ -175,14 +175,25 @@ public class FunctionInstructions {
 			indexesRemoved.add(false);
 		
 		//removes from graph
+		
 		while (removedFromGraph.size() < maxIndex + 1 - nArgs) {
+			if(Yal.getDebug()) {
+				System.out.print("nIntersections: [");
+			for(int i = 0; i < nIntersections.size(); i++) {
+				System.out.print(i + "=>" + nIntersections.get(i));
+				if(i < nIntersections.size() - 1)
+					System.out.print(", ");
+			}
+			System.out.print("]");
+			}
 			int minIntersections = 99999999;
 			int minIndex = -1;
 			for(int i =nArgs; i <= maxIndex; i++) {
 				if(! indexesRemoved.get(i)) {
-					if(minIndex == -1 || nIntersections.get(i) < minIntersections)
+					if(minIndex == -1 || nIntersections.get(i) < minIntersections) {
 						minIntersections = nIntersections.get(i);
 						minIndex = i;
+					}
 				}
 			}
 			removedFromGraph.add(minIndex);

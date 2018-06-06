@@ -20,7 +20,7 @@ class SimpleNode implements Node {
     protected Yal parser;
     protected SymbolTable symbolTable;
     protected FunctionTable functionTable;
-    private CodeLine codeLine;
+    protected CodeLine codeLine;
     protected boolean hasScope;
     protected boolean hasFunctionScope;
     protected boolean hasCodeLineScope;
@@ -29,7 +29,7 @@ class SimpleNode implements Node {
     protected FunctionInstructions functionInstructions;
     protected int firstLine;
     protected ArrayList<Integer> lastLines;
-    private IntegerReference codeLineCounter;
+    protected IntegerReference codeLineCounter;
     
     public Token jjtGetFirstToken() {
         return firstToken;
@@ -412,6 +412,7 @@ public void handleOptimizationR(int optRN) {
 				   System.out.println("   " + variable.getKey()+" => "+"lv"+newIndexes.get(i));
 				   ((Symbol) variable.getValue()).setIndex(newIndexes.get(i));
 			   }
+			   
 			   }
 		   }
 	   }
