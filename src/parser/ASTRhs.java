@@ -104,14 +104,14 @@ class ASTRhs extends SimpleNode {
     
 	public boolean isAnInteger() {
 		SimpleNode termChild = (SimpleNode) jjtGetChild(0).jjtGetChild(0);
-		if (termChild.getId() == YalTreeConstants.JJTINTEGER)
+		if (termChild.getId() == YalTreeConstants.JJTINTEGER && this.jjtGetNumChildren()==1)
 			return true;
 		return false;
 	}
     
     public boolean isAVar(){
     	SimpleNode termChild = (SimpleNode) jjtGetChild(0).jjtGetChild(0);
-		if (termChild.getId() == YalTreeConstants.JJTSCALARACCESS)
+		if (termChild.getId() == YalTreeConstants.JJTSCALARACCESS && this.jjtGetNumChildren()==1)
 			return true;
 		return false;
     }
