@@ -1,0 +1,13 @@
+module constPropagation1 {
+
+	function main(){
+		a = 4;
+		b = a;
+		io.println(b); //4
+		
+		c = b;
+		io.println(c); //4
+		
+	}
+
+}

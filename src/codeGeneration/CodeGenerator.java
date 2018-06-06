@@ -1163,7 +1163,7 @@ public class CodeGenerator {
 	public boolean isInsideWhileOrIf(SimpleNode node) {
 		SimpleNode functionNode = (SimpleNode) node;
 		while (functionNode.getId() != YalTreeConstants.JJTFUNCTION) {
-			if (functionNode.getId() == YalTreeConstants.JJTIF || functionNode.getId() == YalTreeConstants.JJTWHILE)
+			if (functionNode.getId() == YalTreeConstants.JJTIFSTATEMENT || functionNode.getId() == YalTreeConstants.JJTWHILE)
 				return true;
 			functionNode = (SimpleNode) functionNode.jjtGetParent();
 		}
