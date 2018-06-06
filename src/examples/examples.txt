@@ -1,0 +1,1 @@
+The constPropagation.yal is supposed to be tested with the "-o" flag active. With this example it can be seen that to program whenever posible tries to load a constant instead of a variable.
