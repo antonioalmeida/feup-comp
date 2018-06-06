@@ -1,1 +1,14 @@
-The constPropagation.yal is supposed to be tested with the "-o" flag active. With this example it can be seen that to program whenever posible tries to load a constant instead of a variable.
+Note: read the README.md file to see how to run the examples
+
+1 - The constPropagation.yal is supposed to be tested with the "-o" flag active. 
+With this example it can be seen that to program whenever posible tries to load a constant instead of a variable.
+
+2 - In functionOverload.yal, as the name implies, the tool's function overload features are showcased, but with scalar and array combinations.
+
+3 - In quicksort.yal, the versatility of the tool's array handling features are showcased, through an execution of the quicksort algorithm.
+
+4 - The nestedBranch.yal is supposed to be tested with te "-r=3" flag active.
+With this example we showcase the optimization's impact on the number of registers used.
+
+5 - TODO
+
