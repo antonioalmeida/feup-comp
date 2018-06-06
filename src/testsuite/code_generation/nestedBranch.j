@@ -42,36 +42,36 @@
 
 .method public static main([Ljava/lang/String;)V
 
-	.limit locals 5
+	.limit locals 4
 	.limit stack 2
 
 	bipush -10
 	istore_0
 
 	bipush 10
-	istore_2
-
-	iload_0
-	iload_2
-	iadd
 	istore_1
 
 	iload_0
-	invokestatic nestedBranch/sign(I)I
-	istore_3
-
 	iload_1
+	iadd
+	istore_2
+
+	iload_0
 	invokestatic nestedBranch/sign(I)I
 	istore_0
 
 	iload_2
 	invokestatic nestedBranch/sign(I)I
+	istore_2
+
+	iload_1
+	invokestatic nestedBranch/sign(I)I
 	istore_1
 
-	iload_3
+	iload_0
 	invokestatic io/println(I)V
 
-	iload_0
+	iload_2
 	invokestatic io/println(I)V
 
 	iload_1
@@ -80,3 +80,5 @@
 	return
 
 .end method
+
+

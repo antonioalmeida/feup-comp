@@ -113,4 +113,36 @@ public class CodeGenerationTests {
 
         assertEquals(targetCode, generatedCode);
     }
+
+    @Test
+    public void testIfs() throws Exception {
+
+        String testName = "testsuite/code_generation/testIf.yal";
+        String targetName = "testsuite/code_generation/testIf.j";
+
+        FileInputStream testStream = TestUtils.openFile(testName);
+        FileInputStream targetStream = TestUtils.openFile(targetName);
+
+        String generatedCode = TestUtils.normalize(Yal.run(testStream));
+        String targetCode = TestUtils.getFileContent(targetStream);
+
+        assertEquals(targetCode, generatedCode);
+    }
+
+    @Test
+    public void testIndex() throws Exception {
+
+        String testName = "testsuite/code_generation/testIndex.yal";
+        String targetName = "testsuite/code_generation/testIndex.j";
+
+        FileInputStream testStream = TestUtils.openFile(testName);
+        FileInputStream targetStream = TestUtils.openFile(targetName);
+
+        String generatedCode = TestUtils.normalize(Yal.run(testStream));
+        String targetCode = TestUtils.getFileContent(targetStream);
+
+        assertEquals(targetCode, generatedCode);
+    }
+
+
 }
