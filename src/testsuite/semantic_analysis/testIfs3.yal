@@ -1,4 +1,4 @@
-module test12 {
+module testIfs3 {
 
 	function c = f(){
 		a = 4;

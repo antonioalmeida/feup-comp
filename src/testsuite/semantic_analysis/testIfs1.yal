@@ -1,4 +1,4 @@
-module test1
+module testIfs1
 {
 c;
 d = [5];
