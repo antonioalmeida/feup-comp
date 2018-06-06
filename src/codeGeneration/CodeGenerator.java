@@ -913,10 +913,15 @@ public class CodeGenerator {
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
 
 		if (lhs.getSymbolTable().getSymbolType(lhs.getValue()) == Symbol.Type.ARRAY
-				|| root.getSymbolTable().getSymbolType(lhs.getValue()) == Symbol.Type.ARRAY)
+				|| root.getSymbolTable().getSymbolType(lhs.getValue()) == Symbol.Type.ARRAY){
 			if (((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER
-					|| ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTSCALARACCESS)
-				return true;
+					|| ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTSCALARACCESS){
+				if (((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getSymbolTable().getSymbolType(((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue()) != Symbol.Type.ARRAY
+						&& root.getSymbolTable().getSymbolType(((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue()) != Symbol.Type.ARRAY){
+					return true;
+				}
+			}
+		}
 
 		return false;
 	}
