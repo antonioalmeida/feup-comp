@@ -70,18 +70,29 @@ public class CodeGenerator {
 		String varName, varType, varValue = "";
 		SimpleNode element = (SimpleNode) declaration.getChildren()[0];
 		varName = element.getValue();
-
-		if (declaration.isVarArray())
-			varType = " [I ";
-		else {
-			varType = " I ";
-			if (declaration.isVarScalarAssigned()) {
-				SimpleNode assignedScalar = (SimpleNode) declaration.getChildren()[1];
-				varValue = "= " + assignedScalar.getValue();
+		
+		boolean arrayLengthAssignValue = false;
+		if ((root.getSymbolTable().getSymbolType(element.getValue()) == Symbol.Type.ARRAY)){
+			if (declaration.jjtGetNumChildren() > 1){
+				SimpleNode element2 = (SimpleNode) declaration.jjtGetChild(1);
+				if (element2.getId() == YalTreeConstants.JJTSCALARASSIGNED){
+					arrayLengthAssignValue = true;
+				}
 			}
 		}
+		if (!arrayLengthAssignValue){
+			if (declaration.isVarArray())
+				varType = " [I ";
+			else {
+				varType = " I ";
+				if (declaration.isVarScalarAssigned()) {
+					SimpleNode assignedScalar = (SimpleNode) declaration.getChildren()[1];
+					varValue = "= " + assignedScalar.getValue();
+				}
+			}
 
-		appendln(".field static " + varName + varType + varValue);
+			appendln(".field static " + varName + varType + varValue);
+		}
 	}
 
 	private void generateGlobals() {
@@ -102,11 +113,106 @@ public class CodeGenerator {
 		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
 			SimpleNode childRoot = (SimpleNode) root.jjtGetChild(i);
 
-			if (childRoot.getId() == YalTreeConstants.JJTDECLARATION)
+			if (childRoot.getId() == YalTreeConstants.JJTDECLARATION){
 
 				if (((ASTDeclaration) childRoot).isVarArrayInitialized())
 					generateArrayInitilization(childRoot, TAB, stack);
 			// generateArray
+				
+				SimpleNode declarationChild = (SimpleNode) childRoot.jjtGetChild(0);
+				
+				if ((root.getSymbolTable().getSymbolType(declarationChild.getValue()) == Symbol.Type.ARRAY)){
+					if (childRoot.jjtGetNumChildren() > 1){
+						SimpleNode declarationChild2 = (SimpleNode) childRoot.jjtGetChild(1);
+						if (declarationChild2.getId() == YalTreeConstants.JJTSCALARASSIGNED){
+							
+							int loop_number = number_of_loops;
+
+							/*SimpleNode lhsParent = (SimpleNode) lhs.jjtGetParent();
+							while (lhsParent.getId() != YalTreeConstants.JJTFUNCTION)
+								lhsParent = (SimpleNode) lhsParent.jjtGetParent();
+							
+							((ASTFunction)lhsParent).setHasUsedAnExtraReg(true);
+
+							int localI = rhs.getSymbolTable().getMaxIndex() + 1;
+
+							SimpleNode rhsparent = (SimpleNode) rhs.jjtGetParent();
+							while (rhsparent.getId() != YalTreeConstants.JJTFUNCTION)
+								rhsparent = (SimpleNode) rhsparent.jjtGetParent();*/
+
+							int localI = 0;
+							
+							appendln();
+							appendln(TAB + "iconst_0");
+							stack.addInstruction(YalInstructions.ICONST);
+							
+							storeLocalVar(TAB, "i",localI);
+							appendln();
+
+							appendln("loop" + loop_number + ":");
+							loadLocalVar(TAB, "i", localI); 
+							stack.addInstruction(YalInstructions.ILOAD);
+							appendln();
+
+							loadGlobalVar(declarationChild.getValue(), TAB, stack);
+							stack.addInstruction(YalInstructions.GETSTATIC);
+
+							appendln(TAB + "arraylength");
+
+							appendln("if_icmpge loop" + loop_number + "_end");
+							stack.addInstruction(YalInstructions.IF);
+							
+							//load array
+							loadGlobalVar(declarationChild.getValue(), TAB, stack);
+							stack.addInstruction(YalInstructions.GETSTATIC);
+							loadLocalVar(TAB, "i", localI); 
+							stack.addInstruction(YalInstructions.ILOAD);
+							
+
+							// Load i value
+							if (Utils.isInteger(declarationChild2.getValue())) {
+								int value = Integer.parseInt(declarationChild2.getValue());
+								if ((value >= 0) && (value <= 5)) {
+									appendln(TAB + "iconst_" + value);
+									stack.addInstruction(YalInstructions.ICONST);
+								} else if (value == -1) {
+									appendln(TAB + "iconst_m1");
+									stack.addInstruction(YalInstructions.ICONST);
+								}
+								else if (value > -129 && value < 128) {
+									stack.addInstruction(YalInstructions.BIPUSH);
+									appendln(TAB + "bipush " + value);
+								}
+								else if (value > -32769 && value < 32768) {
+									stack.addInstruction(YalInstructions.SIPUSH);
+									appendln(TAB + "sipush " + value);
+								}
+								else {
+									stack.addInstruction(YalInstructions.LDC);
+									appendln(TAB + "ldc " + value);
+								}
+							} else {
+
+								loadGlobalVar(declarationChild2.getValue(), TAB, stack);
+							}
+								
+							appendln(TAB + "iastore");
+							stack.addInstruction(YalInstructions.IASTORE);
+							appendln();
+
+							appendln(TAB + "iinc " + localI + " 1");
+
+							appendln("goto loop" + loop_number);
+							appendln("loop" + loop_number + "_end:");
+							appendln();
+							number_of_loops++;
+							
+						}
+					}
+				}
+				
+				
+			}
 
 		}
 
