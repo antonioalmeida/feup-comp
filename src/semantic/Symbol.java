@@ -15,7 +15,7 @@ public class Symbol {
 
 	protected boolean initialized;
 	
-	protected boolean isConstant = true;
+	protected boolean isConstant = false;
 	protected int value;
 
 	//if set to true it will print this symbol in the symbolTable

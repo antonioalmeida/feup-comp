@@ -28,7 +28,9 @@ public class CodeGenerator {
 	private StringBuilder builder;
 
 	private int number_of_loops = 1;
-	private boolean otimizationO;
+	private boolean otimizationR;
+	private boolean otimizationO = false;
+
 
 	public CodeGenerator(SimpleNode root) throws IOException {
 		
@@ -75,23 +77,35 @@ public class CodeGenerator {
 		SimpleNode element = (SimpleNode) declaration.getChildren()[0];
 		varName = element.getValue();
 
-		if (declaration.isVarArray())
-			varType = " [I ";
-		else {
-			varType = " I ";
-			if (declaration.isVarScalarAssigned()) {
-				SimpleNode assignedScalar = (SimpleNode) declaration.getChildren()[1];
-				varValue = "= " + assignedScalar.getValue();
-				
-//				if(otimizationO){
+		
+		boolean arrayLengthAssignValue = false;
+		if ((root.getSymbolTable().getSymbolType(element.getValue()) == Symbol.Type.ARRAY)){
+			if (declaration.jjtGetNumChildren() > 1){
+				SimpleNode element2 = (SimpleNode) declaration.jjtGetChild(1);
+				if (element2.getId() == YalTreeConstants.JJTSCALARASSIGNED){
+					arrayLengthAssignValue = true;
+				}
+
+			}
+		}
+		if (!arrayLengthAssignValue){
+			if (declaration.isVarArray())
+				varType = " [I ";
+			else {
+				varType = " I ";
+				if (declaration.isVarScalarAssigned()) {
+					SimpleNode assignedScalar = (SimpleNode) declaration.getChildren()[1];
+					varValue = "= " + assignedScalar.getValue();
+//					if(otimizationO){
 //					Symbol symbol = root.getSymbolTable().getSymbolFromName(varName);
 //					symbol.setConstant(true);
 //					symbol.setValue(Integer.parseInt(assignedScalar.getValue()));
 //				}
+				}
 			}
-		}
 
-		appendln(".field static " + varName + varType + varValue);
+			appendln(".field static " + varName + varType + varValue);
+		}
 	}
 
 	private void generateGlobals() {
@@ -108,15 +122,82 @@ public class CodeGenerator {
 
 		int headerIndex = builder.length();
 		StackController stack = new StackController();
+		
+		boolean arrayValueAssign = false;
 
 		for (int i = 0; i < root.jjtGetNumChildren(); i++) {
 			SimpleNode childRoot = (SimpleNode) root.jjtGetChild(i);
 
-			if (childRoot.getId() == YalTreeConstants.JJTDECLARATION)
+			if (childRoot.getId() == YalTreeConstants.JJTDECLARATION){
 
 				if (((ASTDeclaration) childRoot).isVarArrayInitialized())
 					generateArrayInitilization(childRoot, TAB, stack);
 			// generateArray
+				
+				SimpleNode declarationChild = (SimpleNode) childRoot.jjtGetChild(0);
+				
+				if ((root.getSymbolTable().getSymbolType(declarationChild.getValue()) == Symbol.Type.ARRAY)){//value assign to all array positions
+					if (childRoot.jjtGetNumChildren() > 1){
+						SimpleNode declarationChild2 = (SimpleNode) childRoot.jjtGetChild(1);
+						if (declarationChild2.getId() == YalTreeConstants.JJTSCALARASSIGNED){
+							
+							int loop_number = number_of_loops;
+							
+							arrayValueAssign = true;
+									
+
+							int localI = 0;
+							
+							appendln();
+							appendln(TAB + "iconst_0");
+							stack.addInstruction(YalInstructions.ICONST);
+							
+							storeLocalVar(TAB, "i",localI);
+							appendln();
+
+							appendln("loop" + loop_number + ":");
+							loadLocalVar(TAB, "i", localI); 
+							stack.addInstruction(YalInstructions.ILOAD);
+							appendln();
+
+							loadGlobalVar(declarationChild.getValue(), TAB, stack);
+							
+
+							appendln(TAB + "arraylength");
+
+							appendln("if_icmpge loop" + loop_number + "_end");
+							stack.addInstruction(YalInstructions.IF);
+							
+							//load array
+							loadGlobalVar(declarationChild.getValue(), TAB, stack);
+							
+							loadLocalVar(TAB, "i", localI); 
+							stack.addInstruction(YalInstructions.ILOAD);
+							
+
+							// Load i value
+							if (Utils.isInteger(declarationChild2.getValue())) {
+								int value = Integer.parseInt(declarationChild2.getValue());
+								loadInt(value, TAB, stack);
+
+							}
+							appendln(TAB + "iastore");
+							stack.addInstruction(YalInstructions.IASTORE);
+							appendln();
+
+							appendln(TAB + "iinc " + localI + " 1");
+
+							appendln("goto loop" + loop_number);
+							appendln("loop" + loop_number + "_end:");
+							appendln();
+							number_of_loops++;
+							
+						}
+					}
+				}
+				
+				
+			}
 
 		}
 
@@ -126,8 +207,10 @@ public class CodeGenerator {
 		int limitStack = stack.getMax();
 
 		StringBuilder localBuilder = new StringBuilder();
-		//TODO: confirm that this is always 0
-		localBuilder.append(TAB + ".limit locals 0");
+		if (arrayValueAssign)
+			localBuilder.append(TAB + ".limit locals 1");
+		else
+			localBuilder.append(TAB + ".limit locals 0");
 		localBuilder.append("\n");
 		localBuilder.append(TAB + ".limit stack " + limitStack);
 		localBuilder.append("\n");
@@ -507,9 +590,14 @@ public class CodeGenerator {
 			while (functionNode.getId() != YalTreeConstants.JJTFUNCTION)
 				functionNode = (SimpleNode) functionNode.jjtGetParent();
 			
-			
-			
 			Symbol symbol = functionNode.getSymbolTable().getSymbolFromName(varName);
+			
+			if(isInsideWhileOrIf(node) && symbol != null){
+				symbol.setConstant(false);
+			}
+				
+			
+			
 			
 			if (functionNode.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
 				if (symbol != null && symbol.isConstant()) {
@@ -1045,4 +1133,16 @@ public class CodeGenerator {
 		return root.getSymbolTable().containsSymbolName(varName);
 		
 	}
+	
+	public boolean isInsideWhileOrIf(SimpleNode node) {
+		SimpleNode functionNode = (SimpleNode) node;
+		while (functionNode.getId() != YalTreeConstants.JJTFUNCTION) {
+			if (functionNode.getId() == YalTreeConstants.JJTIF || functionNode.getId() == YalTreeConstants.JJTWHILE)
+				return true;
+			functionNode = (SimpleNode) functionNode.jjtGetParent();
+		}
+
+		return false;
+	}
+
 }

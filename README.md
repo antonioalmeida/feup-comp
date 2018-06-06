@@ -80,10 +80,13 @@ $ sh test.sh CodeGenerationTests
 
 In addition to the requested features, our tool features a few additional optimizations:
 
+  - Overload of functions with diferent argument Types, different number of arguments and diferent return types
   - Use of lower cost instructions in the cases of: `iload`, `istore`, `astore`, `aload`
   - Loading constants to the stack (use of `iconst`, `bipush`, `sipush`, `ldc`)
   - Use of `iinc`
-
+  - Assigns variable to the minimum number of registers possible if option -r is set
+  - Performs constant propagation if option -o is set
 
 #### CONS: 
 (Identify the most negative aspects of your tool)
+   - Does not allow the return variable of a function to be a global variable
