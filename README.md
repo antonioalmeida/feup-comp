@@ -35,6 +35,7 @@ $ sh run.sh code_generation testArithmetic
 
 #### DEALING WITH SYNTACTIC ERRORS: 
 (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
+Our tool shows all the syntatic errors found, so that it does not exit after the first error. For example, if it founds an error in the assignement of a variable, the parser skips to the next semicolon and starts looking for syntatic errors from there. Our tool was able to report correctly all the errors in all files of the folder "MyFirstYalExamples_1" that can be found in the link "yal Examples" in the Moodle page of this course.
 
  
 
@@ -46,6 +47,9 @@ In our compiler we implemented all the semantic rules mentioned in the project d
 - We check that the return value of a function should be initialized
 - We check that when a function is called there should be a function with the same signature (i.e. same name and same type of arguments)
 - We check that for the value returned by a function to be used in an expression, that return value should be a SCALAR 
+- We check that a variable used in a function call as parameter has been initialized
+- We attributed scopes for whiles, ifs and elses so that a variable declared inside a scope is not valid outside
+- In the specific case that a variable is declared inside an if statement and in an else statement that follows with the same type, that variable becomes valid to be used outside those if and else scopes  
 
 
  
@@ -62,6 +66,7 @@ In our compiler we implemented all the semantic rules mentioned in the project d
 
 #### OVERVIEW: 
 (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
+Our tool is able to overload functions with different argument types. When there is ambiguity between which function should be called, our compiler gives priority first to the function that returns a SCALAR, the to function that returns an ARRAY and then to a VOID function.
 
  
 
