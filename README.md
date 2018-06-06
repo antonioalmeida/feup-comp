@@ -67,6 +67,8 @@ In our compiler we implemented all the semantic rules mentioned in the project d
 #### INTERMEDIATE REPRESENTATIONS (IRs): 
 (for example, when applicable, briefly describe the HLIR (high-level IR) and the LLIR (low-level IR) used, if your tool includes an LLIR with structure different from the HLIR)
 
+Although we did not use IRs to generate the code, we used an IR to implement optimization -r. That IR consists of an array of instructions, that contains all the instructions of a given function. Each instruction contains its uses and defs and also the id's of instructions that are its antecessor and successor.
+
  
 
 #### CODE GENERATION:
