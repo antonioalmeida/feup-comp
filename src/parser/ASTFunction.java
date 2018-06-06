@@ -85,12 +85,12 @@ class ASTFunction extends SimpleNode {
         		ret = false;
         	} */       	
         for(Pair pair : parameters) {
-        	if(pair.getKey().equals(returnValue)) {
+        	/*if(pair.getKey().equals(returnValue)) {
         		//System.out.println("Semantic Error: Argument "+pair.getKey()+" is being has both a return value and a parameter.");
         		printSemanticError("Argument "+pair.getKey()+" is being has both a return value and a parameter");
         		ret = false;
         	}
-        	else if(symbolTable.verifySymbolTypes((String) pair.getKey(), false, true, Symbol.Type.ARRAY, Symbol.Type.SCALAR)) {
+        	else*/ if(symbolTable.verifySymbolTypes((String) pair.getKey(), false, true, Symbol.Type.ARRAY, Symbol.Type.SCALAR)) {
         		//System.out.println("Semantic Error: Argument "+pair.getKey()+" has already been declared.");
         		printSemanticError("Argument "+pair.getKey()+" has already been declared");
         		ret = false;

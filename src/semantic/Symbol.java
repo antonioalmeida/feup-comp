@@ -14,6 +14,9 @@ public class Symbol {
 	protected Type type;
 
 	protected boolean initialized;
+	
+	protected boolean isConstant = true;
+	protected int value;
 
 	//if set to true it will print this symbol in the symbolTable
 	protected boolean print; 
@@ -70,6 +73,22 @@ public class Symbol {
 			return true;
 		else
 			return false;
+	}
+
+	public boolean isConstant() {
+		return isConstant;
+	}
+
+	public void setConstant(boolean isConstant) {
+		this.isConstant = isConstant;
+	}
+
+	public int getValue() {
+		return value;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
 	}
 	
 	
