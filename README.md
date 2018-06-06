@@ -15,6 +15,8 @@ GLOBAL Grade of the project: 20
 ### SUMMARY: 
 (Describe what your tool does and its main features.)
 
+As a project for the Compilers course at Porto Engineering University, we implemented a compiler capable of generating Java bytecode, a low level language capable of operation the Java Virtual Machine from Yal, a high level programing language. The main features of our compiler are its ability to perform syntatic analysis, semantic analysis and generating low level code.
+
 ### EXECUTE: 
 
 #### Compiling:
