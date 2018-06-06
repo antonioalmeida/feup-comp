@@ -964,12 +964,23 @@ public class CodeGenerator {
 		}
 
 		else {
+			
+			
 			generateRHS(rhs, prefix, stack);
 			generateLHSAssign(lhs, prefix, stack);
 			if (otimizationO) {
 				String lhsVarName = lhs.getValue();
+				
+				if(lhsVarName.equals("c"))
+					System.out.println();
+				
 				String rhsValue = ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue();
 				Symbol symbol;
+				
+				
+				int sign = 1;
+				if(((SimpleNode) rhs.jjtGetChild(0)).getValue().equals("-"))
+					sign=-1;
 				
 				
 
@@ -989,7 +1000,8 @@ public class CodeGenerator {
 					
 
 				if (rhs.isAnInteger()) {
-					symbol.setValue(Integer.parseInt(rhsValue));
+					
+					symbol.setValue(Integer.parseInt(rhsValue)*sign);
 					symbol.setConstant(true);
 
 				} else if (rhs.isAVar()) {
@@ -998,7 +1010,7 @@ public class CodeGenerator {
 					if (!isGlobalVar(lhsVarName)){
 						Symbol symbolRhs = functionNode.getSymbolTable().getSymbolFromName(rhsValue);
 						if(symbolRhs != null && symbolRhs.isConstant()){
-							symbol.setValue(symbolRhs.getValue());
+							symbol.setValue(symbolRhs.getValue()*sign);
 							symbol.setConstant(true);
 						}
 							
