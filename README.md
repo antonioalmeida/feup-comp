@@ -2,15 +2,15 @@
 
 ### GROUP: G27
 
-António Cunha Seco Fernandes de Almeida, up201505836, GRADE1: <0 to 20 value>, CONTRIBUTION1: <0 to 100 %>
+António Cunha Seco Fernandes de Almeida, up201505836, Grade: 20, Contribution: 25%
 
-Francisco Tuna Andrade, up201503481, GRADE2: <0 to 20 value>, CONTRIBUTION2: <0 to 100 %>
+Francisco Tuna Andrade, up201503481, Grade: 20, Contribution: 25%
   
-Gil Dinis Magalhães Teixeira, up201505735, GRADE2: <0 to 20 value>, CONTRIBUTION2: <0 to 100 %>
+Gil Dinis Magalhães Teixeira, up201505735, Grade: 20, Contribution: 25%
 
-Tiago Alexandre de Sousa Dias da Silva, up201404689, GRADE2: <0 to 20 value>, CONTRIBUTION2: <0 to 100 %>
+Tiago Alexandre de Sousa Dias da Silva, up201404689, Grade: 20, Contribution: 25%
 
-GLOBAL Grade of the project: <0 to 20>
+GLOBAL Grade of the project: 20
 
 ### SUMMARY: 
 (Describe what your tool does and its main features.)
@@ -45,10 +45,18 @@ GLOBAL Grade of the project: <0 to 20>
  
 
 #### TESTSUITE AND TEST INFRASTRUCTURE: 
-(Describe the content of your testsuite regarding the number of examples, the approach to automate the test, etc.)
 
+The tool's testsuite provides automated tests through JUnit4 for most of the given examples, as well as our own tests. Each test's purpose is specified on its filename. 
+
+How to run (inside src folder):
+```
+sh compile.sh # compiles code and tests
+sh test.sh <Test Class Name>
+
+# Example - running code generation tests
+sh test.sh CodeGenerationTests
+```
  
-
 #### TASK DISTRIBUTION: 
 (Identify the set of tasks done by each member of the project.)
 
