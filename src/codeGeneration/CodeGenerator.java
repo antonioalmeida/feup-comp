@@ -955,8 +955,28 @@ public class CodeGenerator {
 			
 			appendln();
 			
-			//TODO otimizationO
+			if (otimizationO) {
+				String lhsVarName = lhs.getValue();
+				SimpleNode functionNode = (SimpleNode) lhs.jjtGetParent();
+				while (functionNode.getId() != YalTreeConstants.JJTFUNCTION)
+					functionNode = (SimpleNode) functionNode.jjtGetParent();
+				
+				Symbol symbol;
+				if (!isGlobalVar(lhsVarName))
+					symbol = functionNode.getSymbolTable().getSymbolFromName(lhsVarName);
+				else
+					return;
+				
+				
 
+				if (!isGlobalVar(lhsVarName)) {
+					if (symbol != null && symbol.isConstant()) {
+						symbol.setValue(symbol.getValue() + 1);
+						symbol.setConstant(true);
+					}
+
+				}
+			}
 		}
 		else if(isAssignIntegerToArray(node)){ //just right integer  TODO more general
 			generateAssignIntegerToArray( rhs,  lhs,  prefix,  stack);
@@ -970,10 +990,7 @@ public class CodeGenerator {
 			generateLHSAssign(lhs, prefix, stack);
 			if (otimizationO) {
 				String lhsVarName = lhs.getValue();
-				
-				if(lhsVarName.equals("c"))
-					System.out.println();
-				
+								
 				String rhsValue = ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue();
 				Symbol symbol;
 				
@@ -991,7 +1008,7 @@ public class CodeGenerator {
 				if (!isGlobalVar(lhsVarName))
 					symbol = functionNode.getSymbolTable().getSymbolFromName(lhsVarName);
 				else
-					return; // TODO Global VArs??
+					return;
 				
 				if(((ASTAssign)node).isInsideWhileOrIf() && symbol != null){
 					symbol.setConstant(false);
@@ -1005,7 +1022,6 @@ public class CodeGenerator {
 					symbol.setConstant(true);
 
 				} else if (rhs.isAVar()) {
-					// is not constant anymore, TODO but can be
 					
 					if (!isGlobalVar(lhsVarName)){
 						Symbol symbolRhs = functionNode.getSymbolTable().getSymbolFromName(rhsValue);
@@ -1016,9 +1032,7 @@ public class CodeGenerator {
 							
 					}
 					else
-						symbol.setConstant(false); // TODO Global VArs??
-
-					
+						symbol.setConstant(false); 					
 
 				} else // is not constant anymore
 					if(symbol != null)
