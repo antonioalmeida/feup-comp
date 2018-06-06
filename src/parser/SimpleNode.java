@@ -20,7 +20,7 @@ class SimpleNode implements Node {
     protected Yal parser;
     protected SymbolTable symbolTable;
     protected FunctionTable functionTable;
-    private CodeLine codeLine;
+    protected CodeLine codeLine;
     protected boolean hasScope;
     protected boolean hasFunctionScope;
     protected boolean hasCodeLineScope;
@@ -29,12 +29,9 @@ class SimpleNode implements Node {
     protected FunctionInstructions functionInstructions;
     protected int firstLine;
     protected ArrayList<Integer> lastLines;
-    private IntegerReference codeLineCounter;
+    protected IntegerReference codeLineCounter;
     protected int indexCounter;
 
-    // For constant propagation optimization
-    protected boolean isConstant;
-    
     public Token jjtGetFirstToken() {
         return firstToken;
     }
@@ -56,7 +53,6 @@ class SimpleNode implements Node {
         this.hasScope = false;
         this.hasFunctionScope = false;
         this.hasCodeLineScope = false;
-        this.isConstant = false;
         id = i;
     }
      
@@ -70,7 +66,6 @@ class SimpleNode implements Node {
         this.hasScope = hasScope;
         this.hasFunctionScope = hasFunctionScope;
         this.hasCodeLineScope = hasCodeLineScope;
-        this.isConstant = false;
         id = i;
     }
 
@@ -418,7 +413,6 @@ public void handleOptimizationR(int optRN) {
 				   System.out.println("   " + variable.getKey()+" => "+"lv"+newIndexes.get(i));
 				   ((Symbol) variable.getValue()).setIndex(newIndexes.get(i));
 			   }
-
 			   indexCounter = variablesUsed - 1;
 			   }
 		   }

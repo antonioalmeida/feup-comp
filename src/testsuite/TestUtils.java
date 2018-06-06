@@ -36,6 +36,12 @@ public class TestUtils {
     }
 
     public static String normalize(String str) {
-        return str.trim().replaceAll(" +", " ");
+        String[] lines = str.split("\n");
+
+        StringBuffer buffer = new StringBuffer();
+        for(String line : lines)
+            buffer.append(line.trim()+ "\n");
+
+        return buffer.toString();
     }
 }

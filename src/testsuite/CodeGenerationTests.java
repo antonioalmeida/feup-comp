@@ -83,4 +83,34 @@ public class CodeGenerationTests {
 
         assertEquals(targetCode, generatedCode);
     }
+
+    @Test
+    public void stackSize() throws Exception {
+
+        String testName = "testsuite/code_generation/stackSize.yal";
+        String targetName = "testsuite/code_generation/stackSize.j";
+
+        FileInputStream testStream = TestUtils.openFile(testName);
+        FileInputStream targetStream = TestUtils.openFile(targetName);
+
+        String generatedCode = TestUtils.normalize(Yal.run(testStream, 4));
+        String targetCode = TestUtils.getFileContent(targetStream);
+
+        assertEquals(targetCode, generatedCode);
+    }
+
+    @Test
+    public void testArithmetic() throws Exception {
+
+        String testName = "testsuite/code_generation/testArithmetic.yal";
+        String targetName = "testsuite/code_generation/testArithmetic.j";
+
+        FileInputStream testStream = TestUtils.openFile(testName);
+        FileInputStream targetStream = TestUtils.openFile(targetName);
+
+        String generatedCode = TestUtils.normalize(Yal.run(testStream));
+        String targetCode = TestUtils.getFileContent(targetStream);
+
+        assertEquals(targetCode, generatedCode);
+    }
 }
