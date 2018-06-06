@@ -1,0 +1,24 @@
+module functionOverload {
+
+	function a = f() {
+		a = 10;
+	}
+
+	function a = f(b) {
+		a = b + 10;
+	}
+
+	function a[] = f() {
+		a = 1;
+	}
+
+	function main() {
+
+		x = f() //10;
+
+		x2 = f(2) //12;
+
+		x3 = [3];
+		x3 = f();
+	}
+}

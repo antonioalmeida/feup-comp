@@ -1,0 +1,40 @@
+module functionOverload {
+
+	function a = f() {
+		a = 10;
+	}
+
+	function a = f(b) {
+		a = b + 10;
+	}
+
+	function a[] = f(a[]) {
+		a = 1;
+	}
+
+	function main() {
+
+		x = f(); 
+		io.println(x); // 10
+
+		x2 = f(2); 
+		io.println(x2); // 12
+
+		x3 = [3];
+		x3 = f(x3);
+		print(x3);
+	}
+
+	function print(a[]) {
+		s = a.size;
+		io.println("Size ", s);
+
+		i = 0;
+		while (i < s) {
+			v = a[i];
+			io.println(v);
+
+			i = i + 1;
+		}
+	}
+}
