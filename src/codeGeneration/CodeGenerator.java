@@ -499,8 +499,15 @@ public class CodeGenerator {
 		String varType;
 		
 		if (otimizationO) {
-			Symbol symbol = node.getSymbolTable().getSymbolFromName(varName);
-			if (node.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
+			SimpleNode functionNode = (SimpleNode) node;
+			while (functionNode.getId() != YalTreeConstants.JJTFUNCTION)
+				functionNode = (SimpleNode) functionNode.jjtGetParent();
+			
+			
+			
+			Symbol symbol = functionNode.getSymbolTable().getSymbolFromName(varName);
+			
+			if (functionNode.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
 				if (symbol != null && symbol.isConstant()) {
 					loadInt(symbol.getValue(), prefix, stack);
 					return;
@@ -860,49 +867,7 @@ public class CodeGenerator {
 
 		}
 		else if(isAssignIntegerToArray(node)){ //just right integer  TODO more general
-			int loop_number = number_of_loops;
-
-			SimpleNode lhsParent = (SimpleNode) lhs.jjtGetParent();
-			while (lhsParent.getId() != YalTreeConstants.JJTFUNCTION)
-				lhsParent = (SimpleNode) lhsParent.jjtGetParent();
-			
-			((ASTFunction)lhsParent).setHasUsedAnExtraReg(true);
-
-			int localI = rhs.getSymbolTable().getMaxIndex() + 1;
-
-			SimpleNode rhsparent = (SimpleNode) rhs.jjtGetParent();
-			while (rhsparent.getId() != YalTreeConstants.JJTFUNCTION)
-				rhsparent = (SimpleNode) rhsparent.jjtGetParent();
-
-			appendln();
-			appendln(TAB + "iconst_0");
-			stack.addInstruction(YalInstructions.ICONST);
-			
-			storeLocalVar(TAB, "i",localI);
-			stack.addInstruction(YalInstructions.ISTORE);
-
-			appendln("loop" + loop_number + ":");
-			loadLocalVar(TAB, "i", localI); 
-			stack.addInstruction(YalInstructions.ILOAD);
-
-			generateLHSCompare(lhs, prefix, stack);
-
-			appendln(TAB + "arraylength");
-
-			appendln("if_icmpge loop" + loop_number + "_end");
-			stack.addInstruction(YalInstructions.IF);
-			generateLHSCompare(lhs, prefix, stack);
-			loadLocalVar(TAB, "i", localI); 
-			stack.addInstruction(YalInstructions.ILOAD);
-			generateRHS(rhs, prefix, stack);
-			appendln(TAB + "iastore");
-			stack.addInstruction(YalInstructions.IASTORE);
-
-			appendln(TAB + "iinc " + localI + " 1");
-
-			appendln("goto loop" + loop_number);
-			appendln("loop" + loop_number + "_end:");
-			number_of_loops++;
+			generateAssignIntegerToArray( rhs,  lhs,  prefix,  stack);
 
 		}
 
@@ -958,6 +923,52 @@ public class CodeGenerator {
 		}
 	}
 	
+	
+	private void generateAssignIntegerToArray(ASTRhs rhs, SimpleNode lhs, String prefix, StackController stack) {
+		int loop_number = number_of_loops;
+
+		SimpleNode lhsParent = (SimpleNode) lhs.jjtGetParent();
+		while (lhsParent.getId() != YalTreeConstants.JJTFUNCTION)
+			lhsParent = (SimpleNode) lhsParent.jjtGetParent();
+
+		((ASTFunction) lhsParent).setHasUsedAnExtraReg(true);
+
+		int localI = rhs.getSymbolTable().getMaxIndex() + 1;
+
+		SimpleNode rhsparent = (SimpleNode) rhs.jjtGetParent();
+		while (rhsparent.getId() != YalTreeConstants.JJTFUNCTION)
+			rhsparent = (SimpleNode) rhsparent.jjtGetParent();
+
+		appendln();
+		appendln(TAB + "iconst_0");
+		stack.addInstruction(YalInstructions.ICONST);
+
+		storeLocalVar(TAB, "i", localI);
+		stack.addInstruction(YalInstructions.ISTORE);
+
+		appendln("loop" + loop_number + ":");
+		loadLocalVar(TAB, "i", localI);
+		stack.addInstruction(YalInstructions.ILOAD);
+
+		generateLHSCompare(lhs, prefix, stack);
+
+		appendln(TAB + "arraylength");
+
+		appendln("if_icmpge loop" + loop_number + "_end");
+		stack.addInstruction(YalInstructions.IF);
+		generateLHSCompare(lhs, prefix, stack);
+		loadLocalVar(TAB, "i", localI);
+		stack.addInstruction(YalInstructions.ILOAD);
+		generateRHS(rhs, prefix, stack);
+		appendln(TAB + "iastore");
+		stack.addInstruction(YalInstructions.IASTORE);
+
+		appendln(TAB + "iinc " + localI + " 1");
+
+		appendln("goto loop" + loop_number);
+		appendln("loop" + loop_number + "_end:");
+		number_of_loops++;
+	}
 
 	private void generateLHSAssign(SimpleNode lhs, String prefix, StackController stack) {
 		String varName = lhs.getValue();
