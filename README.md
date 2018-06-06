@@ -35,7 +35,7 @@ $ sh run.sh code_generation testArithmetic
 
 #### DEALING WITH SYNTACTIC ERRORS: 
 (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
-Our tool shows all the syntatic errors found, so it does not exit after the first error. For example if it founds an error in the assignement of a variable, it the parser skips to the next semicolon and starts looking for syntatic errors from there. Our tool was able to report correctly all the errors in all files of the folder MyFirstYalExamples_1 that can be found in the link "yal Examples" in the Moodle page of this course.
+Our tool shows all the syntatic errors found, so that it does not exit after the first error. For example, if it founds an error in the assignement of a variable, the parser skips to the next semicolon and starts looking for syntatic errors from there. Our tool was able to report correctly all the errors in all files of the folder "MyFirstYalExamples_1" that can be found in the link "yal Examples" in the Moodle page of this course.
 
  
 
@@ -66,6 +66,7 @@ In our compiler we implemented all the semantic rules mentioned in the project d
 
 #### OVERVIEW: 
 (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
+Our tool is able to overload functions with different argument types. When there is ambiguity between which function should be called, our compiler gives priority first to the function that returns a SCALAR, the to function that returns an ARRAY and then to a VOID function.
 
  
 
