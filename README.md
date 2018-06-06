@@ -104,7 +104,7 @@ $ sh test.sh CodeGenerationTests
 
 António Almeida
 
-Francisco Andrade - Syntatic Analysis, Symbol Table implementation, Semantic Analysis, Implementation of optimization -r
+Francisco Andrade - Syntatic Analysis, Symbol and Functions Tables implementation, Semantic Analysis, Implementation of optimization -r
 
 Gil Teixeira - AST generation; Base for code generation, Function, Arithmetic expressions, Loops and Arrays code generation; Optimizations related to the "-o" option.
 
@@ -115,10 +115,10 @@ Tiago Silva - AST generation; Base for code generation, Function, Arithmetic exp
 #### PROS:
 
 In addition to the requested features, our tool features a few additional optimizations:
-
+  - Allows overload of functions with different argument types and different number of arguments
   - Assigns variable to the minimum number of registers possible if option -r is set
-  - Performs constant propagation if option -o is set
-  - Lower cost ifs in case of comparisons with 0('ifeq', 'ifge', 'ifgt', 'ifle','iflt', 'ifne')
+  - Performs constant propagation if option -o is set (uses while templates by default)
+  - Lower cost ifs in case of comparisons with 0 ('ifeq', 'ifge', 'ifgt', 'ifle','iflt', 'ifne')
 
 #### CONS: 
 (Identify the most negative aspects of your tool)
