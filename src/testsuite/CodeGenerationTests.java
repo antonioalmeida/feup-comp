@@ -38,4 +38,19 @@ public class CodeGenerationTests {
 
         assertEquals(targetCode, generatedCode);
     }
+
+    @Test
+    public void inputAsOutput() throws Exception {
+
+        String testName = "testsuite/code_generation/inputAsOutput.yal";
+        String targetName = "testsuite/code_generation/inputAsOutput.j";
+
+        FileInputStream testStream = TestUtils.openFile(testName);
+        FileInputStream targetStream = TestUtils.openFile(targetName);
+
+        String generatedCode = TestUtils.normalize(Yal.run(testStream));
+        String targetCode = TestUtils.getFileContent(targetStream);
+
+        assertEquals(targetCode, generatedCode);
+    }
 }
