@@ -35,6 +35,7 @@ $ sh run.sh code_generation testArithmetic
 
 #### DEALING WITH SYNTACTIC ERRORS: 
 (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
+Our tool shows all the syntatic errors found, so it does not exit after the first error. For example if it founds an error in the assignement of a variable, it the parser skips to the next semicolon and starts looking for syntatic errors from there. Our tool was able to report correctly all the errors in all files of the folder MyFirstYalExamples_1 that can be found in the link "yal Examples" in the Moodle page of this course.
 
  
 
