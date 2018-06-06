@@ -1,11 +1,11 @@
-module test10 {
+module testIfs2 {
 	
 	function f(){
 		x = 6;
 		while( x < 10){
-			y = 7;
+			y = 7; //error
 		}
-		x = y;
+		x = y; //error
 		
 	}
 }
