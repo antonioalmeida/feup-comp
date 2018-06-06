@@ -66,7 +66,7 @@ In our compiler we implemented all the semantic rules mentioned in the project d
 
 #### OVERVIEW: 
 (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
-Our tool is able to overload functions with different argument types. When there is ambiguity between which function should be called, our compiler gives priority first to the function that returns a SCALAR, the to function that returns an ARRAY and then to a VOID function.
+
 
  
 
@@ -92,7 +92,7 @@ $ sh test.sh CodeGenerationTests
 
 In addition to the requested features, our tool features a few additional optimizations:
 
-  - Overload of functions with diferent argument Types, different number of arguments and diferent return types
+  - Overload of functions with diferent argument Types and different number of arguments 
   - Use of lower cost instructions in the cases of: `iload`, `istore`, `astore`, `aload`
   - Loading constants to the stack (use of `iconst`, `bipush`, `sipush`, `ldc`)
   - Use of `iinc`
