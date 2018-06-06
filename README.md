@@ -26,6 +26,8 @@ $ sh compile.sh
 ```
 
 #### Running:
+
+##### Running Files Inside `src/testsuite`
 Inside base directory
 ```
 $ sh run.sh <DIRECTORY NAME INSIDE TESTSUITE> <FILENAME - without extension> [-r=INT] [-o]
@@ -34,7 +36,16 @@ $ sh run.sh <DIRECTORY NAME INSIDE TESTSUITE> <FILENAME - without extension> [-r
 $ sh run.sh code_generation testArithmetic
 ```
 
-#### Running Examples (`src/examples` directory):
+##### Running Other `yal` Files
+Inside base directory
+```
+$ java -jar yal2jvm.jar <input_file.yal> [-r=<num>] [-o] 
+
+# Example
+$ java -jar yal2jvm.jar test1.yal -r=3 -o
+```
+
+#### Running Chosen Examples (`src/examples` directory):
 Inside base directory
 ```
 $ sh example.sh <FILENAME INSIDE EXAMPLES - without extension> [-r=INT] [-o]
@@ -102,14 +113,13 @@ $ sh test.sh CodeGenerationTests
 #### TASK DISTRIBUTION: 
 (Identify the set of tasks done by each member of the project.)
 
-António Almeida
+António Almeida - Syntatic Analysis, part of Semantic Analysis, part of Code Generation - base, ifs, variable indexing, stack state controller, Automated Testing and Execution
 
 Francisco Andrade - Syntatic Analysis, Symbol and Functions Tables implementation, Semantic Analysis, Implementation of optimization -r
 
 Gil Teixeira - AST generation; Base for code generation, Function, Arithmetic expressions, Loops and Arrays code generation; Optimizations related to the "-o" option.
 
 Tiago Silva - AST generation; Base for code generation, Function, Arithmetic expressions, Loops and Arrays code generation; Optimizations related to low cost instructions.
-
  
 
 #### PROS:
