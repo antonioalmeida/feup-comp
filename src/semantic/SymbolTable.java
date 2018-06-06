@@ -58,6 +58,31 @@ public class SymbolTable {
             	indexToName = parent.indexToName;
             }
     }
+    
+    public HashMap<String, Symbol> getSymbols() {
+		return symbols;
+	}
+
+	public HashMap<String, Integer> getNameToIndex() {
+		return nameToIndex;
+	}
+	
+	public int getMaxIndex() {
+		if(maxIndex != null)
+			return maxIndex.getValue();
+		else
+			return -1;
+	}
+	
+	public HashMap<Integer, Pair> getIndexToName(){
+		return indexToName;
+	}
+	
+	public Symbol getSymbolFromName(String symbolName) {
+		if (containsSymbolName(symbolName))
+			return symbols.get(symbolName);
+		return null;
+	}
 
     public boolean containsSymbolName(String symbolName) {
         return symbols.containsKey(symbolName);
@@ -208,30 +233,4 @@ public class SymbolTable {
         }
     }
 
-	public HashMap<String, Symbol> getSymbols() {
-		return symbols;
-	}
-
-	public HashMap<String, Integer> getNameToIndex() {
-		return nameToIndex;
-	}
-	
-	public int getMaxIndex() {
-		if(maxIndex != null)
-			return maxIndex.getValue();
-		else
-			return -1;
-	}
-	
-	public HashMap<Integer, Pair> getIndexToName(){
-		return indexToName;
-	}
-	
-	public Symbol getSymbolFromName(String symbolName) {
-		if (containsSymbolName(symbolName))
-			return symbols.get(symbolName);
-		return null;
-	}
-	
-    
 }

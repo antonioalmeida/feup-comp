@@ -894,7 +894,7 @@ public class CodeGenerator {
 				else
 					return; // TODO Global VArs??
 				
-				if(((ASTAssign)node).isInsideWhileOrIf()){
+				if(((ASTAssign)node).isInsideWhileOrIf() && symbol != null){
 					symbol.setConstant(false);
 					return;
 				}
@@ -909,7 +909,7 @@ public class CodeGenerator {
 					
 					if (!isGlobalVar(lhsVarName)){
 						Symbol symbolRhs = functionNode.getSymbolTable().getSymbolFromName(rhsValue);
-						if(symbolRhs.isConstant()){
+						if(symbolRhs != null && symbolRhs.isConstant()){
 							symbol.setValue(symbolRhs.getValue());
 							symbol.setConstant(true);
 						}
@@ -921,7 +921,8 @@ public class CodeGenerator {
 					
 
 				} else // is not constant anymore
-					symbol.setConstant(false);
+					if(symbol != null)
+						symbol.setConstant(false);
 
 			}
 		}
