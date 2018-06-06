@@ -1,0 +1,11 @@
+module const_propagation_3 {
+
+	function main(){
+		a=[10];
+		a=1;
+		b=a[5];
+		c=b+5;
+		io.println(c);
+	}
+
+}

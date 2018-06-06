@@ -11,7 +11,6 @@ public
 class ASTFunction extends SimpleNode {
 	private String returnValue;
 	private Symbol.Type returnType;
-	private int indexCounter;
 	private int nArgs;
 	private boolean hasUsedAnExtraReg = false;
 	
@@ -222,10 +221,6 @@ class ASTFunction extends SimpleNode {
 	
 	public String getFunction() {
 		return getRealValue();
-	}
-
-	public int getIndexCounter() {
-		return indexCounter;
 	}
 
 	public boolean hasUsedAnExtraReg() {

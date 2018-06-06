@@ -30,7 +30,8 @@ class SimpleNode implements Node {
     protected int firstLine;
     protected ArrayList<Integer> lastLines;
     protected IntegerReference codeLineCounter;
-    
+    protected int indexCounter;
+
     public Token jjtGetFirstToken() {
         return firstToken;
     }
@@ -48,23 +49,23 @@ class SimpleNode implements Node {
     }
     
     public SimpleNode(int i) {
-            this.setValue("");
-            this.hasScope = false;
-            this.hasFunctionScope = false;
-            this.hasCodeLineScope = false;
-            id = i;
+        this.setValue("");
+        this.hasScope = false;
+        this.hasFunctionScope = false;
+        this.hasCodeLineScope = false;
+        id = i;
     }
      
     public SimpleNode(Yal p, int i) {
-            this(i);
-            parser = p;
+        this(i);
+        parser = p;
     }
     
     public SimpleNode(int i, boolean hasScope, boolean hasFunctionScope, boolean hasCodeLineScope) {
-    this.setValue("");
-    this.hasScope = hasScope;
-    this.hasFunctionScope = hasFunctionScope;
-    this.hasCodeLineScope = hasCodeLineScope;
+        this.setValue("");
+        this.hasScope = hasScope;
+        this.hasFunctionScope = hasFunctionScope;
+        this.hasCodeLineScope = hasCodeLineScope;
         id = i;
     }
 
@@ -412,7 +413,7 @@ public void handleOptimizationR(int optRN) {
 				   System.out.println("   " + variable.getKey()+" => "+"lv"+newIndexes.get(i));
 				   ((Symbol) variable.getValue()).setIndex(newIndexes.get(i));
 			   }
-			   
+			   indexCounter = variablesUsed - 1;
 			   }
 		   }
 	   }
@@ -520,8 +521,11 @@ public void handleOptimizationR(int optRN) {
     public void printSemanticError(String errorMsg) {
     	String functionName = getFunction();
     	String functionModuleMsg = ", module "+getModule();
+
     	if(! functionName.equals(""))
     		functionModuleMsg += ", function "+functionName;
+
+    	Yal.incErrors();
     	System.out.println("Semantic Error at line "+firstToken.beginLine +  ", column "+firstToken.beginColumn  +functionModuleMsg+": "+errorMsg + ".");
     }
     
@@ -531,12 +535,6 @@ public void handleOptimizationR(int optRN) {
     
     public String getModule() {
     	return ((SimpleNode) parent).getModule();
-    }
-
-    
-
-    public int getLastIndex() {
-        return symbolTable.getIndexCount();
     }
 
 	public Node[] getChildren() {
@@ -555,6 +553,9 @@ public void handleOptimizationR(int optRN) {
 		this.value = value;
 	}
 
+	public int getIndexCounter() {
+        return indexCounter;
+    }
 }
 
 /* JavaCC - OriginalChecksum=ddfb1251cda21b9eb5aadc721edc8350 (do not edit this line) */

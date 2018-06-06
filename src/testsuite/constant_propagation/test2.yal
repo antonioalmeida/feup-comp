@@ -1,0 +1,10 @@
+module const_propagation_2{
+
+	function main(){
+		a=-1;
+		b=a;
+		c=b+5;
+		io.println(c);
+	}
+
+}
