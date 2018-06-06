@@ -501,7 +501,7 @@ public class CodeGenerator {
 		if (otimizationO) {
 			Symbol symbol = node.getSymbolTable().getSymbolFromName(varName);
 			if (node.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
-				if (symbol.isConstant()) {
+				if (symbol != null && symbol.isConstant()) {
 					loadInt(symbol.getValue(), prefix, stack);
 					return;
 				}
@@ -913,6 +913,8 @@ public class CodeGenerator {
 				String lhsVarName = lhs.getValue();
 				String rhsValue = ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue();
 				Symbol symbol;
+				
+				
 
 				SimpleNode functionNode = (SimpleNode) lhs.jjtGetParent();
 				while (functionNode.getId() != YalTreeConstants.JJTFUNCTION)
@@ -922,6 +924,12 @@ public class CodeGenerator {
 					symbol = functionNode.getSymbolTable().getSymbolFromName(lhsVarName);
 				else
 					return; // TODO Global VArs??
+				
+				if(((ASTAssign)node).isInsideWhileOrIf()){
+					symbol.setConstant(false);
+					return;
+				}
+					
 
 				if (rhs.isAnInteger()) {
 					symbol.setValue(Integer.parseInt(rhsValue));
