@@ -116,10 +116,9 @@ Tiago Silva - AST generation; Base for code generation, Function, Arithmetic exp
 
 In addition to the requested features, our tool features a few additional optimizations:
 
-  - Use of lower cost instructions in the cases of: `iload`, `istore`, `astore`, `aload`
-  - Loading constants to the stack (use of `iconst`, `bipush`, `sipush`, `ldc`)
   - Assigns variable to the minimum number of registers possible if option -r is set
   - Performs constant propagation if option -o is set
+  - Lower cost ifs in case of comparisons with 0('ifeq', 'ifge', 'ifgt', 'ifle','iflt', 'ifne')
 
 #### CONS: 
 (Identify the most negative aspects of your tool)
