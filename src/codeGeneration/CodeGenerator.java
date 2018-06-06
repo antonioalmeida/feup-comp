@@ -42,7 +42,7 @@ public class CodeGenerator {
 		this.out = new PrintWriter(bw);
 	}
 
-	public void generateCode() {
+	public String generateCode() {
 		generateHeader();
 		generateGlobals();
 		generateStatic();
@@ -50,6 +50,8 @@ public class CodeGenerator {
 
 		out.println(builder);
 		out.close();
+
+		return builder.toString();
 	}
 
 	private void appendln(String content) {

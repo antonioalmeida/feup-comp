@@ -55,6 +55,55 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
         }
     }
 
+    public static String run(Yal yal) {
+
+        SimpleNode root = null;
+        try {
+            root = yal.Program(); // devolve referência para o nó raiz da árvore
+        }
+        catch (ParseException e) {
+            System.out.println("Error parsing tree");
+        }
+
+        //System.out.println("\nAST Tree:");
+        //root.dump(""); // imprime no ecrã a árvore
+
+        String generatedCode = "";
+
+        if(!error) {
+            System.out.println("");
+            root.analyse();
+
+            //System.out.println("\nFunction Table:");
+            //root.printFunctionTable("");
+
+            //System.out.println("\nSymbol Table:");
+            //root.printSymbolTable("");
+
+            if(optRN >= 0) {
+                if(debug)
+                    root.dumpUsesDefs("");
+                root.handleSuccessorsAntecessors();
+
+                if(debug)
+                    root.dumpSuccessorsAntecessors();
+                root.handleOptimizationR(optRN);
+            }
+
+            CodeGenerator codeGenerator = null;
+            try {
+                codeGenerator = new CodeGenerator(root);
+            }
+            catch (IOException e) {
+                System.out.println("Error creating CodeGenerator");
+            }
+            generatedCode = codeGenerator.generateCode();
+            generatedCode = "ola";
+        }
+
+        return generatedCode;
+    }
+
     public static boolean getDebug() {
         return debug;
     }

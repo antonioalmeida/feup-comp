@@ -30,7 +30,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/ {/*@bgen(j
     private static int optRN = -1;
     private static boolean optO = false;
     private static boolean debug = true;
-    
+
     public static void main(String args []) throws ParseException, IOException {
 
         if(!validArgs(args))
@@ -64,6 +64,55 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/ {/*@bgen(j
                 codeGenerator.generateCode();
             }
         }
+    }
+
+    public static String run(Yal yal) {
+
+        SimpleNode root = null;
+        try {
+            root = yal.Program(); // devolve refer\u00eancia para o n\u00f3 raiz da \u00e1rvore
+        }
+        catch (ParseException e) {
+            System.out.println("Error parsing tree");
+        }
+
+        //System.out.println("\nAST Tree:");
+        //root.dump(""); // imprime no ecr\u00e3 a \u00e1rvore
+
+        String generatedCode = "";
+
+        if(!error) {
+            System.out.println("");
+            root.analyse();
+
+            //System.out.println("\nFunction Table:");
+            //root.printFunctionTable("");
+
+            //System.out.println("\nSymbol Table:");
+            //root.printSymbolTable("");
+
+            if(optRN >= 0) {
+                if(debug)
+                    root.dumpUsesDefs("");
+                root.handleSuccessorsAntecessors();
+
+                if(debug)
+                    root.dumpSuccessorsAntecessors();
+                root.handleOptimizationR(optRN);
+            }
+
+            CodeGenerator codeGenerator = null;
+            try {
+                codeGenerator = new CodeGenerator(root);
+            }
+            catch (IOException e) {
+                System.out.println("Error creating CodeGenerator");
+            }
+            generatedCode = codeGenerator.generateCode();
+            generatedCode = "ola";
+        }
+
+        return generatedCode;
     }
 
     public static boolean getDebug() {
