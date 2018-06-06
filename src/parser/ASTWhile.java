@@ -5,11 +5,11 @@ package parser;
 public
 class ASTWhile extends SimpleNode {
   public ASTWhile(int id) {
-    super(id);
+	  super(id, true, false, false);
   }
 
   public ASTWhile(Yal p, int id) {
-    super(p, id);
+	  super(p, id, true, false, false);
   }
 
 }

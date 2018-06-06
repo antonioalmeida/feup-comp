@@ -79,11 +79,11 @@ class ASTFunction extends SimpleNode {
         		printSemanticError("Return Value "+returnValue+" has previously been declared with a type different from "+returnType);
         		ret = false;
         	}
-        	else if(! initializeSymbol((String) returnValue, (Symbol.Type) returnType, false, true)){
+        	/*else if(! initializeSymbol((String) returnValue, (Symbol.Type) returnType, false, true)){
         		//System.out.println("Semantic Error: Could not initialize "+returnValue+" .");
         		printSemanticError("Could not initialize "+returnValue);
         		ret = false;
-        	}
+        	} */       	
         for(Pair pair : parameters) {
         	if(pair.getKey().equals(returnValue)) {
         		//System.out.println("Semantic Error: Argument "+pair.getKey()+" is being has both a return value and a parameter.");
@@ -122,12 +122,13 @@ class ASTFunction extends SimpleNode {
 	
 	public boolean analyseSymbolTable() {
 		
-		/*if(!returnValue.equals(""))
+		if(!returnValue.equals(""))
 			if(!verifySymbolTypes(returnValue, true, returnType)) {
 				//System.out.println("Semantic Error: In function "+getRealValue()+", return value "+returnValue+" should have been initialized");
-				printSemanticError("In function "+getRealValue()+", return value "+returnValue+" should have been initialized");
+				printSemanticError("In function "+getRealValue()+", return value "+returnValue+" should have been initialized to "+returnType);
+				return false;
 			}
-		*/
+		
 		return true;
 	}
 	
