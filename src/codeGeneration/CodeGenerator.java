@@ -13,6 +13,7 @@ import parser.ASTFunction;
 import parser.ASTRhs;
 import parser.ASTScalarAccess;
 import parser.SimpleNode;
+import parser.Yal;
 import parser.YalTreeConstants;
 import semantic.Symbol;
 import semantic.Symbol.Type;
@@ -27,10 +28,10 @@ public class CodeGenerator {
 	private StringBuilder builder;
 
 	private int number_of_loops = 1;
-	private boolean otimizationR;
-	private boolean otimizationO = true;
+	private boolean otimizationO;
 
 	public CodeGenerator(SimpleNode root) throws IOException {
+		
 		this.root = (SimpleNode) root.getChildren()[0];
 
 		String filename = this.root.getValue() + ".j";
@@ -40,6 +41,7 @@ public class CodeGenerator {
 
 		this.builder = new StringBuilder();
 		this.out = new PrintWriter(bw);
+		this.otimizationO = Yal.getOptO();
 	}
 
 	public String generateCode() {
