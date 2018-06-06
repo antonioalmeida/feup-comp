@@ -26,12 +26,20 @@ $ sh compile.sh
 #### Running:
 Inside base directory
 ```
-$ sh run.sh <DIRECTORY NAME INSIDE TESTSUITE> <FILENAME - without extension>
+$ sh run.sh <DIRECTORY NAME INSIDE TESTSUITE> <FILENAME - without extension> [-r=INT] [-o]
 
 # Example
 $ sh run.sh code_generation testArithmetic
 ```
 
+#### Running Examples (`src/examples` directory):
+Inside base directory
+```
+$ sh example.sh <FILENAME INSIDE EXAMPLES - without extension> [-r=INT] [-o]
+
+# Example
+$ sh example.sh quicksort
+```
 
 #### DEALING WITH SYNTACTIC ERRORS: 
 (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
