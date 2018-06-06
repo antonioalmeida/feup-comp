@@ -8,7 +8,6 @@ import parser.Yal;
 import utils.Pair;
 
 public class CodeLine {
-	//private static int countIndex = -1;
 	private Integer index;
 	ArrayList<Pair> usesAndDefs;
 	private ArrayList<Integer> successors;
@@ -20,10 +19,6 @@ public class CodeLine {
 	BitSet in;
 	BitSet out;
 	
-	/*public CodeLine() {
-		this.index = ++countIndex;
-		usesAndDefs = new ArrayList<Pair>();
-	}*/
 	
 	public CodeLine(int index) {
 		this.index = index;
@@ -80,9 +75,6 @@ public class CodeLine {
 			antecessors.add(antecessor);
 			bitAntecessors.set(antecessor);
 		}
-		/*else {
-			System.out.println("b2: "+index+ " "+antecessor);
-		}*/
 	}
 	
 	public void defineUsesDefs(HashMap<String, Integer> nameToIndex, int maxIndex) {
@@ -105,13 +97,6 @@ public class CodeLine {
 		out = new BitSet(maxIndex + 1);
 	}
 	
-	/*public void addSuccessors(ArrayList<Integer> successors) {
-		this.successors.addAll(successors);
-	}
-	
-	public void addAntecessors(ArrayList<Integer> antecessors) {
-		this.antecessors.addAll(antecessors);
-	}*/
 	
 	public void print() {
 		System.out.print("("+index+") [ ");
