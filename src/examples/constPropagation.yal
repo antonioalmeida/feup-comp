@@ -1,0 +1,36 @@
+module constPropagation {
+
+	function main(){
+		a = 4;
+		b = a;
+		io.println(b); //4
+		
+		c = b;
+		io.println(c); //4
+		
+		
+		a = -4;
+		b = a + 5;
+		io.println(b); //1
+		
+		c = b - 2;
+		io.println(c); // -1
+		
+		
+		a=-10;
+		b=5;
+		if (a < 3) {
+			a = 1;
+		}
+		else {
+			a = 30;
+		}
+		c = b - a;
+		io.println(a); // 1
+		io.println(b); // 5
+		io.println(c); // 4
+		
+	}
+
+}
+
