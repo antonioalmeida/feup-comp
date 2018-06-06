@@ -20,9 +20,11 @@ class ASTArgument extends SimpleNode {
 		  else if(getChildren()[0].toString().equals("String"))
 			  return Symbol.Type.SCALAR;
 		  else if(getChildren()[0].toString().equals("Id")) {
-			  if(! verifySymbolTypes(getValue(), true, Symbol.Type.ARRAY, Symbol.Type.SCALAR))
+			  if(! verifySymbolTypes(getValue(), true, Symbol.Type.ARRAY, Symbol.Type.SCALAR)) {
 				  //System.out.println("Semantic Error: Variable "+value+" has to be  initialized in order to be used as an argument in a function call.");
 				  printSemanticError("Variable "+getValue()+" has to be  initialized in order to be used as an argument in a function call");
+				  return Symbol.Type.UNDEFINED;
+			  }
 			  return symbolTable.getSymbolType(getValue());
 		  }
 		 

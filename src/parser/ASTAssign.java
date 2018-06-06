@@ -117,7 +117,7 @@ class ASTAssign extends SimpleNode {
 	public boolean isInsideWhileOrIf() {
 		SimpleNode functionNode = (SimpleNode) jjtGetParent();
 		while (functionNode.getId() != YalTreeConstants.JJTFUNCTION) {
-			if (functionNode.getId() == YalTreeConstants.JJTIF || functionNode.getId() == YalTreeConstants.JJTWHILE)
+			if (functionNode.getId() == YalTreeConstants.JJTIFSTATEMENT || functionNode.getId() == YalTreeConstants.JJTWHILE)
 				return true;
 			functionNode = (SimpleNode) functionNode.jjtGetParent();
 		}

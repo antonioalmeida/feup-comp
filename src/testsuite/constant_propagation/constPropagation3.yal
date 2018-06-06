@@ -1,0 +1,19 @@
+module constPropagation3 {
+
+	function main(){
+		a=-10;
+		b=5;
+		if (a < 3) {
+			a = 1;
+		}
+		else {
+			a = 30;
+		}
+		c = b - a;
+		io.println(a); // 1
+		io.println(b); // 5
+		io.println(c); // 4
+		
+	}
+
+}
