@@ -95,7 +95,8 @@ $ sh test.sh CodeGenerationTests
 #### TASK DISTRIBUTION: 
 (Identify the set of tasks done by each member of the project.)
 
-Gil Teixeira - AST generation; Function, Arithmetic expressions, Loops and Arrays code generation; Optimizations related to the "-o" option.
+Gil Teixeira - AST generation; Base for code generation, Function, Arithmetic expressions, Loops and Arrays code generation; Optimizations related to the "-o" option.
+Tiago Silva - AST generation; Base for code generation, Function, Arithmetic expressions, Loops and Arrays code generation; Optimizations related to low cost instructions.
 
  
 
