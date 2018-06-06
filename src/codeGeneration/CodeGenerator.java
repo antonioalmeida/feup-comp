@@ -96,11 +96,7 @@ public class CodeGenerator {
 				if (declaration.isVarScalarAssigned()) {
 					SimpleNode assignedScalar = (SimpleNode) declaration.getChildren()[1];
 					varValue = "= " + assignedScalar.getValue();
-//					if(otimizationO){
-//					Symbol symbol = root.getSymbolTable().getSymbolFromName(varName);
-//					symbol.setConstant(true);
-//					symbol.setValue(Integer.parseInt(assignedScalar.getValue()));
-//				}
+
 				}
 			}
 
@@ -227,7 +223,6 @@ public class CodeGenerator {
 		String nameVariable = scalarElement.getValue();
 
 		String sizeArray;
-		// = arraySize.value;
 
 		if (arraySize.jjtGetNumChildren() != 0) {
 			SimpleNode scalarAccess = (SimpleNode) arraySize.jjtGetChild(0);
@@ -560,17 +555,7 @@ public class CodeGenerator {
 	}
 
 	private void loadGlobalVar(String varName, String prefix, StackController stack) {
-		String varType;
-
-//		if (otimizationO) {
-//			Symbol symbol = root.getSymbolTable().getSymbolFromName(varName);
-//			if (root.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
-//				if (symbol.isConstant()) {
-//					loadInt(symbol.getValue(), prefix, stack);
-//					return;
-//				}
-//		}	
-		
+		String varType;	
 
 		if (root.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
 			varType = " I";
@@ -732,7 +717,6 @@ public class CodeGenerator {
 		if(isMain){
 			appendln(prefix + "aconst_null");
 			funcArgs+="[Ljava/lang/String;";
-			//TODO this changes stack size
 		}
 
 
@@ -797,11 +781,6 @@ public class CodeGenerator {
 			SimpleNode term = (SimpleNode) rhs.jjtGetChild(i);
 			SimpleNode termChild = (SimpleNode) term.jjtGetChild(0);
 
-			// TODO Special Case when a = 1 + - 1;
-			// boolean isPositive = true;
-			// if (term.value != null)
-			// isPositive = false;
-
 			switch (termChild.getId()) {
 			case (YalTreeConstants.JJTINTEGER):
 				loadInt(termChild, prefix, stack);
@@ -851,7 +830,6 @@ public class CodeGenerator {
 		SimpleNode indexNode = (SimpleNode) arrayAcess.jjtGetChild(0);
 		String indexValue = indexNode.getValue();
 
-		// ai = a[i]
 
 		// Load array a
 		if (root.getSymbolTable().containsSymbolName(varName)) {
@@ -927,12 +905,7 @@ public class CodeGenerator {
 	}
 
 	private void generateAssign(SimpleNode node, String prefix, StackController stack) {
-		// Assign -> Lhs = Rhs
-		/// Rhs -> Term OP Term | [ ArraySize ]
-		// Term -> OP? ( INT | Call | ArrayAccess | ScalarAccess )
-		// if (((ASTAssign) node).isArrayAssigned()) {
-		//
-		// } else {
+
 		ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
 
@@ -983,7 +956,7 @@ public class CodeGenerator {
 				}
 			}
 		}
-		else if(isAssignIntegerToArray(node)){ //just right integer  TODO more general
+		else if(isAssignIntegerToArray(node)){ 
 			generateAssignIntegerToArray( rhs,  lhs,  prefix,  stack);
 
 		}
@@ -1133,7 +1106,6 @@ public class CodeGenerator {
 	}
 
 	private void storeLocalVar(SimpleNode node, String varName, String prefix, StackController stack) {
-		// TODO for arrays
 		int varIndex = node.getSymbolIndex(varName);
 
 		String varType;
