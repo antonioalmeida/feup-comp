@@ -1,9 +1,0 @@
-module test1 {
-
-	function main(){
-		a=1;
-		b=a+5;
-		io.println(b);
-	}
-
-}

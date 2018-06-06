@@ -1,4 +1,4 @@
-.class public test1
+.class public constPropagation2
 .super java/lang/Object
 
 .method static public <clinit>()V
@@ -10,13 +10,13 @@
 
 .method public static main([Ljava/lang/String;)V
 
-	.limit locals 3
+	.limit locals 4
 	.limit stack 2
 
-	iconst_1
+	bipush -4
 	istore_0
 
-	iconst_1
+	iload_0
 	iconst_5
 	iadd
 	istore_1
@@ -24,6 +24,16 @@
 	iload_1
 	invokestatic io/println(I)V
 
+	iload_1
+	iconst_2
+	isub
+	istore_2
+
+	iload_2
+	invokestatic io/println(I)V
+
 	return
 
 .end method
+
+
