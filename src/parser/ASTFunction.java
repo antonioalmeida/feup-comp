@@ -13,6 +13,9 @@ class ASTFunction extends SimpleNode {
 	private Symbol.Type returnType;
 	private int indexCounter;
 	private int nArgs;
+	private boolean hasUsedAnExtraReg = false;
+	
+	
 	public ASTFunction(int id) {
 		super(id, true, false, true);
 		returnValue = "";
@@ -222,6 +225,14 @@ class ASTFunction extends SimpleNode {
 
 	public int getIndexCounter() {
 		return indexCounter;
+	}
+
+	public boolean hasUsedAnExtraReg() {
+		return hasUsedAnExtraReg;
+	}
+
+	public void setHasUsedAnExtraReg(boolean hasUsedAnExtraReg) {
+		this.hasUsedAnExtraReg = hasUsedAnExtraReg;
 	}
 
 }

@@ -29,8 +29,6 @@ public class CodeGenerator {
 	private int number_of_loops = 1;
 	private boolean otimizationR;
 	private boolean otimizationO;
-	
-	private boolean hasUsedAnExtraReg = false;
 
 	public CodeGenerator(SimpleNode root) throws IOException {
 		this.root = (SimpleNode) root.getChildren()[0];
@@ -236,7 +234,7 @@ public class CodeGenerator {
 		if (functionNode.isMainFunction())
 			limitLocals++;
 		
-		if (hasUsedAnExtraReg)
+		if (functionNode.hasUsedAnExtraReg())
 			limitLocals++;
 
 		localBuilder.append(TAB + ".limit locals " + limitLocals);
@@ -332,6 +330,7 @@ public class CodeGenerator {
 
 	private void generateWhile(SimpleNode functionChild, String prefix, StackController stack) {
 		int loop_number = number_of_loops;
+		number_of_loops++;
 		appendln("loop" + loop_number + ":");
 
 		SimpleNode exprTest = (SimpleNode) functionChild.jjtGetChild(0);
@@ -345,8 +344,6 @@ public class CodeGenerator {
 
 		appendln("goto loop" + loop_number);
 		appendln("loop" + loop_number + "_end:");
-
-		number_of_loops++;
 	}
 
 	private void generateIfStatement(SimpleNode node, String prefix, StackController stack) {
@@ -576,11 +573,15 @@ public class CodeGenerator {
 		//
 		Vector<Type> typeReturnVector = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs);
 
+
+		boolean hasReturn = false;
 		// How to know the return type of external library
 		if (typeReturnVector.size() == 0) {
 
-			if (((SimpleNode) callNode.jjtGetParent()).getId() == YalTreeConstants.JJTTERM)
+			if (((SimpleNode) callNode.jjtGetParent()).getId() == YalTreeConstants.JJTTERM) {
 				funcRetType = "I";
+				hasReturn = true;
+			}
 			else
 				funcRetType = "V";
 
@@ -588,15 +589,17 @@ public class CodeGenerator {
 			Symbol.Type returnType = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs)
 					.get(0);
 
-			if (returnType == Symbol.Type.SCALAR)
+			if (returnType == Symbol.Type.SCALAR) {
 				funcRetType = "I";
-			else if (returnType == Symbol.Type.ARRAY)
+				hasReturn = true;
+			}
+			else if (returnType == Symbol.Type.ARRAY) {
 				funcRetType = "[I";
+				hasReturn = true;
+			}
 			else
 				funcRetType = "V";
-
 		}
-		
 
 		funcName = funcName.replace('.', '/');
 		
@@ -606,8 +609,11 @@ public class CodeGenerator {
 		}
 
 
-		int nArgs = callNode.jjtGetNumChildren();
-		stack.addInstruction(-nArgs);
+		int cost = - callNode.jjtGetNumChildren();
+		if(hasReturn)
+			cost++;
+
+		stack.addInstruction(cost);
 		appendln(prefix + "invokestatic " + funcName + "(" + funcArgs + ")" + funcRetType);
 	}
 
@@ -824,7 +830,11 @@ public class CodeGenerator {
 				((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTSCALARACCESS)){ //just right integer  TODO more general
 			int loop_number = number_of_loops;
 
-			hasUsedAnExtraReg = true;
+			SimpleNode lhsParent = (SimpleNode) lhs.jjtGetParent();
+			while (lhsParent.getId() != YalTreeConstants.JJTFUNCTION)
+				lhsParent = (SimpleNode) lhsParent.jjtGetParent();
+			
+			((ASTFunction)lhsParent).setHasUsedAnExtraReg(true);
 
 			int localI = rhs.getSymbolTable().getMaxIndex() + 1;
 
