@@ -1,8 +1,8 @@
 package testsuite;
 
 import org.junit.Test;
-import parser.ParseException;
 import parser.Yal;
+import utils.Utils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,17 +15,22 @@ public class ConstantPropagationTest {
     public void test1() {
 
         String filename = "testsuite/constant_propagation/test1.yal";
+        String targetname = "testsuite/constant_propagation/test1.j";
         FileInputStream stream = null;
+        FileInputStream target = null;
         try {
             stream = new FileInputStream(filename);
+            target = new FileInputStream(targetname);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
         Yal yal = new Yal(stream);
-        String generatedCode = Yal.run(yal);
+        String generatedCode = Utils.normalize(Yal.run(yal));
 
-        assertEquals("ola", generatedCode);
+        String targetCode = Utils.getFileContent(target, "UTF-8").trim().replaceAll(" +", " ");
+
+        assertEquals(targetCode, generatedCode);
     }
 
 }

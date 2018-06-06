@@ -30,6 +30,9 @@ class SimpleNode implements Node {
     protected int firstLine;
     protected ArrayList<Integer> lastLines;
     private IntegerReference codeLineCounter;
+
+    // For constant propagation optimization
+    protected boolean isConstant;
     
     public Token jjtGetFirstToken() {
         return firstToken;
@@ -48,23 +51,25 @@ class SimpleNode implements Node {
     }
     
     public SimpleNode(int i) {
-            this.setValue("");
-            this.hasScope = false;
-            this.hasFunctionScope = false;
-            this.hasCodeLineScope = false;
-            id = i;
+        this.setValue("");
+        this.hasScope = false;
+        this.hasFunctionScope = false;
+        this.hasCodeLineScope = false;
+        this.isConstant = false;
+        id = i;
     }
      
     public SimpleNode(Yal p, int i) {
-            this(i);
-            parser = p;
+        this(i);
+        parser = p;
     }
     
     public SimpleNode(int i, boolean hasScope, boolean hasFunctionScope, boolean hasCodeLineScope) {
-    this.setValue("");
-    this.hasScope = hasScope;
-    this.hasFunctionScope = hasFunctionScope;
-    this.hasCodeLineScope = hasCodeLineScope;
+        this.setValue("");
+        this.hasScope = hasScope;
+        this.hasFunctionScope = hasFunctionScope;
+        this.hasCodeLineScope = hasCodeLineScope;
+        this.isConstant = false;
         id = i;
     }
 
@@ -527,7 +532,7 @@ class SimpleNode implements Node {
     	return ((SimpleNode) parent).getModule();
     }
 
-    
+
 
     public int getLastIndex() {
         return symbolTable.getIndexCount();
@@ -548,6 +553,10 @@ class SimpleNode implements Node {
 	public void setValue(String value) {
 		this.value = value;
 	}
+
+	public boolean isConstant() {
+        return isConstant;
+    }
 
 }
 

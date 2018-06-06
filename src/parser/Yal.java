@@ -17,7 +17,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
     private static Yal myYal;
     private static boolean error = false;
     private static int optRN = -1;
-    private static boolean optO = false;
+    public static boolean OPT_O = false;
     private static boolean debug = true;
 
     public static void main(String args []) throws ParseException, IOException {
@@ -98,7 +98,6 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
                 System.out.println("Error creating CodeGenerator");
             }
             generatedCode = codeGenerator.generateCode();
-            generatedCode = "ola";
         }
 
         return generatedCode;
@@ -148,7 +147,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
 
             for(int i = 1; i < args.length; i++) {
                 if(args[i].equals("-o"))
-                    optO = true;
+                    OPT_O = true;
                 else if(args[i].substring(0, 3).equals("-r=")) {
                     if(Utils.isInteger(args[i].substring(3))) {
                         optRN = Integer.parseInt(args[i].substring(3));

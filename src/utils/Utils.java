@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.*;
 import java.util.BitSet;
 import java.util.Vector;
 
@@ -30,5 +31,29 @@ public class Utils {
 			}
 			System.out.println("");
 		}
+	}
+
+	public static String getFileContent(FileInputStream fis, String encoding)
+	{
+	    StringBuilder sb = null;
+		try( BufferedReader br =
+					 new BufferedReader(new InputStreamReader(fis, encoding )))
+		{
+			sb = new StringBuilder();
+			String line;
+			while(( line = br.readLine()) != null ) {
+				sb.append( line );
+				sb.append( '\n' );
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return normalize(sb.toString());
+	}
+
+	public static String normalize(String str) {
+		return str.trim().replaceAll(" +", " ");
 	}
 }
