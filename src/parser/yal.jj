@@ -38,7 +38,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/
   private static boolean error = false;
   private static int optRN = -1;
   private static boolean optO = false;
-  private static boolean debug = true;
+  private static boolean debug = false;
   
   public static void main(String args []) throws ParseException, IOException
   {
