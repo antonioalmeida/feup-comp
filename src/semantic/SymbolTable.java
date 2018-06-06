@@ -22,7 +22,7 @@ public class SymbolTable {
     private int indexCount;
     private HashMap<String, Integer> nameToIndex;
     private IntegerReference maxIndex;
-    private ArrayList<String> indexToName;
+    private HashMap<Integer, Pair> indexToName;
 
     
 
@@ -49,7 +49,7 @@ public class SymbolTable {
     	if(newNameToIndex) {
     		nameToIndex = new HashMap<String, Integer>();
     		maxIndex = new IntegerReference(-1);
-    		indexToName = new ArrayList<String>();
+    		indexToName = new HashMap<Integer, Pair>();
     	}
     	else
     		if(parent == null) {
@@ -124,7 +124,7 @@ public class SymbolTable {
         else if(!verifySymbolTypes(symbolName, false, true, type) || containsSymbolName(symbolName)) {
             this.addSymbol(symbolName, type, initialized, print, index);
             this.nameToIndex.put(symbolName, index);
-            this.indexToName.add(symbolName);
+            this.indexToName.put(index, new Pair(symbolName, symbols.get(symbolName)));
             if(this.maxIndex.getValue() < index)
             	this.maxIndex.setValue(index);
             return true;
@@ -163,6 +163,7 @@ public class SymbolTable {
             	if(index == null) {
             		symbol.setIndex(++currentIndex);
             		nameToIndex.put(name, currentIndex);
+            		indexToName.put(currentIndex, new Pair(name, symbols.get(name)));
             		 if(this.maxIndex.getValue() < currentIndex)
                      	this.maxIndex.setValue(currentIndex);
             	}
@@ -233,6 +234,10 @@ public class SymbolTable {
 			return maxIndex.getValue();
 		else
 			return -1;
+	}
+	
+	public HashMap<Integer, Pair> getIndexToName(){
+		return indexToName;
 	}
 	
     

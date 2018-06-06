@@ -246,7 +246,7 @@ public class FunctionInstructions {
 			instructions.get(i).defineUsesDefs(nameToIndex, maxIndex);
 		if(Yal.getDebug())
 			printUsesDefs();
-		ArrayList<Integer> newIndexes = new ArrayList<Integer>();
+		newIndexes = new ArrayList<Integer>();
 		livenessAnalysis(true);
 		buildGraphMatrix();
 		
