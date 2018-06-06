@@ -505,9 +505,14 @@ public class CodeGenerator {
 			while (functionNode.getId() != YalTreeConstants.JJTFUNCTION)
 				functionNode = (SimpleNode) functionNode.jjtGetParent();
 			
-			
-			
 			Symbol symbol = functionNode.getSymbolTable().getSymbolFromName(varName);
+			
+			if(isInsideWhileOrIf(node) && symbol != null){
+				symbol.setConstant(false);
+			}
+				
+			
+			
 			
 			if (functionNode.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
 				if (symbol != null && symbol.isConstant()) {
@@ -1043,4 +1048,16 @@ public class CodeGenerator {
 		return root.getSymbolTable().containsSymbolName(varName);
 		
 	}
+	
+	public boolean isInsideWhileOrIf(SimpleNode node) {
+		SimpleNode functionNode = (SimpleNode) node;
+		while (functionNode.getId() != YalTreeConstants.JJTFUNCTION) {
+			if (functionNode.getId() == YalTreeConstants.JJTIF || functionNode.getId() == YalTreeConstants.JJTWHILE)
+				return true;
+			functionNode = (SimpleNode) functionNode.jjtGetParent();
+		}
+
+		return false;
+	}
+
 }
