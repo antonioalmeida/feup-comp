@@ -91,6 +91,29 @@ class ASTAssign extends SimpleNode {
         	return true;
         return false;
     }
+    
+	public boolean hasAnIncrement() {
+		SimpleNode rhs = (SimpleNode) jjtGetChild(1);
+		SimpleNode lhs = (SimpleNode) jjtGetChild(0);
+
+		//is local var
+		if (getSymbolTable().containsSymbolName(lhs.getValue()))
+			//is a sum
+			if (rhs.getValue().equals("+")) {
+				//case i = i + 1
+				if (lhs.getValue().equals(((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue())
+						&& ((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)
+					return true;
+				//case i = 1 + i
+				if (lhs.getValue().equals(((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getValue())
+						&& ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)
+					return true;
+			}
+		return false;
+		
+
+    }
+
 
 }
 /* JavaCC - OriginalChecksum=b3b7f5a4d1f623c6f3813a4a1e0a425d (do not edit this line) */
