@@ -73,7 +73,7 @@ public class FunctionInstructions {
 	
 	
 	
-	public void livenessAnalysis(boolean debugMode) {
+	public void livenessAnalysis() {
 		
 		
 		boolean changedIteration = false;
@@ -83,7 +83,7 @@ public class FunctionInstructions {
 			BitSet auxiliar = new BitSet();
 			if(!changedIteration)
 				auxiliar = (BitSet) instructions.get(i).out.clone();
-			if(debugMode) {
+			if(Yal.getDebug()) {
 				System.out.print("Out("+i+"): ");
 				Utils.printBitSet(instructions.get(i).out);
 				System.out.print("  ");
@@ -96,7 +96,7 @@ public class FunctionInstructions {
 			if(!changedIteration)
 				auxiliar = (BitSet) instructions.get(i).in.clone();
 			
-			if(debugMode) {
+			if(Yal.getDebug()) {
 				System.out.print("In("+i+"): ");
 				Utils.printBitSet(instructions.get(i).in);
 				System.out.println("");
@@ -246,8 +246,8 @@ public class FunctionInstructions {
 			instructions.get(i).defineUsesDefs(nameToIndex, maxIndex);
 		if(Yal.getDebug())
 			printUsesDefs();
-		ArrayList<Integer> newIndexes = new ArrayList<Integer>();
-		livenessAnalysis(true);
+		newIndexes = new ArrayList<Integer>();
+		livenessAnalysis();
 		buildGraphMatrix();
 		
 		if(Yal.getDebug())

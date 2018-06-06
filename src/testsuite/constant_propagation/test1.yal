@@ -1,4 +1,4 @@
-module const_propagation_1{
+module test1 {
 
 	function main(){
 		a=1;

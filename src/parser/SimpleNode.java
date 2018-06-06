@@ -398,7 +398,8 @@ class SimpleNode implements Node {
 	   }
    }
    
-   public void handleOptimizationR(int optRN) {
+   @SuppressWarnings("unchecked")
+public void handleOptimizationR(int optRN) {
 	   if(toString().equals("Function")) {
 		   
 		   Pair pair;
@@ -409,9 +410,13 @@ class SimpleNode implements Node {
 			   System.out.println("Error: The minimum number of registers required for function "+getRealValue()+ " is "+variablesUsed);
 		   }
 		   else {
+			   if(newIndexes.size() > 0) {
 			   System.out.println("The new assignement of registers for the variables of function "+getRealValue() + " is as follows:");
 			   for(int i = 0; i < newIndexes.size(); i++) {
-				   
+				   Pair variable = symbolTable.getIndexToName().get(i);
+				   System.out.println("   " + variable.getKey()+" => "+"lv"+newIndexes.get(i));
+				   ((Symbol) variable.getValue()).setIndex(newIndexes.get(i));
+			   }
 			   }
 		   }
 	   }

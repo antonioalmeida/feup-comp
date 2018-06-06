@@ -14,50 +14,50 @@ import utils.Utils;
 
 public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@bgen(jjtree)*/
   protected static JJTYalState jjtree = new JJTYalState();
-    private static Yal myYal;
-    private static boolean error = false;
-    private static int optRN = -1;
-    public static boolean OPT_O = false;
-    private static boolean debug = true;
+  private static Yal myYal;
+  private static boolean error = false;
+  private static int optRN = -1;
+  private static boolean optO = false;
+  private static boolean debug = false;
 
-    public static void main(String args []) throws ParseException, IOException {
+  public static void main(String args []) throws ParseException, IOException
+  {
 
-        if(!validArgs(args))
-            return;
-        else {
-            SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
-            System.out.println("\u005cnAST Tree:");
-            root.dump(""); // imprime no ecrã a árvore
+    if( validArgs(args) == false)
+        return;
+    else {
+        SimpleNode root = myYal.Program(); // devolve referência para o nó raiz da árvore
 
-            if(!error) {
+        System.out.println("\u005cnAST Tree:");
+        root.dump(""); // imprime no ecrã a árvore
+        if(error == false) {
                 System.out.println("");
-                root.analyse();
-
+                boolean semanticSuccess = root.analyse();
                 System.out.println("\u005cnFunction Table:");
                 root.printFunctionTable("");
-
-                System.out.println("\u005cnSymbol Table:");
-                root.printSymbolTable("");
-
-                if(optRN >= 0) {
-                    if(debug)
-                        root.dumpUsesDefs("");
-                    root.handleSuccessorsAntecessors();
-
-                    if(debug)
-                        root.dumpSuccessorsAntecessors();
-                    root.handleOptimizationR(optRN);
+                        System.out.println("\u005cnSymbol Table:");
+                        root.printSymbolTable("");
+                        if(semanticSuccess) {
+                                if(optRN >= 0) {
+                                if(debug)
+                                                root.dumpUsesDefs("");
+                                        root.handleSuccessorsAntecessors();
+                                        if(debug)
+                                                root.dumpSuccessorsAntecessors();
+                                                root.handleOptimizationR(optRN);
+                                        }
+                                        CodeGenerator codeGenerator = new CodeGenerator(root);
+                                        codeGenerator.generateCode();
+                   }
                 }
+     }
+  }
 
-                CodeGenerator codeGenerator = new CodeGenerator(root);
-                codeGenerator.generateCode();
-            }
-        }
-    }
+  public static String run(Yal yal) {
 
-    public static String run(Yal yal) {
-
+        String generatedCode = "";
         SimpleNode root = null;
+
         try {
             root = yal.Program(); // devolve referência para o nó raiz da árvore
         }
@@ -65,114 +65,146 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
             System.out.println("Error parsing tree");
         }
 
+
         //System.out.println("\nAST Tree:");
         //root.dump(""); // imprime no ecrã a árvore
 
-        String generatedCode = "";
-
         if(!error) {
-            System.out.println("");
-            root.analyse();
+                //System.out.println("");
 
-            //System.out.println("\nFunction Table:");
-            //root.printFunctionTable("");
+                boolean semanticSuccess = root.analyse();
+                //System.out.println("\nFunction Table:");
+                //root.printFunctionTable("");
+                        //System.out.println("\nSymbol Table:");
+                        //root.printSymbolTable("");
 
-            //System.out.println("\nSymbol Table:");
-            //root.printSymbolTable("");
+                        if(semanticSuccess) {
+                                if(optRN >= 0) {
+                                if(debug)
+                                                root.dumpUsesDefs("");
+                                        root.handleSuccessorsAntecessors();
+                                        if(debug)
+                                                root.dumpSuccessorsAntecessors();
+                                        root.handleOptimizationR(optRN);
+                                }
 
-            if(optRN >= 0) {
-                if(debug)
-                    root.dumpUsesDefs("");
-                root.handleSuccessorsAntecessors();
-
-                if(debug)
-                    root.dumpSuccessorsAntecessors();
-                root.handleOptimizationR(optRN);
-            }
-
-            CodeGenerator codeGenerator = null;
-            try {
-                codeGenerator = new CodeGenerator(root);
-            }
-            catch (IOException e) {
-                System.out.println("Error creating CodeGenerator");
-            }
-            generatedCode = codeGenerator.generateCode();
-        }
-
-        return generatedCode;
-    }
-
-    public static boolean getDebug() {
-        return debug;
-    }
-
-    public static File validFilePath(String filePath) {
-        File file = new File(filePath);
-
-        if(file.exists())
-            return file;
-        else
-            return null;
-    }
-
-    public static boolean validArgs(String args []) {
-
-        if(args.length > 3) {
-            System.out.println("Error: Invalid number of arguments.");
-            System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
-            return false;
-        }
-        else if(args.length == 0)
-            myYal = new Yal(System.in);
-        else {
-            File file;
-            if( (file = validFilePath(args[0])) == null) {
-                System.out.println("Error: Invalid file Path.");
-                System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
-                return false;
-            }
-            else {
-                FileInputStream stream;
+                CodeGenerator codeGenerator = null;
                 try {
-                    stream = new FileInputStream(file);
-                    myYal = new Yal(stream);
-                } catch (FileNotFoundException e) {
-                    System.out.println("Error in stream constructor: ");
-                    System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
-                    e.printStackTrace();
-                    return false;
+                    codeGenerator = new CodeGenerator(root);
                 }
-            }
-
-            for(int i = 1; i < args.length; i++) {
-                if(args[i].equals("-o"))
-                    OPT_O = true;
-                else if(args[i].substring(0, 3).equals("-r=")) {
-                    if(Utils.isInteger(args[i].substring(3))) {
-                        optRN = Integer.parseInt(args[i].substring(3));
-                        if(optRN < 0) {
-                            System.out.println("Error: The number in option R must be an integer greater or equal to 0.");
-                            System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
-                            return false;
+                catch (IOException e) {
+                    System.out.println("Error creating CodeGenerator");
+                }
+                generatedCode = codeGenerator.generateCode();
                         }
-                    }
-                    else {
-                        System.out.println("Error: The number in option R must be an integer.");
-                        System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
+       }
+           return generatedCode;
+  }
+
+  public static boolean getDebug() {
+                return debug;
+  }
+
+  public static boolean getOptO() {
+                return optO;
+  }
+
+  public static File validFilePath(String filePath) {
+                File file = new File(filePath);
+
+                if(file.exists())
+                        return file;
+                else
+                        return null;
+
+  }
+
+
+  public static boolean validArgs(String args []) {
+                if(args.length > 3 || args.length == 0) {
+                        System.out.println("Error: Invalid number of arguments.");
+                        System.out.println("Usage: java Yal filePath [-r=< n >] [-o]");
                         return false;
-                    }
                 }
                 else {
-                    System.out.println("Error: Non valid argument");
-                    System.out.println("Usage: java Yal [filePath] [-r=< n >] [-o]");
-                    return false;
-                }
-            }
+                                File file;
+                        if( (file = validFilePath(args[0])) == null) {
+                                System.out.println("Error: Invalid file Path.");
+                                System.out.println("Usage: java Yal filePath [-r=<n>] [-o]");
+                                return false;
+                        }
+                        else {
+                                FileInputStream stream;
+                                                                try {
+                                                                        stream = new FileInputStream(file);
+                                                                        myYal = new Yal(stream);
+                                                                } catch (FileNotFoundException e) {
+                                                                        System.out.println("Error in stream constructor: ");
+                                                                        System.out.println("Usage: java Yal filePath [-r=<n>] [-o]");
+                                                                        e.printStackTrace();
+                                                                        return false;
+                                                                }
+
+                        }
+                if(args.length >= 2) {
+
+             if( validOption(args[1]) == false)
+                return false;
         }
 
-        return true;
-    }
+        if(args.length == 3) {
+                        if(validOption(args[2]) == false)
+                                return false;
+        }
+
+      }
+
+
+                return true;
+  }
+
+  public static boolean validOption(String arg) {
+         if(arg.equals("-o")) {
+                                if(optO) {
+                                        System.out.println("Error: Option O has already been defined.");
+                                        System.out.println("Usage: java Yal filePath [-r=<n>] [-o]");
+                                        return false;
+                                }
+                optO = true;
+         }
+         else if(arg.length() <  3) {
+                        System.out.println("Error: Non valid argument");
+                        System.out.println("Usage: java Yal filePath [-r=<n>] [-o]");
+                        return false;
+         }
+                 else if(arg.substring(0, 3).equals("-r=")) {
+                                if(optRN >= 0) {
+                                        System.out.println("Error: Option R has already been defined.");
+                                        System.out.println("Usage: java Yal filePath [-r=<n>] [-o]");
+                                        return false;
+                                }
+                                if(Utils.isInteger(arg.substring(3))) {
+                                        optRN = Integer.parseInt(arg.substring(3));
+                                        if(optRN < 0) {
+                                                System.out.println("Error: The number in option R must be an integer greater or equal to 0.");
+                                                System.out.println("Usage: java Yal filePath [-r=<n>] [-o]");
+                                                return false;
+                                        }
+                                }
+                                else {
+                                        System.out.println("Error: The number in option R must be an integer.");
+                                        System.out.println("Usage: java Yal filePath [-r=<n>] [-o]");
+                                        return false;
+                                }
+             }
+             else {
+                                System.out.println("Error: Non valid argument");
+                                System.out.println("Usage: java Yal filePath [-r=<n>] [-o]");
+                                return false;
+             }
+
+                 return true;
+  }
 
      public static void generateCode(SimpleNode root) throws IOException
     {

@@ -470,7 +470,7 @@ public class CodeGenerator {
 	private void loadLocalVar(SimpleNode node, String varName, String prefix, StackController stack) {
 		int varIndex = node.getSymbolIndex(varName);
 		String varType;
-		String load;
+		
 
 		if (node.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR) {
 			varType = "i";
@@ -480,7 +480,11 @@ public class CodeGenerator {
 			varType = "a";
 			stack.addInstruction(YalInstructions.ALOAD);
 		}
-
+		loadLocalVar(prefix, varType, varIndex);
+	}
+	
+	private void loadLocalVar(String prefix, String varType, int varIndex) {
+		String load;
 		if (varIndex <= 3)
 			load = "load_";
 		else
@@ -513,7 +517,6 @@ public class CodeGenerator {
 		}
 	}
 
-	// TODO Refactor this
 	private String addModuleToFunction(String funcName) {
 		if (funcName.contains("."))
 			return funcName;
@@ -554,30 +557,16 @@ public class CodeGenerator {
 					funcArgs += "[I";
 					typesArgs.add(Symbol.Type.ARRAY);
 				}
-
-				// TODO Vars can be arrays
 				break;
 			default:
 				break;
 			}
 		}
 
-		// if (((SimpleNode) callNode.parent).id == YalTreeConstants.JJTTERM)
-		// funcRetType = "I";
-		// else
-		// funcRetType = "V";
-
-		// System.appendln(callNode.value);
-		// System.appendln(typesArgs.size());
-		// System.appendln(typesArgs.get(0));
-		// root.getFunctionTable().printFunctions(" ");
-
-		//
 		Vector<Type> typeReturnVector = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs);
 
 
 		boolean hasReturn = false;
-		// How to know the return type of external library
 		if (typeReturnVector.size() == 0) {
 
 			if (((SimpleNode) callNode.jjtGetParent()).getId() == YalTreeConstants.JJTTERM) {
@@ -588,8 +577,7 @@ public class CodeGenerator {
 				funcRetType = "V";
 
 		} else {
-			Symbol.Type returnType = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs)
-					.get(0);
+			Symbol.Type returnType = root.getFunctionTable().getFunctionReturnType(callNode.getValue(), typesArgs).get(0);
 
 			if (returnType == Symbol.Type.SCALAR) {
 				funcRetType = "I";
@@ -607,7 +595,8 @@ public class CodeGenerator {
 		
 		if(isMain){
 			appendln(prefix + "aconst_null");
-			funcArgs+="[Ljava/lang/String;";					
+			funcArgs+="[Ljava/lang/String;";
+			//TODO this changes stack size
 		}
 
 
@@ -782,6 +771,19 @@ public class CodeGenerator {
 		appendln(TAB + "newarray int");
 
 	}
+	
+	private boolean isAssignIntegerToArray(SimpleNode node) {
+		ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
+		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
+
+		if (lhs.getSymbolTable().getSymbolType(lhs.getValue()) == Symbol.Type.ARRAY
+				|| root.getSymbolTable().getSymbolType(lhs.getValue()) == Symbol.Type.ARRAY)
+			if (((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER
+					|| ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTSCALARACCESS)
+				return true;
+
+		return false;
+	}
 
 	private void generateAssign(SimpleNode node, String prefix, StackController stack) {
 		// Assign -> Lhs = Rhs
@@ -800,17 +802,7 @@ public class CodeGenerator {
 			appendln(TAB + "iastore");
 			appendln();
 			// i = i + 1 || i = 1 + i (or similar cases)
-		} else if (!root.getSymbolTable().containsSymbolName(lhs.getValue()) && 
-				// has to be local variable
-				rhs.getValue().equals("+") && // has to be an increment
-				((lhs.getValue().equals(((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue())
-						&& ((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)
-						// Term in lhs is equal to first term in rhs and second term in rhs is an integer
-						|| (lhs.getValue().equals(((SimpleNode) rhs.jjtGetChild(1).jjtGetChild(0)).getValue())
-								&& ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0))
-										.getId() == YalTreeConstants.JJTINTEGER)
-				// Term in lhs is equal to second term in rhs and first term in rhs is an integer
-						)) {
+		} else if (((ASTAssign) node).hasAnIncrement()) {
 
 			int varIndex = node.getSymbolIndex(lhs.getValue());
 
@@ -824,12 +816,11 @@ public class CodeGenerator {
 			else if (((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getId() == YalTreeConstants.JJTINTEGER)
 				// case integer is first term in rhs
 				appendln(TAB + "iinc " + varIndex + " " + constValue2);
+			
+			appendln();
 
 		}
-		else if((lhs.getSymbolTable().getSymbolType(lhs.getValue())==Symbol.Type.ARRAY ||
-				root.getSymbolTable().getSymbolType(lhs.getValue())==Symbol.Type.ARRAY)
-				&& (((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTINTEGER ||
-				((SimpleNode)rhs.jjtGetChild(0).jjtGetChild(0)).getId()==YalTreeConstants.JJTSCALARACCESS)){ //just right integer  TODO more general
+		else if(isAssignIntegerToArray(node)){ //just right integer  TODO more general
 			int loop_number = number_of_loops;
 
 			SimpleNode lhsParent = (SimpleNode) lhs.jjtGetParent();
@@ -847,11 +838,12 @@ public class CodeGenerator {
 			appendln();
 			appendln(TAB + "iconst_0");
 			stack.addInstruction(YalInstructions.ICONST);
-			appendln(TAB + "istore " + localI); // istore para < 5
+			
+			storeLocalVar(TAB, "i",localI);
 			stack.addInstruction(YalInstructions.ISTORE);
 
 			appendln("loop" + loop_number + ":");
-			appendln(TAB + "iload " + localI); // iload para < 5
+			loadLocalVar(TAB, "i", localI); 
 			stack.addInstruction(YalInstructions.ILOAD);
 
 			generateLHSCompare(lhs, prefix, stack);
@@ -861,7 +853,7 @@ public class CodeGenerator {
 			appendln("if_icmpge loop" + loop_number + "_end");
 			stack.addInstruction(YalInstructions.IF);
 			generateLHSCompare(lhs, prefix, stack);
-			appendln(TAB + "iload " + localI); // iload para < 5
+			loadLocalVar(TAB, "i", localI); 
 			stack.addInstruction(YalInstructions.ILOAD);
 			generateRHS(rhs, prefix, stack);
 			appendln(TAB + "iastore");
@@ -931,6 +923,10 @@ public class CodeGenerator {
 			stack.addInstruction(YalInstructions.ISTORE);
 		}
 
+		storeLocalVar(prefix, varType, varIndex);
+	}
+	
+	private void storeLocalVar(String prefix, String varType,int varIndex){
 		String store = "store";
 
 		if (varIndex <= 3)

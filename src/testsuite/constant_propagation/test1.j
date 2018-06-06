@@ -1,18 +1,29 @@
-.class public const_propagation_1
+.class public test1
 .super java/lang/Object
 
+.method static public <clinit>()V
+	.limit locals 0
+	.limit stack 0
+
+	return
+.end method
+
 .method public static main([Ljava/lang/String;)V
-.limit stack 1
-.limit locals 2
 
-iconst_1
-istore_0
+	.limit locals 3
+	.limit stack 2
 
+	iconst_1
+	istore_0
 
-bipush 6
-istore_1
+	iconst_1
+	iconst_5
+	iadd
+	istore_1
 
-iload_1
-invokestatic io/println(I)V
-return
+	iload_1
+	invokestatic io/println(I)V
+
+	return
+
 .end method
