@@ -28,7 +28,7 @@ public class CodeGenerator {
 
 	private int number_of_loops = 1;
 	private boolean otimizationR;
-	private boolean otimizationO;
+	private boolean otimizationO = true;
 
 	public CodeGenerator(SimpleNode root) throws IOException {
 		this.root = (SimpleNode) root.getChildren()[0];
@@ -78,6 +78,12 @@ public class CodeGenerator {
 			if (declaration.isVarScalarAssigned()) {
 				SimpleNode assignedScalar = (SimpleNode) declaration.getChildren()[1];
 				varValue = "= " + assignedScalar.getValue();
+				
+//				if(otimizationO){
+//					Symbol symbol = root.getSymbolTable().getSymbolFromName(varName);
+//					symbol.setConstant(true);
+//					symbol.setValue(Integer.parseInt(assignedScalar.getValue()));
+//				}
 			}
 		}
 
@@ -178,6 +184,13 @@ public class CodeGenerator {
 			for (int i = 0; i < varList.jjtGetNumChildren(); i++) {
 				SimpleNode var = (SimpleNode) varList.jjtGetChild(i);
 				funcArgs += getVarType(var);
+				
+				if(otimizationO)
+				{
+					Symbol symbolVar = functionNode.getSymbolTable().getSymbolFromName(var.getValue());
+					symbolVar.setConstant(false);					
+				}
+				
 			}
 		}
 
@@ -432,6 +445,11 @@ public class CodeGenerator {
 		if(parentNode.getId()==YalTreeConstants.JJTTERM && parentNode.getValue().equals("-"))
 			value=-value;
 
+		loadInt(value, prefix, stack);
+		
+	}
+	
+	private void loadInt(int value, String prefix, StackController stack) {
 		if ((value >= 0) && (value <= 5)) {
 			appendln(prefix + "iconst_" + value);
 			stack.addInstruction(YalInstructions.ICONST);
@@ -451,10 +469,21 @@ public class CodeGenerator {
 			stack.addInstruction(YalInstructions.LDC);
 			appendln(prefix + "ldc " + value);
 		}
+		
 	}
 
 	private void loadGlobalVar(String varName, String prefix, StackController stack) {
 		String varType;
+
+//		if (otimizationO) {
+//			Symbol symbol = root.getSymbolTable().getSymbolFromName(varName);
+//			if (root.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
+//				if (symbol.isConstant()) {
+//					loadInt(symbol.getValue(), prefix, stack);
+//					return;
+//				}
+//		}	
+		
 
 		if (root.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
 			varType = " I";
@@ -468,6 +497,16 @@ public class CodeGenerator {
 	private void loadLocalVar(SimpleNode node, String varName, String prefix, StackController stack) {
 		int varIndex = node.getSymbolIndex(varName);
 		String varType;
+		
+		if (otimizationO) {
+			Symbol symbol = node.getSymbolTable().getSymbolFromName(varName);
+			if (node.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR)
+				if (symbol.isConstant()) {
+					loadInt(symbol.getValue(), prefix, stack);
+					return;
+				}
+		}
+	
 		
 
 		if (node.getSymbolTable().getSymbolType(varName) == Symbol.Type.SCALAR) {
@@ -816,6 +855,8 @@ public class CodeGenerator {
 				appendln(TAB + "iinc " + varIndex + " " + constValue2);
 			
 			appendln();
+			
+			//TODO otimizationO
 
 		}
 		else if(isAssignIntegerToArray(node)){ //just right integer  TODO more general
@@ -868,8 +909,47 @@ public class CodeGenerator {
 		else {
 			generateRHS(rhs, prefix, stack);
 			generateLHSAssign(lhs, prefix, stack);
+			if (otimizationO) {
+				String lhsVarName = lhs.getValue();
+				String rhsValue = ((SimpleNode) rhs.jjtGetChild(0).jjtGetChild(0)).getValue();
+				Symbol symbol;
+
+				SimpleNode functionNode = (SimpleNode) lhs.jjtGetParent();
+				while (functionNode.getId() != YalTreeConstants.JJTFUNCTION)
+					functionNode = (SimpleNode) functionNode.jjtGetParent();
+				
+				if (!isGlobalVar(lhsVarName))
+					symbol = functionNode.getSymbolTable().getSymbolFromName(lhsVarName);
+				else
+					return; // TODO Global VArs??
+
+				if (rhs.isAnInteger()) {
+					symbol.setValue(Integer.parseInt(rhsValue));
+					symbol.setConstant(true);
+
+				} else if (rhs.isAVar()) {
+					// is not constant anymore, TODO but can be
+					
+					if (!isGlobalVar(lhsVarName)){
+						Symbol symbolRhs = functionNode.getSymbolTable().getSymbolFromName(rhsValue);
+						if(symbolRhs.isConstant()){
+							symbol.setValue(symbolRhs.getValue());
+							symbol.setConstant(true);
+						}
+							
+					}
+					else
+						symbol.setConstant(false); // TODO Global VArs??
+
+					
+
+				} else // is not constant anymore
+					symbol.setConstant(false);
+
+			}
 		}
 	}
+	
 
 	private void generateLHSAssign(SimpleNode lhs, String prefix, StackController stack) {
 		String varName = lhs.getValue();
@@ -878,6 +958,8 @@ public class CodeGenerator {
 			storeGlobalVar(varName, prefix, stack);
 		} else
 			storeLocalVar(lhs, varName, prefix, stack);
+		
+		
 
 		appendln();
 	}
@@ -933,5 +1015,10 @@ public class CodeGenerator {
 			store = "store ";
 
 		appendln(prefix + varType + store + varIndex);
+	}
+	
+	boolean isGlobalVar(String varName){
+		return root.getSymbolTable().containsSymbolName(varName);
+		
 	}
 }

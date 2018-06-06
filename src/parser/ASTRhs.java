@@ -101,6 +101,20 @@ class ASTRhs extends SimpleNode {
     public boolean hasOperation(){
     	return jjtGetNumChildren() == 2;
     }
+    
+	public boolean isAnInteger() {
+		SimpleNode termChild = (SimpleNode) jjtGetChild(0).jjtGetChild(0);
+		if (termChild.getId() == YalTreeConstants.JJTINTEGER)
+			return true;
+		return false;
+	}
+    
+    public boolean isAVar(){
+    	SimpleNode termChild = (SimpleNode) jjtGetChild(0).jjtGetChild(0);
+		if (termChild.getId() == YalTreeConstants.JJTSCALARACCESS)
+			return true;
+		return false;
+    }
 
 }
 /* JavaCC - OriginalChecksum=932ffec24e09a0464c82d9d74ba511cb (do not edit this line) */

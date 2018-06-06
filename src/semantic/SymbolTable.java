@@ -240,5 +240,11 @@ public class SymbolTable {
 		return indexToName;
 	}
 	
+	public Symbol getSymbolFromName(String symbolName) {
+		if (containsSymbolName(symbolName))
+			return symbols.get(symbolName);
+		return null;
+	}
+	
     
 }
