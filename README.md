@@ -45,12 +45,14 @@ $ sh example.sh quicksort
 
 #### DEALING WITH SYNTACTIC ERRORS: 
 (Describe how the syntactic error recovery of your tool does work. Does it exit after the first error?)
+
 Our tool shows all the syntatic errors found, so that it does not exit after the first error. For example, if it founds an error in the assignement of a variable, the parser skips to the next semicolon and starts looking for syntatic errors from there. Our tool was able to report correctly all the errors in all files of the folder "MyFirstYalExamples_1" that can be found in the link "yal Examples" in the Moodle page of this course.
 
  
 
 #### SEMANTIC ANALYSIS: 
 (Refer the semantic rules implemented by your tool.)
+
 In our compiler we implemented all the semantic rules mentioned in the project description and in the slides of this course. For example:
 - We check that if a variable is going to be assigned to another, they must have the same type (note: an array can be assigned to a scalar, in that case it means fill all the array with the value of the scalar)
 - We check that if a variable is going to be used in an expression it must have been initialized to type SCALAR
@@ -73,6 +75,7 @@ Although we did not use IRs to generate the code, we used an IR to implement opt
 
 #### CODE GENERATION:
 (when applicable, describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
+
 The code generation uses the AST as the basis with support from the symbol tables, mostly for variable type checks. While going through it, it the generates the appropriate code. There are special cases, such as, limits generation which happens in the end, and integer assign to all array positions which has to generate code for a loop in order to fill all positions. We tried to make code generation as modular as possible which allowed us to not repeat code unless absolutely necessary. Besides covering the normal cases, it uses low cost instructions such as "iinc","iload","istore","astore","aload" and the various comparisons with 0. All the .yal examples from the "MyFirstYalExamples" run correctly, unless an error is supposed to occur, after the jasmin conversion to .class files. Same occurs for the "Extra yal examples" folder.
 
  
@@ -99,6 +102,10 @@ $ sh test.sh CodeGenerationTests
 #### TASK DISTRIBUTION: 
 (Identify the set of tasks done by each member of the project.)
 
+António Almeida
+
+Francisco Andrade - Syntatic Analysis, Symbol Table implementation, Semantic Analysis, Implementation of optimization -r
+
 Gil Teixeira - AST generation; Base for code generation, Function, Arithmetic expressions, Loops and Arrays code generation; Optimizations related to the "-o" option.
 
 Tiago Silva - AST generation; Base for code generation, Function, Arithmetic expressions, Loops and Arrays code generation; Optimizations related to low cost instructions.
@@ -109,10 +116,8 @@ Tiago Silva - AST generation; Base for code generation, Function, Arithmetic exp
 
 In addition to the requested features, our tool features a few additional optimizations:
 
-  - Overload of functions with diferent argument Types and different number of arguments 
   - Use of lower cost instructions in the cases of: `iload`, `istore`, `astore`, `aload`
   - Loading constants to the stack (use of `iconst`, `bipush`, `sipush`, `ldc`)
-  - Use of `iinc`
   - Assigns variable to the minimum number of registers possible if option -r is set
   - Performs constant propagation if option -o is set
 
