@@ -63,18 +63,7 @@ public class Symbol {
 	public void setIndex(int index) {
 		this.index = index;
 	}
-
-	@Override
-	public boolean equals(Object symbol) {
-		Symbol symbolCast = (Symbol) symbol;
-		
-		if(this.type.equals(symbolCast.getType()) && this.initialized == symbolCast.getInitialized()
-				&& this.print == symbolCast.getPrint())
-			return true;
-		else
-			return false;
-	}
-
+	
 	public boolean isConstant() {
 		return isConstant;
 	}
@@ -90,6 +79,19 @@ public class Symbol {
 	public void setValue(int value) {
 		this.value = value;
 	}
+
+	@Override
+	public boolean equals(Object symbol) {
+		Symbol symbolCast = (Symbol) symbol;
+		
+		if(this.type.equals(symbolCast.getType()) && this.initialized == symbolCast.getInitialized()
+				&& this.print == symbolCast.getPrint())
+			return true;
+		else
+			return false;
+	}
+
+	
 	
 	
 }

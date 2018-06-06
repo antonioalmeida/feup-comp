@@ -13,6 +13,7 @@ import parser.ASTFunction;
 import parser.ASTRhs;
 import parser.ASTScalarAccess;
 import parser.SimpleNode;
+import parser.Yal;
 import parser.YalTreeConstants;
 import semantic.Symbol;
 import semantic.Symbol.Type;
@@ -30,7 +31,9 @@ public class CodeGenerator {
 	private boolean otimizationR;
 	private boolean otimizationO = false;
 
+
 	public CodeGenerator(SimpleNode root) throws IOException {
+		
 		this.root = (SimpleNode) root.getChildren()[0];
 
 		String filename = this.root.getValue() + ".j";
@@ -40,6 +43,7 @@ public class CodeGenerator {
 
 		this.builder = new StringBuilder();
 		this.out = new PrintWriter(bw);
+		this.otimizationO = Yal.getOptO();
 	}
 
 	public void generateCode() {
@@ -971,7 +975,7 @@ public class CodeGenerator {
 				else
 					return; // TODO Global VArs??
 				
-				if(((ASTAssign)node).isInsideWhileOrIf()){
+				if(((ASTAssign)node).isInsideWhileOrIf() && symbol != null){
 					symbol.setConstant(false);
 					return;
 				}
@@ -986,7 +990,7 @@ public class CodeGenerator {
 					
 					if (!isGlobalVar(lhsVarName)){
 						Symbol symbolRhs = functionNode.getSymbolTable().getSymbolFromName(rhsValue);
-						if(symbolRhs.isConstant()){
+						if(symbolRhs != null && symbolRhs.isConstant()){
 							symbol.setValue(symbolRhs.getValue());
 							symbol.setConstant(true);
 						}
@@ -998,7 +1002,8 @@ public class CodeGenerator {
 					
 
 				} else // is not constant anymore
-					symbol.setConstant(false);
+					if(symbol != null)
+						symbol.setConstant(false);
 
 			}
 		}
