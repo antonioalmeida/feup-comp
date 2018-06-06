@@ -52,22 +52,23 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants/*@egen*/
     	root.dump(""); // imprime no ecr\u00e3 a \u00e1rvore
     	if(error == false) { 
     		System.out.println("");
-    	 	root.analyse();
+    	 	boolean semanticSuccess = root.analyse(); 
     		System.out.println("\nFunction Table:");
     		root.printFunctionTable("");
 			System.out.println("\nSymbol Table:");
 			root.printSymbolTable("");
-			if(optRN >= 0) {
-			    if(debug)
-					root.dumpUsesDefs("");
-				root.handleSuccessorsAntecessors();
-				if(debug)
-					root.dumpSuccessorsAntecessors();
-				root.handleOptimizationR(optRN);
-						
+			if(semanticSuccess) { 
+				if(optRN >= 0) {
+			    	if(debug)
+						root.dumpUsesDefs("");
+					root.handleSuccessorsAntecessors();
+					if(debug)
+						root.dumpSuccessorsAntecessors();
+						root.handleOptimizationR(optRN);
+					}
+					CodeGenerator codeGenerator = new CodeGenerator(root);
+					codeGenerator.generateCode();
 			}
-			CodeGenerator codeGenerator = new CodeGenerator(root);
-			codeGenerator.generateCode();
 		}
     }
   }

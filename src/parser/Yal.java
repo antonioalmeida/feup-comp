@@ -34,22 +34,23 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
         root.dump(""); // imprime no ecrã a árvore
         if(error == false) {
                 System.out.println("");
-                root.analyse();
+                boolean semanticSuccess = root.analyse();
                 System.out.println("\u005cnFunction Table:");
                 root.printFunctionTable("");
                         System.out.println("\u005cnSymbol Table:");
                         root.printSymbolTable("");
-                        if(optRN >= 0) {
-                            if(debug)
-                                        root.dumpUsesDefs("");
-                                root.handleSuccessorsAntecessors();
+                        if(semanticSuccess) {
+                                if(optRN >= 0) {
                                 if(debug)
-                                        root.dumpSuccessorsAntecessors();
-                                root.handleOptimizationR(optRN);
-
+                                                root.dumpUsesDefs("");
+                                        root.handleSuccessorsAntecessors();
+                                        if(debug)
+                                                root.dumpSuccessorsAntecessors();
+                                                root.handleOptimizationR(optRN);
+                                        }
+                                        CodeGenerator codeGenerator = new CodeGenerator(root);
+                                        codeGenerator.generateCode();
                         }
-                        CodeGenerator codeGenerator = new CodeGenerator(root);
-                        codeGenerator.generateCode();
                 }
     }
   }
