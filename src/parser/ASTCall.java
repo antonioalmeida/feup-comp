@@ -3,8 +3,11 @@
 package parser;
 import java.util.Vector;
 
+import codeGeneration.CodeLine;
+import codeGeneration.FunctionInstructions;
 import semantic.Symbol;
 import semantic.Symbol.Type;
+import utils.IntegerReference;
 public
 class ASTCall extends SimpleNode {
 	protected String functionName = null; //changed type to functionName
@@ -70,6 +73,30 @@ class ASTCall extends SimpleNode {
 					
 		return node; 
 	}
+	
+	 public void assignCodeLine() {
+	    	if(!hasCodeLine()) {
+	    		this.functionInstructions = null;
+	    		codeLineCounter = null;
+	    	}
+	    	else { 
+	    		if(toString().equals("Function")) {
+	    			codeLineCounter = new IntegerReference();
+	    			this.functionInstructions = new FunctionInstructions();
+	    		}
+	    		else {
+	    			codeLineCounter = ((SimpleNode) parent).codeLineCounter;
+	    			this.functionInstructions = ((SimpleNode) parent).functionInstructions;
+	    		}
+	    		if(! parent.toString().equals("Term")) {
+	    			this.codeLine =  new CodeLine(codeLineCounter.getValue());
+	    			this.functionInstructions.addInstruction(this.codeLine);
+	    			codeLineCounter.inc();
+	    		}
+	    		else
+	    			this.codeLine = ((SimpleNode) parent).getCodeLine();
+	    	}
+	 }
 
 }
 /* JavaCC - OriginalChecksum=98507d8d70d83f4b72fdf45214a73416 (do not edit this line) */

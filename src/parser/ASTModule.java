@@ -27,11 +27,7 @@ class ASTModule extends SimpleNode {
         if(getChildren() == null)
             return false;
 
-        
-
-        result = true;
-
-        
+           
 
         for(Node child : getChildren()) {
         	if(child.toString().equals("Declaration")) {

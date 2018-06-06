@@ -49,7 +49,7 @@ class ASTTerm extends SimpleNode {
     			}
     		}
     		else if(child.toString().equals("Call")) {
-    			System.out.println("ReturnTypes: "+((ASTCall) child).getReturnTypes());
+    			//System.out.println("ReturnTypes: "+((ASTCall) child).getReturnTypes());
     			Vector<Symbol.Type> returnTypes = getReturnTypes();
     			if(!returnTypes.contains(Symbol.Type.SCALAR) && !returnTypes.contains(Symbol.Type.ARRAY)) {
     				//System.out.println("Semantic Error: In order to be used here, function "+child.value+" should return a SCALAR or an ARRAY.");
