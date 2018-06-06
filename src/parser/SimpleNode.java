@@ -521,8 +521,11 @@ public void handleOptimizationR(int optRN) {
     public void printSemanticError(String errorMsg) {
     	String functionName = getFunction();
     	String functionModuleMsg = ", module "+getModule();
+
     	if(! functionName.equals(""))
     		functionModuleMsg += ", function "+functionName;
+
+    	Yal.incErrors();
     	System.out.println("Semantic Error at line "+firstToken.beginLine +  ", column "+firstToken.beginColumn  +functionModuleMsg+": "+errorMsg + ".");
     }
     

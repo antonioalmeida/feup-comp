@@ -19,6 +19,7 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
   private static int optRN = -1;
   private static boolean optO = false;
   private static boolean debug = false;
+  private static int nErrors = 0;
 
   public static void main(String args []) throws ParseException, IOException
   {
@@ -61,8 +62,10 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
 
         if(myYal == null)
             myYal = new Yal(stream);
-        else
+        else {
+            nErrors = 0;
             Yal.ReInit(stream);
+        }
 
         String generatedCode = "";
         SimpleNode root = null;
@@ -99,6 +102,43 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
        }
            return generatedCode;
   }
+
+    public static int runAndGetErrors(FileInputStream stream) {
+        return runAndGetErrors(stream, 0);
+    }
+
+    public static int runAndGetErrors(FileInputStream stream, int localOptRN) {
+
+          if(myYal == null)
+              myYal = new Yal(stream);
+          else {
+              nErrors = 0;
+              Yal.ReInit(stream);
+          }
+
+          String generatedCode = "";
+          SimpleNode root = null;
+
+          try {
+              root = myYal.Program(); // devolve referência para o nó raiz da árvore
+          }
+          catch (ParseException e) {
+              System.out.println("Error parsing tree");
+          }
+
+        if(!error) {
+                boolean semanticSuccess = root.analyse();
+
+                if(semanticSuccess)
+                    return 0;
+
+                return nErrors;
+         }
+
+           return -1;
+    }
+
+
 
   public static boolean getDebug() {
                 return debug;
@@ -222,7 +262,13 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
 
     }
 
+    public static void incErrors() {
+        nErrors++;
+    }
 
+    public static int getNErrors() {
+        return nErrors;
+    }
 
     public static void errorSkipTo(ParseException e, String errorMessage, Integer leftToken, Integer rightToken, SkipToken... skipTargets) {
      error = true;
