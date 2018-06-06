@@ -16,7 +16,21 @@ GLOBAL Grade of the project: 20
 (Describe what your tool does and its main features.)
 
 ### EXECUTE: 
-(indicate how to run your tool)
+
+#### Compiling:
+Inside base directory
+```
+$ sh compile.sh
+```
+
+#### Running:
+Inside base directory
+```
+$ sh run.sh <DIRECTORY NAME INSIDE TESTSUITE> <FILENAME - without extension>
+
+# Example
+$ sh run.sh code_generation testArithmetic
+```
 
 
 #### DEALING WITH SYNTACTIC ERRORS: 
@@ -48,13 +62,13 @@ GLOBAL Grade of the project: 20
 
 The tool's testsuite provides automated tests through JUnit4 for most of the given examples, as well as our own tests. Each test's purpose is specified on its filename. 
 
-How to run (inside src folder):
+How to run (inside base directory)
 ```
-sh compile.sh # compiles code and tests
-sh test.sh <Test Class Name>
+$ sh compile.sh # compiles code and tests
+$ sh test.sh <Test Class Name>
 
 # Example - running code generation tests
-sh test.sh CodeGenerationTests
+$ sh test.sh CodeGenerationTests
 ```
  
 #### TASK DISTRIBUTION: 
@@ -63,13 +77,12 @@ sh test.sh CodeGenerationTests
  
 
 #### PROS:
-(Identify the most positive aspects of your tool)
+
 In addition to the requested features, our tool features a few additional optimizations:
 
   - Use of lower cost instructions in the cases of: `iload`, `istore`, `astore`, `aload`
   - Loading constants to the stack (use of `iconst`, `bipush`, `sipush`, `ldc`)
   - Use of `iinc`
-  - Can call `main` function
 
 
 #### CONS: 
