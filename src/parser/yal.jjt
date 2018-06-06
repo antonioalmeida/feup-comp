@@ -62,6 +62,10 @@ public class Yal
   }
 
   public static String run(FileInputStream stream) {
+        return run(stream, 0);
+  }
+
+  public static String run(FileInputStream stream, int localOptRN) {
 
         if(myYal == null)
             myYal = new Yal(stream);
@@ -78,27 +82,17 @@ public class Yal
             System.out.println("Error parsing tree");
         }
 
-
-      	//System.out.println("\nAST Tree:");
-    	//root.dump(""); // imprime no ecrã a árvore
-
     	if(!error) {
-    		//System.out.println("");
-
     	 	boolean semanticSuccess = root.analyse();
-    		//System.out.println("\nFunction Table:");
-    		//root.printFunctionTable("");
-			//System.out.println("\nSymbol Table:");
-			//root.printSymbolTable("");
 
 			if(semanticSuccess) {
-				if(optRN >= 0) {
+				if(localOptRN >= 0) {
 			    	if(debug)
 						root.dumpUsesDefs("");
 					root.handleSuccessorsAntecessors();
 					if(debug)
 						root.dumpSuccessorsAntecessors();
-					root.handleOptimizationR(optRN);
+					root.handleOptimizationR(localOptRN);
 				}
 
                 CodeGenerator codeGenerator = null;

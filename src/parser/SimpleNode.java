@@ -30,6 +30,7 @@ class SimpleNode implements Node {
     protected int firstLine;
     protected ArrayList<Integer> lastLines;
     private IntegerReference codeLineCounter;
+    protected int indexCounter;
 
     // For constant propagation optimization
     protected boolean isConstant;
@@ -417,6 +418,8 @@ public void handleOptimizationR(int optRN) {
 				   System.out.println("   " + variable.getKey()+" => "+"lv"+newIndexes.get(i));
 				   ((Symbol) variable.getValue()).setIndex(newIndexes.get(i));
 			   }
+
+			   indexCounter = variablesUsed - 1;
 			   }
 		   }
 	   }
@@ -537,12 +540,6 @@ public void handleOptimizationR(int optRN) {
     	return ((SimpleNode) parent).getModule();
     }
 
-
-
-    public int getLastIndex() {
-        return symbolTable.getIndexCount();
-    }
-
 	public Node[] getChildren() {
 		return children;
 	}
@@ -559,10 +556,9 @@ public void handleOptimizationR(int optRN) {
 		this.value = value;
 	}
 
-	public boolean isConstant() {
-        return isConstant;
+	public int getIndexCounter() {
+        return indexCounter;
     }
-
 }
 
 /* JavaCC - OriginalChecksum=ddfb1251cda21b9eb5aadc721edc8350 (do not edit this line) */

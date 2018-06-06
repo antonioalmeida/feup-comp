@@ -53,4 +53,19 @@ public class CodeGenerationTests {
 
         assertEquals(targetCode, generatedCode);
     }
+
+    @Test
+    public void nestedBranch() throws Exception {
+
+        String testName = "testsuite/code_generation/nestedBranch.yal";
+        String targetName = "testsuite/code_generation/nestedBranch.j";
+
+        FileInputStream testStream = TestUtils.openFile(testName);
+        FileInputStream targetStream = TestUtils.openFile(targetName);
+
+        String generatedCode = TestUtils.normalize(Yal.run(testStream, 4));
+        String targetCode = TestUtils.getFileContent(targetStream);
+
+        assertEquals(targetCode, generatedCode);
+    }
 }

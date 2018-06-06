@@ -54,6 +54,10 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
   }
 
   public static String run(FileInputStream stream) {
+        return run(stream, 0);
+  }
+
+  public static String run(FileInputStream stream, int localOptRN) {
 
         if(myYal == null)
             myYal = new Yal(stream);
@@ -84,13 +88,13 @@ public class Yal/*@bgen(jjtree)*/implements YalTreeConstants, YalConstants {/*@b
                         //root.printSymbolTable("");
 
                         if(semanticSuccess) {
-                                if(optRN >= 0) {
+                                if(localOptRN >= 0) {
                                 if(debug)
                                                 root.dumpUsesDefs("");
                                         root.handleSuccessorsAntecessors();
                                         if(debug)
                                                 root.dumpSuccessorsAntecessors();
-                                        root.handleOptimizationR(optRN);
+                                        root.handleOptimizationR(localOptRN);
                                 }
 
                 CodeGenerator codeGenerator = null;

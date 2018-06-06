@@ -19,17 +19,13 @@ public class SymbolTable {
     private SymbolTable parent;
     protected HashMap<String, Symbol> symbols;
 
-    private int indexCount;
     private HashMap<String, Integer> nameToIndex;
     private IntegerReference maxIndex;
     private HashMap<Integer, Pair> indexToName;
 
-    
-
     public SymbolTable(SymbolTable parent) {
         this.parent = parent;
         symbols = new HashMap<String, Symbol>();
-        this.indexCount = 0;
         if(parent == null) {
         	nameToIndex = null;
         	maxIndex = null;
@@ -45,7 +41,6 @@ public class SymbolTable {
     public SymbolTable(SymbolTable parent, boolean newNameToIndex) {
     	this.parent = parent;
         symbols = new HashMap<String, Symbol>();
-        this.indexCount = 0;
     	if(newNameToIndex) {
     		nameToIndex = new HashMap<String, Integer>();
     		maxIndex = new IntegerReference(-1);
@@ -216,14 +211,6 @@ public class SymbolTable {
 	public HashMap<String, Symbol> getSymbols() {
 		return symbols;
 	}
-
-    public int getIndexCount() {
-        return indexCount;
-    }
-
-    public void incIndexCount() {
-        indexCount++;
-    }
 
 	public HashMap<String, Integer> getNameToIndex() {
 		return nameToIndex;
